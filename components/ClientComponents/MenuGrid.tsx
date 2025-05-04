@@ -5,11 +5,9 @@ import Image from "next/image"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useCart } from "./CartContext"
-import { Badge } from "@/components/ui/badge"
 import { FilteredMenuItem, MenuItem } from "@/lib/types/menu_type"
 import ViewCartFooter from "../ViewCartFooter"
-import { ChevronDown, ChevronUp, PlusCircle, MinusCircle } from "lucide-react"
-import { Box } from "@mui/material"
+import { PlusCircle, MinusCircle } from "lucide-react"
 
 interface MenuGridProps {
     menuItems: MenuItem[],
