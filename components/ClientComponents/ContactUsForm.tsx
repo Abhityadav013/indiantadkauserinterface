@@ -6,7 +6,6 @@ const ContactUsForm = () => {
 
     const [message, setMessage] = useState("");
     const [name, setName] = useState("");
-    // const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
