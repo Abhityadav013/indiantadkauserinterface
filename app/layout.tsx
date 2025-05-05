@@ -25,6 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" >
+       <head>
+        <script
+          id="usercentrics-cmp"
+          src="https://web.cmp.usercentrics.eu/ui/loader.js"
+          data-settings-id="367RVaF9HFZbR9"
+          async
+        ></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-[100%] md:w-[60%] sm:w-[100%] mx-auto bg-white min-h-screen shadow-md`}
       >
