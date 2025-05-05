@@ -15,18 +15,12 @@ interface MenuGridProps {
     menuItems: MenuItem[],
     menuCategories: FilteredMenuItem[],
 }
-const MenuGrid: React.FC<MenuGridProps> = ({ menuItems }) => {
+const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     const [openCardId, setOpenCardId] = useState<string | null>(null); // Track which card is open
     const { addToCart, removeFromCart, getItemQuantity } = useCart()
     const [showFilter, setShowFilter] = useState(false)
     const [activeCategory, setActiveCategory] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>("")
-    //   const { toast } = useToast()
-
-    const toggleCard = (id: string) => {
-        // If the clicked card is already open, close it. Otherwise, open it.
-        setOpenCardId(openCardId === id ? null : id);
-    };
     // Filter menu items by category if a category is selected
     const filteredItems = menuItems.filter((item) => {
         const matchesCategory = activeCategory ? item.category === activeCategory : true;
@@ -34,6 +28,41 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems }) => {
             searchQuery.toLowerCase().includes(`category: ${activeCategory?.toLowerCase()}`);
         return matchesCategory && matchesSearch;
     });
+
+    const groupedItems: Record<string, MenuItem[]> = {};
+    filteredItems.forEach(item => {
+        if (!groupedItems[item.category]) {
+            groupedItems[item.category] = [];
+        }
+        groupedItems[item.category].push(item);
+    });
+    const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>(() => {
+        const initialState: Record<string, boolean> = {};
+        Object.keys(groupedItems).forEach((cat,index) => {
+            //initialState[cat] = true; // All expanded by default
+            initialState[cat] = index === 0; // Only expand the first category by default
+        });
+        return initialState;
+    });
+
+    const toggleCard = (id: string) => {
+        // If the clicked card is already open, close it. Otherwise, open it.
+        setOpenCardId(openCardId === id ? null : id);
+    };
+
+    const toggleCategory = (category: string) => {
+        setExpandedCategories(prev => ({
+            ...prev,
+            [category]: !prev[category],
+        }));
+    };
+
+
+    const categoryImageMap: Record<string, string> = {};
+    menuCategories.forEach(cat => {
+        categoryImageMap[cat.menu_name] = cat.menu_image;
+    });
+
 
     const noItemsFound = filteredItems.length === 0
     // Categories for filter buttons
@@ -76,96 +105,161 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems }) => {
                 </div>
             )}
 
-            {/* Menu grid */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredItems.map((item) => {
-                    const quantity = getItemQuantity(item.id)
+            {/* MOBILE VIEW: Grouped by category */}
+            <div className="sm:hidden space-y-4">
+                {Object.entries(groupedItems).map(([category, items]) => {
+                    const isExpanded = expandedCategories[category];
 
                     return (
-                        <Card key={item.id} className="overflow-hidden  rounded-none transition-all border-none py-0">
-                            {/* Mobile View */}
+                        <div key={category} className="mb-2 border rounded">
+                            {/* Header */}
                             <div
-                                className="sm:hidden flex justify-between items-start p-3 cursor-pointer"
-                                onClick={() => toggleCard(item.id)} // Toggle open card on click
+                                className="flex items-center justify-between px-4 py-2 cursor-pointer bg-gray-100"
+                                onClick={() => toggleCategory(category)}
                             >
-                                {/* Name on left */}
-                                <div className="flex flex-col">
-                                    <h3 className="font-semibold text-sm">{item.itemName}</h3>
-                                    {
-                                        openCardId !== item.id &&
-                                        <p className="text-xs text-muted-foreground">{item.description}</p>
-                                    }
-                                </div>
-                                {/* Price on right */}
-                                <span className="text-sm text-[#FF6347] font-medium">
-                                    €{item.price.toFixed(2)}
-                                </span>
+                                <h2 className="text-base font-semibold">{category}</h2>
+                                <motion.div
+                                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </motion.div>
                             </div>
 
-                            {/* Expanded content for mobile when specific card is clicked */}
-                            {openCardId === item.id && (
-                                <div className="sm:hidden p-3 border-none text-sm space-y-2">
-                                    <div className="relative h-[120px] w-full overflow-hidden">
-                                        <Image
-                                            src={item.imageURL || "/placeholder.svg"}
-                                            alt={item.itemName}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-
-                                    <p className="text-muted-foreground">{item.description}</p>
-
-                                    {/* Add/Remove Buttons */}
-                                    <div className="flex justify-end">
-                                        {quantity === 0 ? (
-                                            <Button
-                                                onClick={() => handleAddToCart(item)}
-                                                className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                                size="sm"
-                                            >
-
-                                                <Plus className="mr-1 h-4 w-4" />  Add
-                                            </Button>
-                                        ) : (
-                                            <div className="flex items-center border border-green-600 space-x-2">
-                                                <Button
-                                                    onClick={() => handleRemoveFromCart(item)}
-                                                    className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
-                                                    size="sm"
-                                                >
-                                                    -
-                                                </Button>
-
-                                                {/* Quantity Animation */}
-                                                <AnimatePresence mode="wait">
-                                                    <motion.span
-                                                        key={quantity}
-                                                        className="text-sm font-bold text-green-600"
-                                                        initial={{ opacity: 0, y: 10 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        exit={{ opacity: 0, y: -10 }}
-                                                        transition={{ duration: 0.25 }}
-                                                    >
-                                                        {quantity}
-                                                    </motion.span>
-                                                </AnimatePresence>
-
-                                                <Button
-                                                    onClick={() => handleAddToCart(item)}
-                                                    className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
-                                                    size="sm"
-                                                >
-                                                    +
-                                                </Button>
+                            {/* Collapsible Content */}
+                            <AnimatePresence initial={false}>
+                                {isExpanded && (
+                                    <motion.div
+                                        key="content"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.25 }}
+                                        className="overflow-hidden"
+                                    >
+                                        {/* Category Image */}
+                                        {items[0]?.imageURL && (
+                                            <div className="relative w-full h-32 mb-2">
+                                                <Image
+                                                    src={items[0].imageURL}
+                                                    alt={category}
+                                                    fill
+                                                    className="object-cover"
+                                                />
                                             </div>
                                         )}
-                                    </div>
-                                </div>
-                            )
-                            }
 
-                            {/* Desktop View */}
+                                        {/* Menu Items */}
+                                        {items.map(item => {
+                                            const quantity = getItemQuantity(item.id);
+                                            return (
+
+                                                <Card key={item.id} className="overflow-hidden rounded-none transition-all border-none py-0">
+                                                    <div
+                                                        className="sm:hidden flex justify-between items-start p-3 cursor-pointer"
+                                                        onClick={() => toggleCard(item.id)} // Toggle open card on click
+                                                    >
+                                                        {/* Name on left */}
+                                                        <div className="flex flex-col">
+                                                            <h3 className="font-semibold text-sm">{item.itemName}</h3>
+                                                            {
+                                                                openCardId !== item.id &&
+                                                                <p className="text-xs text-muted-foreground">{item.description}</p>
+                                                            }
+                                                        </div>
+                                                        {/* Price on right */}
+                                                        <span className="text-sm text-[#FF6347] font-medium">
+                                                            €{item.price.toFixed(2)}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Expanded content for mobile when specific card is clicked */}
+                                                    {openCardId === item.id && (
+                                                        <div className="sm:hidden p-3 border-none text-sm space-y-2">
+                                                            <div className="relative h-[120px] w-full overflow-hidden">
+                                                                <Image
+                                                                    src={item.imageURL || "/placeholder.svg"}
+                                                                    alt={item.itemName}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                />
+                                                            </div>
+
+                                                            <p className="text-muted-foreground">{item.description}</p>
+
+                                                            {/* Add/Remove Buttons */}
+                                                            <div className="flex justify-end">
+                                                                {quantity === 0 ? (
+                                                                    <Button
+                                                                        onClick={() => handleAddToCart(item)}
+                                                                        className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
+                                                                        size="sm"
+                                                                    >
+
+                                                                        <Plus className="mr-1 h-4 w-4" />  Add
+                                                                    </Button>
+                                                                ) : (
+                                                                    <div className="flex items-center border border-green-600 space-x-2">
+                                                                        <Button
+                                                                            onClick={() => handleRemoveFromCart(item)}
+                                                                            className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
+                                                                            size="sm"
+                                                                        >
+                                                                            -
+                                                                        </Button>
+
+                                                                        {/* Quantity Animation */}
+                                                                        <AnimatePresence mode="wait">
+                                                                            <motion.span
+                                                                                key={quantity}
+                                                                                className="text-sm font-bold text-green-600"
+                                                                                initial={{ opacity: 0, y: 10 }}
+                                                                                animate={{ opacity: 1, y: 0 }}
+                                                                                exit={{ opacity: 0, y: -10 }}
+                                                                                transition={{ duration: 0.25 }}
+                                                                            >
+                                                                                {quantity}
+                                                                            </motion.span>
+                                                                        </AnimatePresence>
+
+                                                                        <Button
+                                                                            onClick={() => handleAddToCart(item)}
+                                                                            className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
+                                                                            size="sm"
+                                                                        >
+                                                                            +
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                    }
+                                                </Card>
+                                            );
+                                        })}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    );
+                })}
+            </div>
+
+
+            {/* DESKTOP VIEW: Flat grid, no grouping */}
+            <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredItems.map(item => {
+                    const quantity = getItemQuantity(item.id);
+                    return (
+                        <Card key={item.id} className="overflow-hidden rounded-none transition-all border-none py-0">
                             < div className="hidden sm:flex flex-col h-[300px] overflow-hidden transition-all hover:shadow-lg border-none" >
                                 <div className="relative h-[140px] w-full overflow-hidden">
                                     <Image
@@ -232,9 +326,9 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems }) => {
                                 </CardFooter>
                             </div>
                         </Card>
-                    )
+                    );
                 })}
-            </div >
+            </div>
             <div className="mt-12">
                 <ViewCartFooter itmesCount={2} />
             </div>
