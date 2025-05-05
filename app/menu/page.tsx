@@ -40,7 +40,7 @@ export default async function MenuPage() {
     <CartProvider>
       <>
         <NavBarNavigation label="Our Menu" isImage={false} />
-        <div className=" container mx-auto px-4 py-8 bg-white">
+        <div className=" container mx-auto px-4 py-8 min-h-[100vh] max-h-[1400vh] bg-white">
           <MenuGrid menuItems={menuItems} menuCategories={menuCategories} />
           <Toaster />
         </div>
