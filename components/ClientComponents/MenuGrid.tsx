@@ -109,7 +109,6 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
             <div className="sm:hidden space-y-4">
                 {Object.entries(groupedItems).map(([category, items]) => {
                     const isExpanded = expandedCategories[category];
-
                     return (
                         <div key={category} className="mb-2 border rounded">
                             {/* Header */}
@@ -175,7 +174,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                             }
                                                         </div>
                                                         {/* Price on right */}
-                                                        <span className="text-sm text-[#FF6347] font-medium">
+                                                        <span className="text-sm text-[#FF6347] pr-3 font-medium">
                                                             €{item.price.toFixed(2)}
                                                         </span>
                                                     </div>
