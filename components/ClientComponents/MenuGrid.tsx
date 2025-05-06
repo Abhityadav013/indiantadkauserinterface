@@ -14,6 +14,7 @@ import { useCart } from "@/hooks/useCartDetails"
 import { Box } from "@mui/material"
 import Loader from "../CartLoader"
 import toast from "react-hot-toast"
+import ViewCartFooter from "../ViewCartFooter"
 
 
 interface MenuGridProps {
@@ -22,7 +23,7 @@ interface MenuGridProps {
 }
 const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     const [openCardId, setOpenCardId] = useState<string | null>(null); // Track which card is open
-    const { loading,items, addToCart, removeFromCart, getItemQuantity } = useCart()
+    const { loading, items, addToCart, removeFromCart, getItemQuantity, getTotalItems } = useCart()
     const [showFilter, setShowFilter] = useState(false)
     const [activeCategory, setActiveCategory] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -82,48 +83,48 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     // Categories for filter buttons
     const categories = Array.from(new Set(menuItems.map((item) => item.category)))
 
-    const handleAddToCart = (itemId: string,itemName:string) => {
+    const handleAddToCart = (itemId: string, itemName: string) => {
         addToCart(menuItems, itemId)
         toast.success(`${itemName} Added to cart`, {
-            id:itemId,
+            id: itemId,
             duration: 2000, // Show toast for 2 seconds
             style: {
-              padding: "16px 24px", // Adjusted padding
-              height: "60px", // Fixed height
-              fontSize: "16px", // Fixed font size
-              backgroundColor: "#28a745", // Green color for success
-              color: "#fff", // White text
-              borderRadius: "10px",
-              marginTop:'50px'
+                padding: "16px 24px", // Adjusted padding
+                height: "60px", // Fixed height
+                fontSize: "16px", // Fixed font size
+                backgroundColor: "#28a745", // Green color for success
+                color: "#fff", // White text
+                borderRadius: "10px",
+                marginTop: '50px'
             },
             iconTheme: {
-              primary: "#fff", // White icon
-              secondary: "#28a745", // Green icon
+                primary: "#fff", // White icon
+                secondary: "#28a745", // Green icon
             },
-          });
+        });
     };
 
 
     const handleRemoveFromCart = (item: MenuItem) => {
         removeFromCart(item.id);
         toast(`${item.itemName} removed from cart`, {
-          id: `remove-${item.id}`,
-          duration: 2000,
-          style: {
-            padding: "16px 24px",
-            height: "60px",
-            fontSize: "16px",
-            backgroundColor: "#dc3545", // Red color for removal
-            color: "#fff",
-            borderRadius: "10px",
-            marginTop: "50px",
-          },
-          iconTheme: {
-            primary: "#fff",
-            secondary: "#dc3545",
-          },
+            id: `remove-${item.id}`,
+            duration: 2000,
+            style: {
+                padding: "16px 24px",
+                height: "60px",
+                fontSize: "16px",
+                backgroundColor: "#dc3545", // Red color for removal
+                color: "#fff",
+                borderRadius: "10px",
+                marginTop: "50px",
+            },
+            iconTheme: {
+                primary: "#fff",
+                secondary: "#dc3545",
+            },
         });
-      };
+    };
 
     if (loading && !items.length) {
         return (
@@ -255,7 +256,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                             <div className="flex justify-end">
                                                                 {quantity === 0 ? (
                                                                     <Button
-                                                                        onClick={() => handleAddToCart(item.id,item.itemName)}
+                                                                        onClick={() => handleAddToCart(item.id, item.itemName)}
                                                                         className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                                                                         size="sm"
                                                                     >
@@ -287,7 +288,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                                         </AnimatePresence>
 
                                                                         <Button
-                                                                         onClick={() => handleAddToCart(item.id,item.itemName)}
+                                                                            onClick={() => handleAddToCart(item.id, item.itemName)}
                                                                             className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                                                             size="sm"
                                                                         >
@@ -340,7 +341,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                 <CardFooter className="flex justify-end p-4 pt-0 mt-auto">
                                     {quantity === 0 ? (
                                         <Button
-                                        onClick={() => handleAddToCart(item.id,item.itemName)}
+                                            onClick={() => handleAddToCart(item.id, item.itemName)}
                                             className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                                             size="sm"
                                         >
@@ -372,7 +373,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                             </AnimatePresence>
 
                                             <Button
-                                               onClick={() => handleAddToCart(item.id,item.itemName)}
+                                                onClick={() => handleAddToCart(item.id, item.itemName)}
                                                 className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                                 size="sm"
                                             >
@@ -386,9 +387,14 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                     );
                 })}
             </div>
-            {/* <div className="mt-12">
-                <ViewCartFooter itmesCount={2} />
-            </div> */}
+            {
+                getTotalItems() && (
+                    <div className="mt-12">
+                        <ViewCartFooter itmesCount={getTotalItems()} />
+                    </div>
+                )
+            }
+
 
         </div >
     )
