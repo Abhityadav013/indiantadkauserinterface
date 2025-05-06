@@ -4,12 +4,17 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useCart } from "./CartContext"
 import { FilteredMenuItem, MenuItem } from "@/lib/types/menu_type"
-import ViewCartFooter from "../ViewCartFooter"
+// import ViewCartFooter from "../ViewCartFooter"
 import { Plus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion";
 import SearchFoodCategory from "./SearchFoodCategory"
+// import { useGetCartQuery, useUpdateCartMutation } from "@/store/api/cartApi"
+import { useCart } from "@/hooks/useCartDetails"
+import { Box } from "@mui/material"
+import Loader from "../CartLoader"
+import toast from "react-hot-toast"
+
 
 interface MenuGridProps {
     menuItems: MenuItem[],
@@ -17,11 +22,11 @@ interface MenuGridProps {
 }
 const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     const [openCardId, setOpenCardId] = useState<string | null>(null); // Track which card is open
-    const { addToCart, removeFromCart, getItemQuantity } = useCart()
+    const { loading,items, addToCart, removeFromCart, getItemQuantity } = useCart()
     const [showFilter, setShowFilter] = useState(false)
     const [activeCategory, setActiveCategory] = useState<string | null>(null)
-    const [searchQuery, setSearchQuery] = useState<string>("")
-
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    // const [updateCart] = useUpdateCartMutation();
     // Filter menu items by category if a category is selected
     const filteredItems = menuItems.filter((item) => {
         const matchesCategory = activeCategory ? item.category === activeCategory : true;
@@ -77,23 +82,67 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     // Categories for filter buttons
     const categories = Array.from(new Set(menuItems.map((item) => item.category)))
 
-    const handleAddToCart = (item: MenuItem) => {
-        addToCart(item)
-        // toast({
-        //   title: "Added to cart",
-        //   description: `${item.name} has been added to your cart.`,
-        //   duration: 2000,
-        // })
-    }
+    const handleAddToCart = (itemId: string,itemName:string) => {
+        addToCart(menuItems, itemId)
+        toast.success(`${itemName} Added to cart`, {
+            id:itemId,
+            duration: 2000, // Show toast for 2 seconds
+            style: {
+              padding: "16px 24px", // Adjusted padding
+              height: "60px", // Fixed height
+              fontSize: "16px", // Fixed font size
+              backgroundColor: "#28a745", // Green color for success
+              color: "#fff", // White text
+              borderRadius: "10px",
+              marginTop:'50px'
+            },
+            iconTheme: {
+              primary: "#fff", // White icon
+              secondary: "#28a745", // Green icon
+            },
+          });
+    };
+
 
     const handleRemoveFromCart = (item: MenuItem) => {
-        removeFromCart(item.id)
-        // toast({
-        //   title: "Removed from cart",
-        //   description: `${item.name} has been removed from your cart.`,
-        //   variant: "destructive",
-        //   duration: 2000,
-        // })
+        removeFromCart(item.id);
+        toast(`${item.itemName} removed from cart`, {
+          id: `remove-${item.id}`,
+          duration: 2000,
+          style: {
+            padding: "16px 24px",
+            height: "60px",
+            fontSize: "16px",
+            backgroundColor: "#dc3545", // Red color for removal
+            color: "#fff",
+            borderRadius: "10px",
+            marginTop: "50px",
+          },
+          iconTheme: {
+            primary: "#fff",
+            secondary: "#dc3545",
+          },
+        });
+      };
+
+    if (loading && !items.length) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                }}
+            >
+                <Loader
+                    loadingImage={
+                        'https://testing.indiantadka.eu/assets/cart-item-loader.gif'
+                    }
+                    isLoading={loading}
+                />
+            </Box>
+        );
     }
 
     return (
@@ -206,7 +255,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                             <div className="flex justify-end">
                                                                 {quantity === 0 ? (
                                                                     <Button
-                                                                        onClick={() => handleAddToCart(item)}
+                                                                        onClick={() => handleAddToCart(item.id,item.itemName)}
                                                                         className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                                                                         size="sm"
                                                                     >
@@ -238,7 +287,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                                         </AnimatePresence>
 
                                                                         <Button
-                                                                            onClick={() => handleAddToCart(item)}
+                                                                         onClick={() => handleAddToCart(item.id,item.itemName)}
                                                                             className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                                                             size="sm"
                                                                         >
@@ -291,7 +340,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                 <CardFooter className="flex justify-end p-4 pt-0 mt-auto">
                                     {quantity === 0 ? (
                                         <Button
-                                            onClick={() => handleAddToCart(item)}
+                                        onClick={() => handleAddToCart(item.id,item.itemName)}
                                             className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                                             size="sm"
                                         >
@@ -323,7 +372,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                             </AnimatePresence>
 
                                             <Button
-                                                onClick={() => handleAddToCart(item)}
+                                               onClick={() => handleAddToCart(item.id,item.itemName)}
                                                 className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                                 size="sm"
                                             >
@@ -337,9 +386,9 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                     );
                 })}
             </div>
-            <div className="mt-12">
+            {/* <div className="mt-12">
                 <ViewCartFooter itmesCount={2} />
-            </div>
+            </div> */}
 
         </div >
     )

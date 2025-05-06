@@ -1,10 +1,8 @@
-import { CartProvider } from "@/components/ClientComponents/CartContext";
 import MenuGrid from "@/components/ClientComponents/MenuGrid";
 import NavBarNavigation from "@/components/NavBarNavigation";
 import { menu_url } from "@/lib/apiEndpoints";
 import { MenuCategory } from "@/lib/types/menu_category";
 import { FilteredMenuItem, MenuItem } from "@/lib/types/menu_type";
-import { Toaster } from "react-hot-toast";
 
 async function getMenuData() {
   try {
@@ -37,14 +35,11 @@ async function getMenuData() {
 export default async function MenuPage() {
   const { menuItems, menuCategories } = await getMenuData();
   return (
-    <CartProvider>
-      <>
+    <>
         <NavBarNavigation label="Our Menu" isImage={false} />
         <div className=" container mx-auto px-4 py-8 min-h-[100vh] max-h-[1400vh] bg-white">
           <MenuGrid menuItems={menuItems} menuCategories={menuCategories} />
-          <Toaster />
         </div>
       </>
-    </CartProvider>
   )
 }

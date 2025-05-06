@@ -22,7 +22,7 @@ export default function AboutSection() {
           </div>
           <div className="relative h-[300px] w-full overflow-hidden rounded-lg md:w-1/2">
             <Image
-              src="/placeholder.svg?height=600&width=800"
+              src="https://testing.indiantadka.eu/assets/header_img.png"
               alt="Our chef team preparing authentic Indian cuisine"
               fill
               className="object-cover"
