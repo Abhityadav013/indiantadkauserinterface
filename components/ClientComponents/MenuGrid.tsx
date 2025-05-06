@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     const [showFilter, setShowFilter] = useState(false)
     const [activeCategory, setActiveCategory] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>("")
+
     // Filter menu items by category if a category is selected
     const filteredItems = menuItems.filter((item) => {
         const matchesCategory = activeCategory ? item.category === activeCategory : true;
@@ -38,13 +39,21 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     });
     const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>(() => {
         const initialState: Record<string, boolean> = {};
-        Object.keys(groupedItems).forEach((cat,index) => {
+        Object.keys(groupedItems).forEach((cat, index) => {
             //initialState[cat] = true; // All expanded by default
             initialState[cat] = index === 0; // Only expand the first category by default
         });
         return initialState;
     });
 
+    useEffect(() => {
+        // Toggle the selected category
+        setExpandedCategories(prev => ({
+            ...prev,
+            ...(activeCategory ? { [activeCategory]: !prev[activeCategory] } : {}),
+        }));
+
+    }, [activeCategory]);
     const toggleCard = (id: string) => {
         // If the clicked card is already open, close it. Otherwise, open it.
         setOpenCardId(openCardId === id ? null : id);
@@ -110,7 +119,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                 {Object.entries(groupedItems).map(([category, items]) => {
                     const isExpanded = expandedCategories[category];
                     return (
-                        <div key={category} className="mb-2 border rounded">
+                        <div key={category} className="mb-2 border-0 rounded">
                             {/* Header */}
                             <div
                                 className="flex items-center justify-between px-4 py-2 cursor-pointer bg-gray-100"
