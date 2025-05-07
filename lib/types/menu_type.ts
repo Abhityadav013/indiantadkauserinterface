@@ -1,17 +1,20 @@
 export type MenuItem = {
   id: string;
-  itemName: string;
+  name: string;
   imageURL: string;
   price: number;
   description: string;
-  category: string;
+  category:{
+    id:string,
+    order:number
+  };
   isDelivery: boolean;
-  tags: string[]; // Optional property
 };
 
-export type FilteredMenuItem = {
-  menu_name: string;
-  menu_image: string;
+export type MenuCategoryItem = {
+  categoryId:string
+  categoryName: string;
+  categoryImage: string;
 };
 
 export type GroupedMenu = {
