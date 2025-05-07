@@ -1,5 +1,3 @@
-import { base_url } from "./apiEndpoints";
-
 interface FetchParams {
   [key: string]: string | number | boolean;
 }
@@ -20,7 +18,7 @@ export async function fetchFromApi<T>(
     : "";
 
   // Fetch request with query parameters (if provided)
-  const res = await fetch(`${base_url}${endpoint}${queryString}`, {
+  const res = await fetch(`${process.env.API_BASE_URL}${endpoint}${queryString}`, {
     next: { tags: ['category'], revalidate: 3600 },
   });
 
