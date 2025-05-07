@@ -1,14 +1,15 @@
 // pages/api/user/register-session.ts
 
 import { v4 as uuidv4 } from 'uuid';
-import {  NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import UserSession from '@/lib/mongodb/models/UserSession';
 import ApiResponse from '@/utils/ApiResponse';
-
+import { connectToDatabase } from '@/lib/mongodb/connect';
 
 export async function POST() {
   try {
+    await connectToDatabase();
     const cookieStore = await cookies(); // ✅ Always use this in App Router
     const deviceId = cookieStore.get('_device_id')?.value;
     let session = new UserSession();
@@ -44,17 +45,13 @@ export async function POST() {
           tid: session.guestId,
           statusMessage: ' Session created.',
         },
-        'User session created successfully.',
-      ),
+        'User session created successfully.'
+      )
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      new ApiResponse(
-        500,
-        { error: `Internal Server Error: ${error} ` },
-        'An error occurred.',
-      ),
+      new ApiResponse(500, { error: `Internal Server Error: ${error} ` }, 'An error occurred.')
     );
   }
 }
