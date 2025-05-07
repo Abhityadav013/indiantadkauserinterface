@@ -2,7 +2,7 @@
 
 import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useCart } from "./CartContext"
+import { useCart } from "@/hooks/useCartDetails"
 
 export default function CartButton() {
   const { getTotalItems } = useCart()
