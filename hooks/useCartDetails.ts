@@ -39,7 +39,7 @@ export function useCart() {
     } else {
       updatedCart.push({
         itemId: itemId,
-        itemName: foodItem.itemName,
+        itemName: foodItem.name,
         quantity: 1,
       });
     }

@@ -3,18 +3,21 @@ import { Filter, X } from "lucide-react"
 interface SearchFoodCategoryProps {
     showFilter: boolean,
     setShowFilter: React.Dispatch<React.SetStateAction<boolean>>,
-    activeCategory: string | null,
-    setActiveCategory: React.Dispatch<React.SetStateAction<string | null>>
+    activeCategory: { id: string, name: string } | null,
+    setActiveCategory: React.Dispatch<React.SetStateAction<{ id: string, name: string } | null>>
     searchTerm: string,
     setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-    categories: string[]
+    categories: {
+        id: string;
+        name: string;
+    }[]
 }
 
 const SearchFoodCategory: React.FC<SearchFoodCategoryProps> = ({ categories, showFilter, activeCategory, searchTerm, setShowFilter, setActiveCategory, setSearchTerm }) => {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (activeCategory) {
             // If a category is selected, format the search query as category:[categoryName] + item name
-            setSearchTerm(`category: ${activeCategory} ${e.target.value}`);
+            setSearchTerm(`category: ${activeCategory.name} ${e.target.value}`);
         } else {
             // If no category is selected, just search by item name
             setSearchTerm(e.target.value);
@@ -25,7 +28,7 @@ const SearchFoodCategory: React.FC<SearchFoodCategoryProps> = ({ categories, sho
             <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 shadow-sm">
                 <input
                     type="text"
-                    placeholder="Search food..."
+                    placeholder={activeCategory ? `Search within ${activeCategory.name}` : "Search food..."}
                     className="flex-1 bg-transparent focus:outline-none text-sm"
                     value={searchTerm}
                     onChange={handleSearchChange}
@@ -67,16 +70,16 @@ const SearchFoodCategory: React.FC<SearchFoodCategoryProps> = ({ categories, sho
                     </button>
                     {categories.map((category) => (
                         <button
-                            key={category}
+                            key={category.id}
                             onClick={() => {
                                 setActiveCategory(category)
-                                setSearchTerm(`category: ${category}`);
+                                setSearchTerm(`${category.name}`);
                                 setShowFilter(false)
                             }}
-                            className={`block w-full text-left px-3 py-1 text-sm rounded-md hover:bg-gray-100 ${activeCategory === category ? "bg-gray-100 font-medium" : ""
+                            className={`block w-full text-left px-3 py-1 text-sm rounded-md hover:bg-gray-100 ${activeCategory && activeCategory.id === category.id ? "bg-gray-100 font-medium" : ""
                                 }`}
                         >
-                            {category}
+                            {category.name}
                         </button>
                     ))}
                 </div>

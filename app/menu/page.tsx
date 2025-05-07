@@ -1,45 +1,40 @@
+// import MenuGrid from "@/components/ClientComponents/MenuGrid";
 import MenuGrid from "@/components/ClientComponents/MenuGrid";
 import NavBarNavigation from "@/components/NavBarNavigation";
-import { menu_url } from "@/lib/apiEndpoints";
+import { menuTransform } from "@/hooks/useMenuTransform";
+import { fetchFromApi } from "@/lib/fetchAPICalls";
 import { MenuCategory } from "@/lib/types/menu_category";
-import { FilteredMenuItem, MenuItem } from "@/lib/types/menu_type";
+import { MenuCategoryItem, MenuItem } from "@/lib/types/menu_type";
 
 async function getMenuData() {
   try {
-    const [menuResponse, categoryResponse] = await Promise.all([
-      fetch(`${menu_url}/menu`, { next: { revalidate: 3600 } }), // Cache for 1 hour
-      fetch(`${menu_url}/category`, { next: { revalidate: 3600 } }),
+    const [menuItemsRaw, categoryData] = await Promise.all([
+      fetchFromApi<{ menu: MenuItem[] }>(`/menu`),
+      fetchFromApi<{ category: MenuCategory[] }>(`/category`),
     ]);
-
-
-    if (!menuResponse.ok || !categoryResponse.ok) {
-      throw new Error("Failed to fetch data");
-    }
-
-    const foodMenuItems: MenuItem[] = await menuResponse.json();
-    const foodCategoryItems: MenuCategory[] = await categoryResponse.json();
-    const menuItems: MenuItem[] = foodMenuItems.filter((cat) => cat.isDelivery);
-    const menuCategories: FilteredMenuItem[] = foodCategoryItems
-      .filter((cat) => cat.isDelivery)
+    const menuItems: MenuItem[] = menuItemsRaw.menu;
+    const menuCategoriesDetails: MenuCategoryItem[] = categoryData.category
       .map((cat) => ({
-        menu_name: cat.categoryName,
-        menu_image: cat.imageUrl,
+        categoryId: cat.id,
+        categoryName: cat.categoryName,
+        categoryImage: cat.imageUrl,
       }));
 
-    return { menuItems, menuCategories };
+    return { menuItems, menuCategoriesDetails };
   } catch (error) {
     console.error("Error fetching menu data:", error);
-    return { menuItems: [], menuCategories: [] };
+    return { menuItems: [], menuCategoriesDetails: [] };
   }
 }
 export default async function MenuPage() {
-  const { menuItems, menuCategories } = await getMenuData();
+  const { menuItems, menuCategoriesDetails } = await getMenuData();
+  const menuCategories = menuTransform(menuItems, menuCategoriesDetails);
   return (
     <>
-        <NavBarNavigation label="Our Menu" isImage={false} />
-        <div className=" container mx-auto px-4 py-8 min-h-[100vh] max-h-[1400vh] bg-white">
-          <MenuGrid menuItems={menuItems} menuCategories={menuCategories} />
-        </div>
-      </>
+      <NavBarNavigation label="Our Menu" isImage={false} />
+      <div className=" container mx-auto px-4 py-8 min-h-[100vh] max-h-[1400vh] bg-white">
+        <MenuGrid menuItems={menuItems} menuCategories={menuCategories} />
+      </div>
+    </>
   )
 }
