@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { MenuItem } from '@/lib/types/menu_type';
 import { useGetCartQuery, useUpdateCartMutation } from '@/store/api/cartApi';
 import { Cart } from '@/lib/types/cart_type';
+import toast from 'react-hot-toast';
 
 export function useCart() {
   const [items, setItems] = useState<Cart[]>([]);
@@ -9,17 +10,12 @@ export function useCart() {
   const { data: cart, isLoading } = useGetCartQuery();
   const [updateCart] = useUpdateCartMutation();
 
-
   useEffect(() => {
-    if( cart?.length){
-        setItems(cart || []);
+    setItems(cart?.length ? cart : []);
+    if (isLoading) {
+      setLoading(false);
     }
-    if(isLoading){
-        setLoading(false)
-    }
-    
-   // setItems(cart || []);
-  }, [loading, cart, setItems, isLoading]);
+  }, [cart, isLoading, setItems]);
 
   const addToCart = (menuItems: MenuItem[], itemId: string) => {
     if (isLoading) {
@@ -45,12 +41,30 @@ export function useCart() {
     }
 
     updateCart({ cart: updatedCart });
+    toast.success(`${foodItem.name} Added to cart`, {
+      id: itemId,
+      duration: 2000, // Show toast for 2 seconds
+      style: {
+        padding: '16px 24px', // Adjusted padding
+        height: '60px', // Fixed height
+        fontSize: '16px', // Fixed font size
+        backgroundColor: '#28a745', // Green color for success
+        color: '#fff', // White text
+        borderRadius: '10px',
+        marginTop: '50px',
+      },
+      iconTheme: {
+        primary: '#fff', // White icon
+        secondary: '#28a745', // Green icon
+      },
+    });
   };
 
   const removeFromCart = (itemId: string) => {
     if (isLoading) {
-        return;
-      }
+      return;
+    }
+    const foodItem = items.find((item) => item.itemId === itemId);
     const cartItems = [...(cart || [])];
     const updatedCart = cartItems
       .map((cartItem) =>
@@ -59,6 +73,23 @@ export function useCart() {
       .filter((cartItem) => cartItem.quantity > 0);
 
     updateCart({ cart: updatedCart });
+    toast(`${foodItem?.itemName} removed from cart`, {
+      id: `remove-${foodItem?.itemId}`,
+      duration: 2000,
+      style: {
+          padding: "16px 24px",
+          height: "60px",
+          fontSize: "16px",
+          backgroundColor: "#dc3545", // Red color for removal
+          color: "#fff",
+          borderRadius: "10px",
+          marginTop: "50px",
+      },
+      iconTheme: {
+          primary: "#fff",
+          secondary: "#dc3545",
+      },
+  });
   };
 
   //   const removeFromCart = (itemId: string) => {
