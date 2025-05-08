@@ -53,7 +53,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
         } else {
             // No active category: set all categories as not expandable
             const nonExpandableCategories = Object.entries(menuCategories).map(([categoryId, categoryData]) => {
-                return [categoryId, { ...categoryData, isExpandable:  categoryData.order === 1 }];
+                return [categoryId, { ...categoryData, isExpandable: categoryData.order === 1 }];
             });
     
             setFilterMenuCategories(Object.fromEntries(nonExpandableCategories));
@@ -141,8 +141,6 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
             </Box>
         );
     }
-
-   // console.log('expandedCategories::::::',expandedCategories)
     return (
         <div>
             {/* Category filter buttons */}
@@ -216,9 +214,9 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                         {categoryData.items.map((item) => {
                                             const quantity = getItemQuantity(item.id);
                                             return (
-                                                <Card key={item.id} className="overflow-hidden rounded-none transition-all border-none py-0">
+                                                <Card key={item.id} style={{ border: openCardId === item.id ? '1px outset' : '' }} className="overflow-hidden rounded-none transition-all border-none py-0">
                                                     <div
-                                                        className="sm:hidden flex justify-between items-start p-3 cursor-pointer"
+                                                        className={`sm:hidden flex justify-between items-start p-3 cursor-pointer ${openCardId === item.id ? 'p-0' : 'p-3'}`}
                                                         onClick={() => toggleCard(item.id)} // Toggle open card on click
                                                     >
                                                         {/* Name on left */}
@@ -234,7 +232,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
 
                                                     {/* Expanded content for mobile when specific card is clicked */}
                                                     {openCardId === item.id && (
-                                                        <div className="sm:hidden p-3 border-none text-sm space-y-2">
+                                                        <div className="sm:hidden px-3 py-0 pb-3 border-none text-sm space-y-2">
                                                             <div className="relative h-[120px] w-full overflow-hidden">
                                                                 <Image
                                                                     src={item.imageURL || "/placeholder.svg"}
@@ -274,7 +272,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                                                 initial={{ opacity: 0, y: 10 }}
                                                                                 animate={{ opacity: 1, y: 0 }}
                                                                                 exit={{ opacity: 0, y: -10 }}
-                                                                                transition={{ duration: 0.25 }}
+                                                                                transition={{ duration: 0.15 }}
                                                                             >
                                                                                 {quantity}
                                                                             </motion.span>
@@ -388,7 +386,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                                                 initial={{ opacity: 0, y: 10 }}
                                                                                 animate={{ opacity: 1, y: 0 }}
                                                                                 exit={{ opacity: 0, y: -10 }}
-                                                                                transition={{ duration: 0.25 }}
+                                                                                transition={{ duration: 0.15 }}
                                                                             >
                                                                                 {quantity}
                                                                             </motion.span>

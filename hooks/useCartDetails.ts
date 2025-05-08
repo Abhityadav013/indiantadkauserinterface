@@ -11,11 +11,14 @@ export function useCart() {
   const [updateCart] = useUpdateCartMutation();
 
   useEffect(() => {
-    setItems(cart?.length ? cart : []);
+    if (!items.length && cart?.length) {
+      setItems(cart?.length ? cart : []);
+    }
+
     if (isLoading) {
       setLoading(false);
     }
-  }, [cart, isLoading, setItems]);
+  }, [cart, items, isLoading, setItems]);
 
   const addToCart = (menuItems: MenuItem[], itemId: string) => {
     if (isLoading) {
@@ -39,7 +42,7 @@ export function useCart() {
         quantity: 1,
       });
     }
-
+    setItems(updatedCart);
     updateCart({ cart: updatedCart });
     toast.success(`${foodItem.name} Added to cart`, {
       id: itemId,
@@ -71,25 +74,25 @@ export function useCart() {
         cartItem.itemId === itemId ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
       )
       .filter((cartItem) => cartItem.quantity > 0);
-
+    setItems(updatedCart);
     updateCart({ cart: updatedCart });
     toast(`${foodItem?.itemName} removed from cart`, {
       id: `remove-${foodItem?.itemId}`,
       duration: 2000,
       style: {
-          padding: "16px 24px",
-          height: "60px",
-          fontSize: "16px",
-          backgroundColor: "#dc3545", // Red color for removal
-          color: "#fff",
-          borderRadius: "10px",
-          marginTop: "50px",
+        padding: '16px 24px',
+        height: '60px',
+        fontSize: '16px',
+        backgroundColor: '#dc3545', // Red color for removal
+        color: '#fff',
+        borderRadius: '10px',
+        marginTop: '50px',
       },
       iconTheme: {
-          primary: "#fff",
-          secondary: "#dc3545",
+        primary: '#fff',
+        secondary: '#dc3545',
       },
-  });
+    });
   };
 
   //   const removeFromCart = (itemId: string) => {
@@ -109,7 +112,8 @@ export function useCart() {
   };
 
   const getTotalItems = () => {
-    return items.reduce((total, item) => total + item.quantity, 0);
+    // Use reduce to accumulate the count of items with quantity > 0
+    return items.reduce((total, item) => item.quantity > 0 ? total + 1 : total, 0);
   };
 
   //   const getTotalPrice = () => {
