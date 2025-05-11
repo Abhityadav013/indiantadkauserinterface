@@ -177,7 +177,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
           edge="start"
           color="inherit"
           onClick={onClose}
-          sx={{ position: "absolute", top: 10, left: 10 }}
+          sx={{ position: "absolute", top: 20, left: 10 }}
         >
           <CloseIcon />
         </IconButton>

@@ -7,15 +7,26 @@ import { useCart } from '@/hooks/useCartDetails';
 import { MenuItem } from '@/lib/types/menu_type';
 import { useUpdateCartMutation } from '@/store/api/cartApi';
 import { motion, AnimatePresence } from "framer-motion";
+import Image from 'next/image';
 
 interface CartItemProps {
     menu: MenuItem[]
 }
 const CartItem: React.FC<CartItemProps> = ({ menu }) => {
+    const [showLoader, setShowLoader] = useState(true);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
-    const { items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
+    const { loading, items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
     const [isCartUpdated, setCartUpdated] = useState(false);
     const [updateCart] = useUpdateCartMutation();
+
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => setShowLoader(false), 1000); // delay 1s
+            return () => clearTimeout(timer); // ✅ cleanup
+        } else {
+            setShowLoader(true);
+        }
+    }, [loading]);
     useEffect(() => {
         if (!menuItems.length) {
             updateMenuItems(menu)
@@ -77,6 +88,17 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
         return () => clearTimeout(timer);
     };
 
+    // foodCartLoader
+    if (showLoader) {
+        return (
+            <Image
+                src='https://testing.indiantadka.eu/assets/foodCartLoader.gif'
+                alt="Loading..."
+                width={400}
+                height={400} // Assuming the image is square
+            />
+        );
+    }
     return (
         <React.Fragment>
             <Box sx={{ width: '100%', height: 4, mb: 2 }}>

@@ -9,8 +9,8 @@ const CartHistory = async () => {
     return (
         <Card
             sx={{
-                minWidth: { xs: '90vw', sm: '90vw', lg: '28vw' },
-                maxWidth: { xs: '90vw', sm: '90vw', lg: '28vw' },
+                minWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
+                maxWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -54,7 +54,7 @@ const CartHistory = async () => {
                     <Box sx={{ width: '20%', textAlign: 'right' }}>Price</Box> */}
                     <Box sx={{ width: '55%' }}>Item Name</Box>
                     <Box sx={{ width: '25%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>Qty</Box>
-                    <Box sx={{ width: '20%', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>Price</Box>
+                    <Box sx={{ width: '20%', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: {xs:'center', sm:'center' ,lg:'flex-start'}}}>Price</Box>
                 </Box>
                 <Box
                     sx={{

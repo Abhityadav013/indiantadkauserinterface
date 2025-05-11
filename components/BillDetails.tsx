@@ -9,8 +9,8 @@ const BillDetails = async () => {
     const { menuItems } = await getMenuData();
     return (
         <>
-            <Box className=" max-w-md mx-auto p-4 border bg-white shadow-md">
-                <Typography variant="h6" sx={{ fonWeight: 600 }}>
+            <Box className=" max-w-md mx-auto p-4 bg-white shadow-md">
+                <Typography variant="h6" sx={{ fonWeight: 300 }}>
                     <IconButton>
                         <ReceiptIcon fontSize="medium" className="text-gray-700" />
                     </IconButton>
