@@ -10,7 +10,7 @@ const CartNavigate = () => {
 
   const handleNavigate = () => {
     // ToDo:: Need this when we have Login functioanlity
-    router.push("/checkout"); // Navigate to cart page
+    router.push("/cart"); // Navigate to cart page
     //router.push('order-details')
   };
   return (
