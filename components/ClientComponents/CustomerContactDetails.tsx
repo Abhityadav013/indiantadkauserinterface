@@ -25,17 +25,7 @@ const CustomerContactDetails = () => {
     }, [loading, customerDetails, customerOrder, router]);
 
     return (
-        <Box
-            sx={{
-                maxWidth: '28rem',
-                margin: '0 auto',
-                padding: 2,
-                border: '1px solid #e0e0e0',
-                boxShadow: 2,
-                backgroundColor: 'white',
-                minHeight: '20vh',
-                maxHeight: '20vh',
-            }}>
+        <div className="max-w-md mx-auto p-4 bg-white shadow-md">
             {
                 !loading && customerDetails ? (
                     <>
@@ -81,9 +71,7 @@ const CustomerContactDetails = () => {
                 handleAdddressDetailClose={handleAdddressDetailClose}
                 handleUpdateCustomerDetails={handleUpdateCustomerDetails}
             />
-        </Box>
-
-
+        </div>
     );
 };
 
