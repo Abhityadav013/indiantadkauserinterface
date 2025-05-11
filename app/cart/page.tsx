@@ -11,7 +11,6 @@ const page = async() => {
       sx={{
         marginBottom: '1rem',
         overflow: 'auto',
-        borderWidth: '1px',
         backgroundColor: '#e9ecee',
         padding: 2,
         height:'100vh'
