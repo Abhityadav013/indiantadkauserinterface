@@ -97,13 +97,13 @@ export function useCart() {
 
   const getCartTotal = () => {
     return items.reduce((total, cartItem) => {
-      console.log('menuItems::::::::::',menuItems)
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
   };
 
   return {
+    isLoading,
     items,
     menuItems,
     loading,

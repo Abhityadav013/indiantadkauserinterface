@@ -5,11 +5,11 @@ import { Box, Typography, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import Person4Icon from '@mui/icons-material/Person4';
 import { useAddressDetails } from '@/hooks/useAddressDetails';
-import AddAddressButton from './AddAddressButton';
 import CustomerContactDetailsWrapper from './CustomerContactDetailsWrapper';
 import AddressForm from './AddressForm';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
 import { useRouter } from 'next/navigation';
+import ButtonAction from './ButtonAction';
 const CustomerContactDetails = () => {
     const router = useRouter();
     const { loading, customerDetails, customerOrder, formError, isAddressModelOpen, setFormError, handleAdddressDetailOpen, handleAdddressDetailClose, handleUpdateCustomerDetails } = useAddressDetails();
@@ -59,7 +59,7 @@ const CustomerContactDetails = () => {
                                 </Typography>
                             </Box>
 
-                            <AddAddressButton textToDisplay="Add Address To Proceed" handleAdddressDetailOpen={handleAdddressDetailOpen} /></>
+                            <ButtonAction textToDisplay="Add Address To Proceed" handleButtonAction={handleAdddressDetailOpen} /></>
                     )
             }
             <AddressForm

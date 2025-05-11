@@ -4,6 +4,7 @@ import CartHistory from './ClientComponents/CartHistory'
 import SuggestionInput from './ClientComponents/RestroSuggestion'
 import BillDetails from './BillDetails'
 import CustomerContactDetails from './ClientComponents/CustomerContactDetails'
+import ProceedCheckout from './ProceedCheckout'
 
 const CartWrapper = () => {
     return (
@@ -14,7 +15,7 @@ const CartWrapper = () => {
                 display: { xs: 'block', md: 'flex' }, // 'block' on mobile, 'flex' on md and up
                 gap: { xs: 0, md: 4 },
                 backgroundColor: '#e9ecee',
-                mt: { xs: 10, sm: 10, md: 7 }, // 12 margin-top on mobile, 7 on md and up
+                mt: { xs: 8, sm: 8, md: 6 }, // 12 margin-top on mobile, 7 on md and up
             }}
         >
 
@@ -27,7 +28,9 @@ const CartWrapper = () => {
                 <SuggestionInput />
                 <BillDetails />
                 <CustomerContactDetails />
+                <ProceedCheckout/>
             </Box>
+            
         </Box>
     )
 }

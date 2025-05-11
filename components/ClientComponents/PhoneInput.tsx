@@ -127,9 +127,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ phoneNumber, setPhoneNumber, se
                 error={isValid === false}
                 helperText={
                     <>
-                        <Box>{errorMessage}</Box>
-                        {isValid && (
-                            <Box display="flex" alignItems="center" justifyContent="flex-end" color="green" sx={{ gap: 0.5 }}>
+                        {isValid ? (
+                            <Box component="span" display="flex" alignItems="center" justifyContent="flex-end" color="green" sx={{ gap: 0.5 }}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="14"
@@ -145,7 +144,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ phoneNumber, setPhoneNumber, se
                                 </svg>
                                 Valid phone number
                             </Box>
-                        )}
+                        ):
+                         <Box component="span">{errorMessage}</Box>}
                     </>
 
                 }
