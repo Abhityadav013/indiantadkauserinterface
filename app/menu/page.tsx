@@ -6,7 +6,7 @@ import { fetchFromApi } from "@/lib/fetchAPICalls";
 import { MenuCategory } from "@/lib/types/menu_category";
 import { MenuCategoryItem, MenuItem } from "@/lib/types/menu_type";
 
-async function getMenuData() {
+export async function getMenuData() {
   try {
     const [menuItemsRaw, categoryData] = await Promise.all([
       fetchFromApi<{ menu: MenuItem[] }>(`/menu`),
@@ -33,7 +33,7 @@ export default async function MenuPage() {
     <>
       <NavBarNavigation label="Our Menu" isImage={false} />
       <div className=" container mx-auto px-4 py-8 min-h-[100vh] max-h-[1400vh] bg-white">
-        <MenuGrid menuItems={menuItems} menuCategories={menuCategories} />
+        <MenuGrid menuCategories={menuCategories} />
       </div>
     </>
   )

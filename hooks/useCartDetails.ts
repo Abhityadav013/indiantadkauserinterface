@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 import { MenuItem } from '@/lib/types/menu_type';
-import { useGetCartQuery, useUpdateCartMutation } from '@/store/api/cartApi';
+import { useGetCartQuery } from '@/store/api/cartApi';
 import { Cart } from '@/lib/types/cart_type';
-import toast from 'react-hot-toast';
 
 export function useCart() {
   const [items, setItems] = useState<Cart[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { data: cart, isLoading } = useGetCartQuery();
-  const [updateCart] = useUpdateCartMutation();
-
   useEffect(() => {
     if (!items.length && cart?.length) {
       setItems(cart?.length ? cart : []);
@@ -20,15 +18,13 @@ export function useCart() {
     }
   }, [cart, items, isLoading, setItems]);
 
-  const addToCart = (menuItems: MenuItem[], itemId: string) => {
+  const addToCart = (item: MenuItem): Cart[] => {
     if (isLoading) {
-      return;
+      return [] as Cart[];
     }
-    const foodItem = menuItems.find((item) => item.id === itemId);
-    if (!foodItem) return;
 
     const updatedCart = [...(cart || [])];
-    const itemIndex = updatedCart.findIndex((cartItem) => cartItem.itemId === itemId);
+    const itemIndex = updatedCart.findIndex((cartItem) => cartItem.itemId === item.id);
 
     if (itemIndex > -1) {
       updatedCart[itemIndex] = {
@@ -37,62 +33,32 @@ export function useCart() {
       };
     } else {
       updatedCart.push({
-        itemId: itemId,
-        itemName: foodItem.name,
+        itemId: item.id,
+        itemName: item.name,
         quantity: 1,
       });
     }
     setItems(updatedCart);
-    updateCart({ cart: updatedCart });
-    toast.success(`${foodItem.name} Added to cart`, {
-      id: itemId,
-      duration: 2000, // Show toast for 2 seconds
-      style: {
-        padding: '16px 24px', // Adjusted padding
-        height: '60px', // Fixed height
-        fontSize: '16px', // Fixed font size
-        backgroundColor: '#28a745', // Green color for success
-        color: '#fff', // White text
-        borderRadius: '10px',
-        marginTop: '50px',
-      },
-      iconTheme: {
-        primary: '#fff', // White icon
-        secondary: '#28a745', // Green icon
-      },
-    });
+    return updatedCart;
   };
 
-  const removeFromCart = (itemId: string) => {
+  const removeFromCart = (item: MenuItem): Cart[] => {
     if (isLoading) {
-      return;
+      return [] as Cart[];
     }
-    const foodItem = items.find((item) => item.itemId === itemId);
     const cartItems = [...(cart || [])];
     const updatedCart = cartItems
       .map((cartItem) =>
-        cartItem.itemId === itemId ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
+        cartItem.itemId === item.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
       )
       .filter((cartItem) => cartItem.quantity > 0);
     setItems(updatedCart);
-    updateCart({ cart: updatedCart });
-    toast(`${foodItem?.itemName} removed from cart`, {
-      id: `remove-${foodItem?.itemId}`,
-      duration: 2000,
-      style: {
-        padding: '16px 24px',
-        height: '60px',
-        fontSize: '16px',
-        backgroundColor: '#dc3545', // Red color for removal
-        color: '#fff',
-        borderRadius: '10px',
-        marginTop: '50px',
-      },
-      iconTheme: {
-        primary: '#fff',
-        secondary: '#dc3545',
-      },
-    });
+    return updatedCart;
+  };
+
+  const updateMenuItems = (menuItems: MenuItem[]) => {
+    
+    setMenuItems(menuItems);
   };
 
   //   const removeFromCart = (itemId: string) => {
@@ -113,25 +79,42 @@ export function useCart() {
 
   const getTotalItems = () => {
     // Use reduce to accumulate the count of items with quantity > 0
-    return items.reduce((total, item) => item.quantity > 0 ? total + 1 : total, 0);
+    return items.reduce((total, item) => (item.quantity > 0 ? total + 1 : total), 0);
   };
 
   //   const getTotalPrice = () => {
   //     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   //   };
+  const getItemPriceWithMenu = (item: Cart) => {
+    const menu = menuItems.find((mi) => mi.id === item.itemId);
+    const itemPrice = menu?.price ?? 0;
+    return { totalPrice: itemPrice * item.quantity, menu };
+  };
 
   const clearCart = () => {
     setItems([]);
   };
 
+  const getCartTotal = () => {
+    return items.reduce((total, cartItem) => {
+      console.log('menuItems::::::::::',menuItems)
+      const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
+      return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
+    }, 0);
+  };
+
   return {
     items,
+    menuItems,
     loading,
     addToCart,
     removeFromCart,
     getItemQuantity,
     getTotalItems,
+    getItemPriceWithMenu,
     // getTotalPrice,
     clearCart,
+    updateMenuItems,
+    getCartTotal
   };
 }

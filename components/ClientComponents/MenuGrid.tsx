@@ -15,13 +15,13 @@ import Loader from "../CartLoader"
 import toast from "react-hot-toast"
 import ViewCartFooter from "../ViewCartFooter"
 import { IMenuTransformed } from "@/lib/interface/IMenuTransform"
+import { useUpdateCartMutation } from "@/store/api/cartApi"
 
 
 interface MenuGridProps {
-    menuItems: MenuItem[],
     menuCategories: Record<string, IMenuTransformed>,
 }
-const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
+const MenuGrid: React.FC<MenuGridProps> = ({ menuCategories }) => {
     const [openCardId, setOpenCardId] = useState<string | null>(null); // Track which card is open
     const { loading, items, addToCart, removeFromCart, getItemQuantity, getTotalItems } = useCart()
     const [showFilter, setShowFilter] = useState(false)
@@ -31,6 +31,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
     const [menu] = useState<Record<string, IMenuTransformed>>(menuCategories);
     const [isLoading, setIsLoading] = useState(false)
     const hasRun = useRef(false);
+    const [updateCart] = useUpdateCartMutation();
 
     useEffect(() => {
         // Check if active category or search query is provided
@@ -89,10 +90,11 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
         name: categoryData.categoryName
     }));
 
-    const handleAddToCart = (itemId: string, name: string) => {
-        addToCart(menuItems, itemId)
-        toast.success(`${name} Added to cart`, {
-            id: itemId,
+    const handleAddToCart = (item: MenuItem) => {
+        const updatedCart = addToCart(item)
+        updateCart({ cart: updatedCart });
+        toast.success(`${item.name} Added to cart`, {
+            id: item.id,
             duration: 2000, // Show toast for 2 seconds
             style: {
                 padding: "16px 24px", // Adjusted padding
@@ -112,7 +114,8 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
 
 
     const handleRemoveFromCart = (item: MenuItem) => {
-        removeFromCart(item.id);
+        const updatedCart = removeFromCart(item);
+        updateCart({ cart: updatedCart });
         toast(`${item.name} removed from cart`, {
             id: `remove-${item.id}`,
             duration: 2000,
@@ -263,7 +266,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                             <div className="flex justify-end">
                                                                 {quantity === 0 ? (
                                                                     <Button
-                                                                        onClick={() => handleAddToCart(item.id, item.name)}
+                                                                        onClick={() => handleAddToCart(item)}
                                                                         className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                                                                         size="sm"
                                                                     >
@@ -294,7 +297,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                                         </AnimatePresence>
 
                                                                         <Button
-                                                                            onClick={() => handleAddToCart(item.id, item.name)}
+                                                                            onClick={() => handleAddToCart(item)}
                                                                             className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                                                             size="sm"
                                                                         >
@@ -379,7 +382,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                         <CardFooter className="flex justify-end p-4 pt-0 mt-auto">
                                                             {quantity === 0 ? (
                                                                 <Button
-                                                                    onClick={() => handleAddToCart(item.id, item.name)}
+                                                                    onClick={() => handleAddToCart(item)}
                                                                     className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                                                                     size="sm"
                                                                 >
@@ -409,7 +412,7 @@ const MenuGrid: React.FC<MenuGridProps> = ({ menuItems, menuCategories }) => {
                                                                     </AnimatePresence>
 
                                                                     <Button
-                                                                        onClick={() => handleAddToCart(item.id, item.name)}
+                                                                        onClick={() => handleAddToCart(item)}
                                                                         className="text-green-600 font-bold rounded-none border-none bg-transparent hover:bg-transparent"
                                                                         size="sm"
                                                                     >
