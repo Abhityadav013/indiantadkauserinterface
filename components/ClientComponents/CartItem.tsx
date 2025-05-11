@@ -1,0 +1,207 @@
+'use client'
+import { Box, LinearProgress, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button"
+import toast from 'react-hot-toast';
+import { useCart } from '@/hooks/useCartDetails';
+import { MenuItem } from '@/lib/types/menu_type';
+import { useUpdateCartMutation } from '@/store/api/cartApi';
+import { motion, AnimatePresence } from "framer-motion";
+
+interface CartItemProps {
+    menu: MenuItem[]
+}
+const CartItem: React.FC<CartItemProps> = ({ menu }) => {
+    const [isCustomizeModal, setCustomizeModal] = useState(false);
+    const { items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
+    const [isCartUpdated, setCartUpdated] = useState(false);
+    const [updateCart] = useUpdateCartMutation();
+    useEffect(() => {
+        if (!menuItems.length) {
+            updateMenuItems(menu)
+        }
+    }, [menuItems, menu, updateMenuItems])
+
+    const handleAddToCart = (item: MenuItem) => {
+        const updatedCart = addToCart(item)
+        updateCart({ cart: updatedCart });
+        toast.success(`${item.name} Added to cart`, {
+            id: item.id,
+            duration: 2000, // Show toast for 2 seconds
+            style: {
+                padding: "16px 24px", // Adjusted padding
+                height: "60px", // Fixed height
+                fontSize: "16px", // Fixed font size
+                backgroundColor: "#28a745", // Green color for success
+                color: "#fff", // White text
+                borderRadius: "10px",
+                marginTop: '50px'
+            },
+            iconTheme: {
+                primary: "#fff", // White icon
+                secondary: "#28a745", // Green icon
+            },
+        });
+        setCartUpdated(true);
+        const timer = setTimeout(() => {
+            updateCart({ cart: updatedCart });
+            setCartUpdated(false);
+        }, 1000); // Show loading indicator for 1 second
+        return () => clearTimeout(timer);
+    };
+
+    const handleRemoveFromCart = (item: MenuItem) => {
+        const updatedCart = removeFromCart(item);
+        toast(`${item.name} removed from cart`, {
+            id: `remove-${item.id}`,
+            duration: 2000,
+            style: {
+                padding: "16px 24px",
+                height: "60px",
+                fontSize: "16px",
+                backgroundColor: "#dc3545", // Red color for removal
+                color: "#fff",
+                borderRadius: "10px",
+                marginTop: "50px",
+            },
+            iconTheme: {
+                primary: "#fff",
+                secondary: "#dc3545",
+            },
+        });
+        setCartUpdated(true);
+        const timer = setTimeout(() => {
+            updateCart({ cart: updatedCart });
+            setCartUpdated(false);
+        }, 1000); // Show loading indicator for 1 second
+        return () => clearTimeout(timer);
+    };
+
+    return (
+        <React.Fragment>
+            <Box sx={{ width: '100%', height: 4, mb: 2 }}>
+                {isCartUpdated && (
+                    <motion.div
+                        initial={false}
+                        animate={{ opacity: isCartUpdated ? 1 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ height: 8, marginBottom: '0.5rem' }} // margin to make it visible
+                    >
+                        <LinearProgress
+                            sx={{
+                                height: '100%',
+                                '& .MuiLinearProgress-bar': {
+                                    backgroundColor: 'tomato',
+                                },
+                                backgroundColor: 'lightgray',
+                            }}
+                        />
+                    </motion.div>
+                )}
+            </Box>
+            {
+                items.map((item) => {
+                    const quantity = item.quantity ?? 0
+                    const { totalPrice: itemTotal, menu: currentMenuItem } = getItemPriceWithMenu(item)
+                    // const cartDescription = cartDescriptions.find(di => di.itemId === item.id);
+
+                    return (
+                        <React.Fragment key={item.itemId}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '100%',
+                                    gap: '1rem'
+                                }}
+                            >
+                                <Box
+                                    sx={{ display: 'flex', alignItems: 'center', width: '100%', marginBottom: 2 }}>
+                                    <Box
+                                        sx={{ flex: '1 1 0%', width: '50%' }}>
+                                        <Typography variant="body2" className="text-gray-700 text-sm">
+                                            {item.itemName}
+                                        </Typography>
+                                        <Typography
+                                            variant="caption"
+                                            className="text-blue-500 cursor-pointer"
+                                            onClick={() => setCustomizeModal(true)}
+                                        >
+                                            Customize
+                                        </Typography>
+                                        {isCustomizeModal && (
+                                            <></>
+                                            // <CartCustomizeDialog
+                                            //     isOpen={isCustomizeModal}
+                                            //     onClose={handleCustomizeModal}
+                                            //     foodData={{ itemId: item.id, itemName: item.itemName }}
+                                            //     onSubmit={handleItemDescription}
+                                            //     cartDescription={String(cartDescription?.description || '')}
+                                            // />
+                                        )}
+                                    </Box>
+                                    <Box sx={{
+                                        width: '25%',
+                                        left: '10%',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        gap: '0.1rem',
+                                        marginX: '0.75rem'
+                                    }}
+                                        className=" border border-gray-500"
+                                    >
+
+                                        <Button
+                                            onClick={() => handleRemoveFromCart(currentMenuItem || {} as MenuItem)}
+                                            className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
+                                            size="sm"
+                                        >
+                                            -
+                                        </Button>
+
+                                        {/* Quantity Animation */}
+                                        <AnimatePresence mode="wait">
+                                            <motion.span
+                                                key={quantity}
+                                                className="text-sm font-bold text-green-600"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                transition={{ duration: 0.45 }}
+                                            >
+                                                {quantity}
+                                            </motion.span>
+                                        </AnimatePresence>
+
+                                        <Button
+                                            onClick={() => handleAddToCart(currentMenuItem || {} as MenuItem)}
+                                            className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
+                                            size="sm"
+                                        >
+                                            +
+                                        </Button>
+                                    </Box>
+                                    {/* Price Section */}
+                                    <Box sx={{
+                                        width: '15%',
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        alignItems: 'center',
+                                        marginX: '0.75rem'
+                                    }}>
+                                        <Typography variant="body2" className="font-semibold text-gray-800 text-sm">
+                                            €{itemTotal.toFixed(2)}  {/* Ensuring the price is formatted correctly */}
+                                        </Typography>
+                                    </Box>
+
+                                </Box>
+                            </Box>
+                        </React.Fragment>
+                    );
+                })
+            }
+        </React.Fragment>
+    );
+};
+
+export default CartItem;

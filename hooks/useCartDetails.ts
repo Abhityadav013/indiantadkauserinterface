@@ -1,35 +1,30 @@
 import { useEffect, useState } from 'react';
 import { MenuItem } from '@/lib/types/menu_type';
-import { useGetCartQuery, useUpdateCartMutation } from '@/store/api/cartApi';
+import { useGetCartQuery } from '@/store/api/cartApi';
 import { Cart } from '@/lib/types/cart_type';
 
 export function useCart() {
   const [items, setItems] = useState<Cart[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { data: cart, isLoading } = useGetCartQuery();
-  const [updateCart] = useUpdateCartMutation();
-
-
   useEffect(() => {
-    if( cart?.length){
-        setItems(cart || []);
+    if (!items.length && cart?.length) {
+      setItems(cart?.length ? cart : []);
     }
-    if(isLoading){
-        setLoading(false)
-    }
-    
-   // setItems(cart || []);
-  }, [loading, cart, setItems, isLoading]);
 
-  const addToCart = (menuItems: MenuItem[], itemId: string) => {
     if (isLoading) {
-      return;
+      setLoading(false);
     }
-    const foodItem = menuItems.find((item) => item.id === itemId);
-    if (!foodItem) return;
+  }, [cart, items, isLoading, setItems]);
+
+  const addToCart = (item: MenuItem): Cart[] => {
+    if (isLoading) {
+      return [] as Cart[];
+    }
 
     const updatedCart = [...(cart || [])];
-    const itemIndex = updatedCart.findIndex((cartItem) => cartItem.itemId === itemId);
+    const itemIndex = updatedCart.findIndex((cartItem) => cartItem.itemId === item.id);
 
     if (itemIndex > -1) {
       updatedCart[itemIndex] = {
@@ -38,27 +33,32 @@ export function useCart() {
       };
     } else {
       updatedCart.push({
-        itemId: itemId,
-        itemName: foodItem.name,
+        itemId: item.id,
+        itemName: item.name,
         quantity: 1,
       });
     }
-
-    updateCart({ cart: updatedCart });
+    setItems(updatedCart);
+    return updatedCart;
   };
 
-  const removeFromCart = (itemId: string) => {
+  const removeFromCart = (item: MenuItem): Cart[] => {
     if (isLoading) {
-        return;
-      }
+      return [] as Cart[];
+    }
     const cartItems = [...(cart || [])];
     const updatedCart = cartItems
       .map((cartItem) =>
-        cartItem.itemId === itemId ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
+        cartItem.itemId === item.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
       )
       .filter((cartItem) => cartItem.quantity > 0);
+    setItems(updatedCart);
+    return updatedCart;
+  };
 
-    updateCart({ cart: updatedCart });
+  const updateMenuItems = (menuItems: MenuItem[]) => {
+    
+    setMenuItems(menuItems);
   };
 
   //   const removeFromCart = (itemId: string) => {
@@ -78,25 +78,43 @@ export function useCart() {
   };
 
   const getTotalItems = () => {
-    return items.reduce((total, item) => total + item.quantity, 0);
+    // Use reduce to accumulate the count of items with quantity > 0
+    return items.reduce((total, item) => (item.quantity > 0 ? total + 1 : total), 0);
   };
 
   //   const getTotalPrice = () => {
   //     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   //   };
+  const getItemPriceWithMenu = (item: Cart) => {
+    const menu = menuItems.find((mi) => mi.id === item.itemId);
+    const itemPrice = menu?.price ?? 0;
+    return { totalPrice: itemPrice * item.quantity, menu };
+  };
 
   const clearCart = () => {
     setItems([]);
   };
 
+  const getCartTotal = () => {
+    return items.reduce((total, cartItem) => {
+      console.log('menuItems::::::::::',menuItems)
+      const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
+      return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
+    }, 0);
+  };
+
   return {
     items,
+    menuItems,
     loading,
     addToCart,
     removeFromCart,
     getItemQuantity,
     getTotalItems,
+    getItemPriceWithMenu,
     // getTotalPrice,
     clearCart,
+    updateMenuItems,
+    getCartTotal
   };
 }

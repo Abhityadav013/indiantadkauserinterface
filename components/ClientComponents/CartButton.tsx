@@ -2,11 +2,11 @@
 
 import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useCart } from "@/hooks/useCartDetails"
+// import { useCart } from "@/hooks/useCartDetails"
 
 export default function CartButton() {
-  const { getTotalItems } = useCart()
-  const totalItems = getTotalItems()
+  //const { getTotalItems } = useCart()
+  const totalItems = 5
 
   return (
     <Button variant="outline" className="relative">
