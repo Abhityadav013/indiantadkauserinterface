@@ -20,7 +20,6 @@ module.exports = {
         "tomato-red": "#E94B3C",
         saffron: "#F2A93B",
         cream: "#FFF5E1",
-        border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
