@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAddressDetails } from "@/hooks/useAddressDetails";
-import AddAddressButton from "@/components/ClientComponents/AddAddressButton";
+import ButtonAction from "@/components/ClientComponents/ButtonAction";
 
 export default function DeliveryError() {
     const { loading, customerDetails,handleAdddressDetailOpen } = useAddressDetails();
@@ -56,7 +56,7 @@ export default function DeliveryError() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
             >
-                <AddAddressButton textToDisplay="Please change address to get your food" handleAdddressDetailOpen={handleAdddressDetailOpen} />
+                <ButtonAction textToDisplay="Please change address to get your food" handleButtonAction={handleAdddressDetailOpen} />
 
             </motion.div>
         </div>

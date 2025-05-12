@@ -1,22 +1,24 @@
-import React  from 'react'
+import React from 'react'
 import { Typography } from '@mui/material';
 import HomeIcon from "@mui/icons-material/Home";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { OrderType } from '@/lib/types/order_type';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
 
-interface CustomerContactDetailsWrapperProps{
-    isLoading:boolean
-    customerDetails:CustomerDetails,
-    customerOrder:CustomerOrder
+interface CustomerContactDetailsWrapperProps {
+    isLoading: boolean
+    customerDetails: CustomerDetails,
+    customerOrder: CustomerOrder
 }
 
-const CustomerContactDetailsWrapper:React.FC<CustomerContactDetailsWrapperProps> = ({isLoading,customerDetails,customerOrder}) => {
-    const formatPhoneNumber = (phone: string) => {
-        const match = phone.match(/^(\d{2})(\d+)$/); // splits first 2 digits as country code
+const CustomerContactDetailsWrapper: React.FC<CustomerContactDetailsWrapperProps> = ({ isLoading, customerDetails, customerOrder }) => {
+    const formatPhoneNumber = (phone: string): string => {
+        // Remove any non-digit characters like '+' or spaces
+        const cleaned = phone.replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{2})(\d+)$/); // e.g., '49' and the rest
         if (!match) return phone;
         return `+${match[1]} ${match[2]}`;
-    };
+    }
     const isDeliveryOrder =
         (customerOrder && customerOrder.orderType === OrderType.DELIVERY) || false;
 
@@ -49,7 +51,7 @@ const CustomerContactDetailsWrapper:React.FC<CustomerContactDetailsWrapperProps>
                         {/* Address block */}
                         <div className="flex flex-col mt-2">
                             <Typography variant="body2" className="text-gray-900">
-                            {`${customerDetails?.address?.street ?? '--'} ${customerDetails?.address?.buildingNumber ?? ''}`}
+                                {`${customerDetails?.address?.street ?? '--'} ${customerDetails?.address?.buildingNumber ?? ''}`}
 
                             </Typography>
                             <Typography variant="body2" className="text-gray-600">

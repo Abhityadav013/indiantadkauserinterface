@@ -12,7 +12,7 @@ import { PostCodePlace } from '@/lib/types/location_type';
 import { fetchPlaceByPostalCode } from '@/lib/api/fetchPlaceByPostalCode';
 import { fetchStreetsByPostalCode } from '@/lib/api/fetchStreetsByPostalCode';
 import PhoneInput from './PhoneInput';
-import { CountryCode } from 'libphonenumber-js';
+import { CountryCode, getCountryCallingCode } from 'libphonenumber-js';
 
 interface AddressFormProps {
   onSubmit: (values: { userInfo: UserInfo, orderType: OrderType, address?: AddressInput }) => void;
@@ -121,17 +121,16 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
   const handleSubmit = async (event: any) => {
     event.preventDefault(); // Prevent default form submission behavior
     try {
-      if (orderType === OrderType.DELIVERY) {
-        console.log(" addressType.toUpperCase()", addressType.toUpperCase())
+      if (orderType === OrderType.DELIVERY) {         
         await onSubmit({
-          userInfo: { name, phoneNumber },
+          userInfo: { name, phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}` },
           orderType: orderType,
           address: { buildingNumber, street, town, pincode, addressType: addressType.toUpperCase() },
 
         });
       } else {
         await onSubmit({
-          userInfo: { name, phoneNumber },
+          userInfo: { name, phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}` },
           orderType: orderType,
         });
       }
@@ -177,7 +176,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
           edge="start"
           color="inherit"
           onClick={onClose}
-          sx={{ position: "absolute", top: 10, left: 10 }}
+          sx={{ position: "absolute", top: 20, left: 10 }}
         >
           <CloseIcon />
         </IconButton>
