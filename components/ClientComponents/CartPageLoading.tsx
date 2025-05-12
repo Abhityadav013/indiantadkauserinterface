@@ -5,14 +5,17 @@ import Loader from '../CartLoader'
 import { useCart } from '@/hooks/useCartDetails'
 import { useAddressDetails } from '@/hooks/useAddressDetails'
 
-const CartPageLoading = () => {
+interface CartPageLoadingProps {
+    loadingImage?: string
+}
+const CartPageLoading: React.FC<CartPageLoadingProps> = ({ loadingImage }) => {
     const [showLoader, setShowLoader] = useState(true);
     const { loading: cartLoading } = useCart();
     const { loading: customerdetailLoading } = useAddressDetails();
 
     useEffect(() => {
         if (!(cartLoading && customerdetailLoading)) {
-            const timer = setTimeout(() => setShowLoader(false), 3000); // delay 1s
+            const timer = setTimeout(() => setShowLoader(false), 2000); // delay 1s
             return () => clearTimeout(timer); // ✅ cleanup
         } else {
             setShowLoader(true);
@@ -22,16 +25,21 @@ const CartPageLoading = () => {
         return (
             <Box
                 sx={{
+                    position: 'fixed',       // Overlay over the entire screen
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 9999,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
-                    background:'white'
+                    background: 'white',
                 }}
             >
                 <Loader
                     loadingImage={
-                        'https://testing.indiantadka.eu/assets/cartPageLoading.gif'
+                        loadingImage ?? 'https://testing.indiantadka.eu/assets/cartPageLoading.gif'
                     }
                     isLoading={showLoader}
                 />

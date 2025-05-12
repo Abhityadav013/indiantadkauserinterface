@@ -59,12 +59,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  try {
+export async function GET(req: NextRequest) {
+  try { 
+    const deviceIdFromHeaders = req.headers.get('ssid') || ''; // Try headers if deviceId in cookies is not available
+   
     await connectToDatabase();
-    const deviceId = request.headers.get('ssid') || '';
-
-    const cartFilter = { deviceId };
+   
+    const cartFilter = { deviceId:deviceIdFromHeaders };
 
     const cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
     return NextResponse.json(

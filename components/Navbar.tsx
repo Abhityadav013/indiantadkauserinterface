@@ -24,7 +24,6 @@ interface FieldError {
 export type ErrorResponse = FieldError[];
 
 const NavBar = () => {
-//   const cart = useSelector((state: RootState) => state.cart.cart);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
