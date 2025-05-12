@@ -5,7 +5,6 @@ import { OrderType } from '@/lib/types/order_type';
 import { connectToDatabase } from '@/lib/mongodb/connect';
 import { UserLocation } from '@/lib/types/user_location_type';
 import UserInfo, { IUserInfoLean } from '@/lib/mongodb/models/UserInfo';
-import { refreshSessionCookies } from '../../middleware/refereshSessionCookies';
 import { fetchCustomerLocationApi } from '@/lib/api/fetchCustomerLocationApi';
 import { Location } from '@/lib/types/location_type';
 import { getUserLocationFromLatLon } from '@/lib/api/fetchUserLocationFromLatLon';
@@ -14,11 +13,11 @@ import { CustomerOrder } from '@/lib/types/customer_order_type';
 
 // import { isValidNumber } from 'libphonenumber-js';
 export async function POST(request: NextRequest) {
-  await refreshSessionCookies();
   try {
     const payload = await request.json();
     const tId = request.headers.get('tid') || '';
-    const ssId = request.headers.get('session-id') || '';
+    // const ssId = request.headers.get('session-id') || '';
+    const ssId = request.headers.get('ssid') || '';
 
     const { customerDetails, orderType } = payload;
     const errors = [];
@@ -186,9 +185,21 @@ export async function POST(request: NextRequest) {
     delete userData.deviceId;
     delete userData.tid;
 
+    const updateUserDetails: CustomerOrder = {
+      customerDetails: {
+        name: userData.name,
+        phoneNumber: userData.phoneNumber,
+        address: userData.address || {},
+        isFreeDelivery: userData.isFreeDelivery,
+        deliveryFee: userData.deliveryFee,
+        notDeliverable: userData.notDeliverable,
+      },
+      orderType: userData.orderMethod as OrderType,
+    };
+
     // Success response
     return NextResponse.json(
-      new ApiResponse(200, { ...userData }, 'User information saved successfully.')
+      new ApiResponse(200, { ...updateUserDetails }, 'User information saved successfully.')
     );
   } catch (error) {
     console.error('Internal Error:', error);
@@ -200,26 +211,25 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    await refreshSessionCookies();
     await connectToDatabase();
     const ssId = request.headers.get('ssid') || '';
- const userInfo = await UserInfo.findOne({ deviceId: ssId })
-  .select('-_id -deviceId -tid')
-  .lean<IUserInfoLean>();
+    const userInfo = await UserInfo.findOne({ deviceId: ssId })
+      .select('-_id -deviceId -tid')
+      .lean<IUserInfoLean>();
 
     if (!userInfo) {
       return NextResponse.json(new ApiResponse(404, {}, 'User info not found.'));
     }
 
     const userDetails: CustomerOrder = {
-      customerDetails:  {
-          name: userInfo.name,
-          phoneNumber: userInfo.phoneNumber,
-          address: userInfo.address || {},
-          isFreeDelivery:userInfo.isFreeDelivery,
-          deliveryFee:userInfo.deliveryFee,
-          notDeliverable: userInfo.notDeliverable
-      } ,
+      customerDetails: {
+        name: userInfo.name,
+        phoneNumber: userInfo.phoneNumber,
+        address: userInfo.address || {},
+        isFreeDelivery: userInfo.isFreeDelivery,
+        deliveryFee: userInfo.deliveryFee,
+        notDeliverable: userInfo.notDeliverable,
+      },
       orderType: userInfo.orderMethod as OrderType,
     };
 

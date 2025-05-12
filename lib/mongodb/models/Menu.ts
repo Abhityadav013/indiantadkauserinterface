@@ -64,16 +64,6 @@ const MenuSchema = new Schema<IMenu>(
   }
 );
 
-// Remove _id from the response when querying (optional)
-// MenuSchema.set('toJSON', {
-//   transform: (doc, ret) => {
-//     // Optionally remove _id from the response
-//     delete ret._id;
-//     return ret;
-//   },
-// });
-
-// Create and export the Menu model
 const Menu = mongoose?.models?.Menu || mongoose.model('Menu', MenuSchema);
 
 export default Menu;

@@ -20,7 +20,6 @@ export function useAddressDetails() {
   useEffect(() => {
    
     if (!isLoading) {
-       console.log('isLoading::::::', isLoading,fetchedCustomerOrder);
       setCustomerDetails(fetchedCustomerOrder?.customerDetails);
       setCustomerOrder(fetchedCustomerOrder);
     }
@@ -36,7 +35,6 @@ export function useAddressDetails() {
 
   const handleUpdateCustomerDetails = async (customerDetails: CustomerOrder) => {
     try {
-      console.log('Step 1::::::::::::', customerDetails);
       // Update customer details using RTK Query mutation
       setLoading(true);
       const response = await updateCustomerDetails(customerDetails).unwrap();

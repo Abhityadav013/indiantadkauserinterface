@@ -15,18 +15,18 @@ interface CartItemProps {
 const CartItem: React.FC<CartItemProps> = ({ menu }) => {
     const [showLoader, setShowLoader] = useState(true);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
-    const { loading, items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
+    const { isLoading, items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
     const [isCartUpdated, setCartUpdated] = useState(false);
     const [updateCart] = useUpdateCartMutation();
 
     useEffect(() => {
-        if (!loading) {
+        if (!isLoading) {
             const timer = setTimeout(() => setShowLoader(false), 1000); // delay 1s
             return () => clearTimeout(timer); // ✅ cleanup
         } else {
             setShowLoader(true);
         }
-    }, [loading]);
+    }, [isLoading]);
     useEffect(() => {
         if (!menuItems.length) {
             updateMenuItems(menu)
