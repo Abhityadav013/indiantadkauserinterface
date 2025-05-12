@@ -14,8 +14,6 @@ export async function fetchFromApi<T>(
   const cookiesHeader = cookieStore.get('_device_id');
   const _device_id = cookiesHeader ? cookiesHeader.value : '';
 
-  console.log('_device_id:::::::::',_device_id)
-
   const queryString = params
     ? '?' +
       new URLSearchParams(
@@ -29,7 +27,7 @@ export async function fetchFromApi<T>(
     headers: {
       ssid: _device_id || '',
     },
-    // next: { revalidate: 3600 },
+    next: { revalidate: 3600 },
     // next: { tags: ['cart'] },
   });
 
