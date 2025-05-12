@@ -6,7 +6,6 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     await connectToDatabase();
-
     const menu: IMenu[] = await Menu.find().sort({ 'category.order': 1 }).select('-_id');;
     return NextResponse.json(new ApiResponse(200, { menu }, 'Menu retrieved successfully.'));
   } catch (error) {
