@@ -6,8 +6,9 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     await connectToDatabase();
-
-    const menu: IMenu[] = await Menu.find().sort({ 'category.order': 1 }).select('-_id');;
+    console.log('step 1:::::')
+    const menu: IMenu[] = await Menu.find().sort({ 'category.order': 1 }).select('-_id');
+     console.log('step 2:::::',menu.length)
     return NextResponse.json(new ApiResponse(200, { menu }, 'Menu retrieved successfully.'));
   } catch (error) {
     console.error('Contact API error:', error);
