@@ -21,7 +21,7 @@ interface IStripeTransaction {
   fee: number;
   customer_email: string;
 }
-interface ITransaction extends Document {
+export interface ITransaction extends Document {
   transactionId: string;  // Make sure transactionId is part of the schema
   paymentIntentId: string;
   paymentProvider: 'paypal' | 'stripe';

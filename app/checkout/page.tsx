@@ -55,6 +55,7 @@ export default async function CheckoutPage() {
 
         
         const cartdata: Cart[] = cartDataRow.cart.cartItems ?? [];
+        console.log('cartdata::::::',cartdata)
         const customerOrderInfo: CustomerOrder = customerDataRow;
         const menuItems: MenuItem[] = menuData.menuItems;
 

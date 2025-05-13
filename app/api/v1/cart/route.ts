@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     let cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
 
     // If the cart is empty, delete the cart document entirely
-    if (isCartEmpty && cart) {
+    if (isCartEmpty) {
       await cart.deleteOne({ deviceId });
       return NextResponse.json(new ApiResponse(200, null, 'Cart cleared successfully'));
     }
@@ -47,9 +47,6 @@ export async function POST(request: NextRequest) {
     );
 
     // Save the updated cart
-    await cart.save();
-
-    // Save the cart with updated items
     await cart.save();
 
     return NextResponse.json(new ApiResponse(201, cart, 'Cart updated successfully'));
