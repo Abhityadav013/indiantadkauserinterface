@@ -7,22 +7,34 @@ import PaypalComponent from './PaypalComponent';
 import StripeComponent from './StripeComponent';
 import { convertToSubcurrency } from '@/utils/convertToSubCurrency';
 import { Cart } from '@/lib/types/cart_type';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import { useUpdateCartMutation } from '@/store/api/cartApi';
+import { useOrderDetails } from '@/hooks/userOrderDetails';
+import { useAddressDetails } from '@/hooks/useAddressDetails';
+import { OrderType } from '@/lib/types/order_type';
+import { ApiError } from '@/utils/ApiResponse';
+import { useRouter } from 'next/navigation';
 interface PaymentWrapperProps {
     cartData: Cart[]
 }
 const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
     const stripeRef = useRef<HTMLDivElement | null>(null);
     const paypalRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(false);
     const [amountInCents, setAmountInCents] = useState<number>(0);
-    const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'stripe' | null>(null);
+    const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'stripe' | 'cash' | null>(null);
     const [cartTotal, setCartTotal] = useState<number>(0);
     const [isStripeLoaded, setIsStripeLoaded] = React.useState(false);
     const [isPaypalLoaded, setIsPaypalLoaded] = React.useState(false);
     const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedMethod = event.target.value as 'paypal' | 'stripe';
+        const selectedMethod = event.target.value as 'paypal' | 'stripe' | 'cash';
         setPaymentMethod(selectedMethod);
     };
+    const [updateCart] = useUpdateCartMutation();
+    const { handleOrderCreation } = useOrderDetails()
+    const { customerOrder } = useAddressDetails();
+
     useEffect(() => {
         const checkCartTotalAmount = () => {
             const cartAmount = sessionStorage.getItem('cartTotalAmount');
@@ -53,6 +65,39 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
             paypalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, [isStripeLoaded, isPaypalLoaded]);
+
+    const handleOrderPlaced = async () => {
+        try {
+            const deliveryFee = sessionStorage.getItem('deliveryFee');
+            const tipAmount = sessionStorage.getItem('tipAmount');
+            const orderCreatedResponse = await handleOrderCreation({
+                orderDetails: cartData,
+                orderType: customerOrder?.orderType as OrderType,
+                paymentIntentId: '',
+                ...deliveryFee && { deliveryFee: parseFloat(deliveryFee) },
+                ...tipAmount && { tipAmount: parseFloat(tipAmount) }
+            });
+            if (!orderCreatedResponse) {
+                throw new Error('Order creation failed: No response received.');
+            }
+            if (orderCreatedResponse.orderId) {
+                updateCart({ cart: [], isCartEmpty: true });
+                const timer = setTimeout(() => {
+                    router.replace(`/order-confirmation?orderId=${orderCreatedResponse.displayId}`)
+                    // router.push(`/order-confirmation?orderId=${orderCreatedResponse?.displayId}`);
+                }, 1000); // ⏱ Minimum 2s loader
+
+                return () => clearTimeout(timer);
+            }
+        } catch (error) {
+            if (error instanceof ApiError) {
+                console.error('API Error:', error.message);
+                // Optionally show error.message or error.validationErrors in UI
+            } else {
+                console.error('Unexpected error:', error);
+            }
+        }
+    }
 
     if (!loading && amountInCents <= 0 || cartData.length === 0) {
         return (
@@ -106,6 +151,16 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
                                     </span>
                                 }
                             />
+                            <FormControlLabel
+                                value="cash"
+                                control={<Radio />}
+                                label={
+                                    <span className="flex items-center gap-2">
+                                        <AttachMoneyIcon />
+                                        Pay with Cash
+                                    </span>
+                                }
+                            />
                         </RadioGroup>
                     </FormControl>
                 </Box>
@@ -132,14 +187,22 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
                             width: { xs: '100%', sm: '100%', lg: '80%' },
                             background: 'white',
                             p: 4,
-                            minHeight: { xs: '60vh', sm: '60vh', lg: '70vh' }, // Ensures there's enough scrollable space
+                            minHeight: { xs: '60vh', sm: '60vh', lg: '70vh' },
+                            maxHeight: '100vh',
+                            overflow: 'auto',  // Make sure content is scrollable
                         }}
                     >
-                        <StripeComponent
-                            amount={amountInCents}
-                            onLoad={() => setIsStripeLoaded(true)}  // Set it to true once Stripe is loaded
-                        />
+                        <StripeComponent amount={amountInCents} onLoad={() => setIsStripeLoaded(true)} />
                     </Box>
+                )
+            }
+            {
+                paymentMethod === 'cash' && amountInCents > 0 && cartData.length > 0 && (
+                    <button
+                        onClick={handleOrderPlaced}
+                        className="w-full lg:w-4/5 mt-4 rounded-md font-bold text-xl py-4 sm:text-lg sm:py-3 text-white bg-[#FF6347]">
+                        Place Order
+                    </button>
                 )
             }
         </>
