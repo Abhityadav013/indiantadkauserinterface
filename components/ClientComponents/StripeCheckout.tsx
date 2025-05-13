@@ -22,7 +22,7 @@ const StripeCheckout: React.FC<StripeCheckoutProps> = ({ amount, onClientSecretL
     const [loading, setLoading] = useState(false);
 
     const hasFetched = useRef(false); // <- to track first-time API call
-
+    const paymentIntentId = clientSecret?.split('_secret_')[0];
     useEffect(() => {
         if (hasFetched.current) return;
         hasFetched.current = true;
@@ -73,7 +73,7 @@ const StripeCheckout: React.FC<StripeCheckoutProps> = ({ amount, onClientSecretL
             elements,
             clientSecret,
             confirmParams: {
-                return_url: 'https://theindiantadka.vercel.app/payment-success',
+                return_url: `http://localhost:3000/payment-success?payment_intent=${paymentIntentId}`,
             },
         });
         if (response.error) {
@@ -92,8 +92,8 @@ const StripeCheckout: React.FC<StripeCheckoutProps> = ({ amount, onClientSecretL
                     background: 'white',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent:'center',
-                    height:'50vh'
+                    justifyContent: 'center',
+                    height: '50vh'
                 }}
             >
                 <Image
