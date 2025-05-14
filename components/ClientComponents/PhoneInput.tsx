@@ -15,7 +15,6 @@ const PhoneInputWrapper = styled(Box)(({ theme }) => ({
     flexDirection: "column",
     gap: theme.spacing(2),
     width: "100%",
-    maxWidth: "400px",
 }))
 
 interface PhoneInputProps {
@@ -117,7 +116,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ phoneNumber, setPhoneNumber, se
     }
 
     return (
-        <PhoneInputWrapper className="mx-auto my-4">
+        <PhoneInputWrapper>
             <TextField
                 label="Phone Number"
                 variant="outlined"
