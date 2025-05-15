@@ -1,41 +1,56 @@
-import { connectToDatabase } from "@/lib/mongodb/connect";
-import Reservation from "@/lib/mongodb/models/Reservation";
-import ApiResponse from "@/utils/ApiResponse";
-import { NextRequest, NextResponse } from "next/server"
+import { connectToDatabase } from '@/lib/mongodb/connect';
+import Reservation from '@/lib/mongodb/models/Reservation';
+import ApiResponse from '@/utils/ApiResponse';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function DELETE(request: NextRequest, context: any) {
+export async function DELETE(
+  request: NextRequest,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any
+) {
   try {
-    const { params } = context;
+    const { params } = await context;
     await connectToDatabase();
     const deviceId = request.headers.get('ssid') || '';
-    const { id } = params
+    const { id } = params;
     // In a real application, you would delete the reservation from your database
     // For this example, we'll just simulate a successful response
 
     // Simulate a slight delay
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const reservationInfo = await Reservation.deleteOne({ id, deviceId: deviceId })
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const reservationInfo = await Reservation.deleteOne({ id, deviceId: deviceId });
 
     if (!reservationInfo) {
       return NextResponse.json(new ApiResponse(404, {}, 'Reservation info not found.'));
     }
     return NextResponse.json(new ApiResponse(201, {}, 'Reservation deleted successfully.'));
   } catch (error) {
-    console.error("Error deleting reservation:", error)
-    return NextResponse.json({ success: false, message: "Failed to delete reservation" }, { status: 500 })
+    console.error('Error deleting reservation:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to delete reservation' },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any
+) {
   try {
-    const id = params.id
-    const data = await request.json()
+    const { params } = await context;
+    const { id } = await params; // Directly access params without await
+    const data = await request.json();
     const deviceId = request.headers.get('ssid') || '';
     // Validate required fields
-    const requiredFields = ["fullName", "phoneNumber", "numberOfPeople", "reservationDateTime"]
+    const requiredFields = ['fullName', 'phoneNumber', 'numberOfPeople', 'reservationDateTime'];
     for (const field of requiredFields) {
       if (!data[field]) {
-        return NextResponse.json({ success: false, message: `Missing required field: ${field}` }, { status: 400 })
+        return NextResponse.json(
+          { success: false, message: `Missing required field: ${field}` },
+          { status: 400 }
+        );
       }
     }
 
@@ -43,7 +58,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // For this example, we'll just simulate a successful response
 
     // Simulate a slight delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const updatedReservationPayload = {
       id,
@@ -51,23 +66,33 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       phoneNumber: data.phoneNumber,
       numberOfPeople: data.numberOfPeople,
       reservationDateTime: data.reservationDateTime,
-      deviceId: deviceId
-    }
+      deviceId: deviceId,
+    };
 
-    const updateReservationInfo = await Reservation.updateOne({
-      id, deviceId: deviceId
-    }, {
-      $set: { ...updatedReservationPayload }
-    })
+    const updateReservationInfo = await Reservation.updateOne(
+      {
+        id,
+        deviceId: deviceId,
+      },
+      {
+        $set: { ...updatedReservationPayload },
+      }
+    );
 
-    if (updateReservationInfo && Object.keys(updateReservationInfo).length > 0 && updateReservationInfo.modifiedCount > 0) {
+    if (
+      updateReservationInfo &&
+      Object.keys(updateReservationInfo).length > 0 &&
+      updateReservationInfo.modifiedCount > 0
+    ) {
       return NextResponse.json(
-        new ApiResponse(201, { ...updatedReservationPayload }, 'Reservation updated successfully'),
+        new ApiResponse(201, { ...updatedReservationPayload }, 'Reservation updated successfully')
       );
     }
-
   } catch (error) {
-    console.error("Error updating reservation:", error)
-    return NextResponse.json({ success: false, message: "Failed to update reservation" }, { status: 500 })
+    console.error('Error updating reservation:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to update reservation' },
+      { status: 500 }
+    );
   }
 }

@@ -10,6 +10,7 @@ import {
     FormControl,
     FormHelperText,
     CircularProgress,
+    Box,
 } from "@mui/material"
 import toast from 'react-hot-toast';
 import { isValid, isMonday, format, parse, isWithinInterval } from "date-fns"
@@ -17,6 +18,7 @@ import { CountryCode, getCountryCallingCode } from 'libphonenumber-js';
 import PhoneInput from "./PhoneInput"
 import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import Loader from "../CartLoader";
 
 interface FormData {
     fullName: string
@@ -83,7 +85,7 @@ export default function ReservationForm() {
         if (phoneNumber) {
             setFormData({ ...formData, ['phoneNumber']: phoneNumber })
         }
-    }, [phoneNumber])
+    }, [phoneNumber, formData])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -239,6 +241,33 @@ export default function ReservationForm() {
         return disabledDates.some((disabledDate) => format(disabledDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd"))
     }
     //  message: "Reservation submitted successfully! We look forward to seeing you.",
+
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    position: 'fixed',       // Overlay over the entire screen
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 9999,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: 'white',
+                }}
+            >
+                <Loader
+                    loadingImage={
+                        'https://testing.indiantadka.eu/assets/reservationTable.gif'
+                    }
+                    isLoading={loading}
+                />
+            </Box>
+        )
+    }
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <form

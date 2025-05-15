@@ -36,6 +36,12 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
     const handleAddToCart = (item: MenuItem) => {
         const updatedCart = addToCart(item)
         updateCart({ cart: updatedCart });
+
+        setCartUpdated(true);
+        const timer = setTimeout(() => {
+            updateCart({ cart: updatedCart });
+            setCartUpdated(false);
+        }, 1000); // Show loading indicator for 1 second
         toast.success(`${item.name} Added to cart`, {
             id: item.id,
             duration: 2000, // Show toast for 2 seconds
@@ -53,16 +59,17 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
                 secondary: "#28a745", // Green icon
             },
         });
+        return () => clearTimeout(timer);
+
+    };
+
+    const handleRemoveFromCart = (item: MenuItem) => {
+        const updatedCart = removeFromCart(item);
         setCartUpdated(true);
         const timer = setTimeout(() => {
             updateCart({ cart: updatedCart });
             setCartUpdated(false);
         }, 1000); // Show loading indicator for 1 second
-        return () => clearTimeout(timer);
-    };
-
-    const handleRemoveFromCart = (item: MenuItem) => {
-        const updatedCart = removeFromCart(item);
         toast(`${item.name} removed from cart`, {
             id: `remove-${item.id}`,
             duration: 2000,
@@ -80,12 +87,8 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
                 secondary: "#dc3545",
             },
         });
-        setCartUpdated(true);
-        const timer = setTimeout(() => {
-            updateCart({ cart: updatedCart });
-            setCartUpdated(false);
-        }, 1000); // Show loading indicator for 1 second
         return () => clearTimeout(timer);
+
     };
 
     // foodCartLoader
