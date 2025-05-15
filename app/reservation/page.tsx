@@ -6,8 +6,7 @@ import type React from "react"
 import { useState } from "react"
 import ReservationForm from "@/components/ClientComponents/ReservationForm"
 import NavBarNavigation from "@/components/NavBarNavigation"
-import Image from "next/image"
-import { Container, Paper, Tabs, Tab, Box, Typography } from "@mui/material"
+import { Container, Paper, Tabs, Tab, Box } from "@mui/material"
 import PreviousReservation from "@/components/ClientComponents/PreviouReservation"
 
 interface TabPanelProps {

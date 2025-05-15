@@ -23,7 +23,6 @@ import {
   useMediaQuery,
   useTheme,
   Alert,
-  Snackbar,
 } from "@mui/material"
 import { format } from "date-fns"
 import UpdateReservation from "./UpdateReservation"
@@ -159,7 +158,7 @@ export default function PreviousReservation() {
           No Previous Bookings
         </Typography>
         <Typography variant="body1" className="text-gray-600">
-          You haven't made any reservations yet. Use the form to book your first table!
+          You haven&apos;t made any reservations yet. Use the form to book your first table!
         </Typography>
       </Box>
     )

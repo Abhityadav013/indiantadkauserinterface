@@ -1,5 +1,5 @@
 import Reservation from "@/lib/mongodb/models/Reservation"
-import ApiResponse, { ApiError } from "@/utils/ApiResponse";
+import ApiResponse from "@/utils/ApiResponse";
 import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
