@@ -11,7 +11,6 @@ export function useOrderDetails() {
   const handleOrderCreation = async (payload: CreateOrderRequest) => {
     try {
       const orderCreatedResponse = await createOrder(payload).unwrap();
-      console.log('orderCreatedResponse::::::',orderCreatedResponse)
       if (orderCreatedResponse.orderId) {
         setOrderSummary(orderCreatedResponse);
         return orderCreatedResponse ?? ({} as OrderSuccessSummary);
