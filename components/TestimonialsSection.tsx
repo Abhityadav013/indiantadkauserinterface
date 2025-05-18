@@ -29,6 +29,26 @@ export default function TestimonialsSection() {
       rating: 5,
       text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
     },
+     {
+      name: "Aisha Patel",
+      rating: 5,
+      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+    },
+     {
+      name: "Aisha Patel",
+      rating: 5,
+      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+    },
+     {
+      name: "Aisha Patel",
+      rating: 5,
+      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+    },
+     {
+      name: "Aisha Patel",
+      rating: 5,
+      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+    },
   ]
 
   const renderRating = (rating: number) => {

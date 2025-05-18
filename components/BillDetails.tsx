@@ -1,15 +1,25 @@
 import React from 'react'
-import { Box, Typography,  IconButton } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import BillDetailWrapper from './ClientComponents/BillDetailWrapper';
-import { getMenuData } from '@/app/menu/page';
+import { MenuItem } from '@/lib/types/menu_type';
+
+interface BillDetailsProps {
+    menu: MenuItem[];
+}
 
 
-const BillDetails = async () => {
-    const { menuItems } = await getMenuData();
+const BillDetails = async ({ menu }: BillDetailsProps) => {
+
     return (
         <>
-            <Box className=" max-w-md mx-auto p-4 bg-white shadow-md">
+            <Box
+                sx={{
+                    minWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
+                    maxWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
+                    borderRadius: 0,
+                    px: 2,
+                }}>
                 <Typography variant="h6" sx={{ fonWeight: 300 }}>
                     <IconButton>
                         <ReceiptIcon fontSize="medium" className="text-gray-700" />
@@ -17,7 +27,7 @@ const BillDetails = async () => {
                     Bill Details
                 </Typography>
 
-              <BillDetailWrapper menu={menuItems}/>
+                <BillDetailWrapper menu={menu} />
             </Box>
         </>
     )

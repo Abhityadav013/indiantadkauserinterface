@@ -26,8 +26,8 @@ export default function LocationSection() {
                 <MapPin className="mr-4 h-6 w-6 text-[#FF6347]" />
                 <div>
                   <h4 className="font-semibold">Address</h4>
-                  <p className="text-gray-700">123 Spice Avenue, Culinary District</p>
-                  <p className="text-gray-700">New York, NY 10001</p>
+                  <p className="text-gray-700">Friedrichstraße 69, </p>
+                  <p className="text-gray-700">66538 Neunkirchen, Germany</p>
                 </div>
               </div>
 
@@ -35,7 +35,7 @@ export default function LocationSection() {
                 <Phone className="mr-4 h-6 w-6 text-[#FF6347]" />
                 <div>
                   <h4 className="font-semibold">Phone</h4>
-                  <p className="text-gray-700">(123) 456-7890</p>
+                  <p className="text-gray-700">(+49)-1521 2628877</p>
                 </div>
               </div>
 

@@ -75,5 +75,6 @@ export function useAddressDetails() {
     handleAdddressDetailOpen,
     handleAdddressDetailClose,
     handleUpdateCustomerDetails,
+    setAddressModelOpen,
   };
 }

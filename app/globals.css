@@ -2,9 +2,9 @@
 
 /* Removed empty ruleset for .dark & */
 
-body {
+/* body {
   background-image: url(https://testing.indiantadka.eu/assets/bgTile.png);
-}
+} */
 
 :root {
   --radius-sm: calc(var(--radius) - 4px);
@@ -111,6 +111,14 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
 @layer base {

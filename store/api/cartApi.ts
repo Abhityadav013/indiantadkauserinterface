@@ -3,64 +3,89 @@ import { base_url } from '@/lib/apiEndpoints';
 import { Cart, CartDescription } from '@/lib/types/cart_type';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+// Define response types
+interface GetCartResponse {
+  data: {
+    cart: {
+      cartItems: Cart[];
+    };
+  };
+}
+
+interface UpdateCartResponse {
+  data: {
+    cart: {
+      cartItems: Cart[];
+    };
+  };
+}
+
+interface GetCartDescriptionResponse {
+  data: {
+    cartDescription: CartDescription[];
+  };
+}
+
+// Create the API slice
 export const cartApi = createApi({
   reducerPath: 'cartApi',
   baseQuery: fetchBaseQuery({
     baseUrl: base_url,
     credentials: 'include',
     prepareHeaders: (headers) => {
-      // Retrieve token from localStorage
-      const tid = localStorage.getItem('tid');
-      const ssid = localStorage.getItem('ssid');
-
-      // If a token exists, add it to the Authorization header
-      if (tid) headers.set('tid', tid);
-      if (ssid) headers.set('ssid', ssid);
-
+      // Avoid accessing localStorage on the server
+      if (typeof window !== 'undefined') {
+        const tid = localStorage.getItem('tid');
+        const ssid = localStorage.getItem('ssid');
+        if (tid) headers.set('tid', tid);
+        if (ssid) headers.set('ssid', ssid);
+      }
       return headers;
     },
   }),
   tagTypes: ['Cart', 'CartDescription'],
   endpoints: (builder) => ({
+    // GET /cart
     getCart: builder.query<Cart[], void>({
       query: () => '/cart',
-      transformResponse: (res: any) => res.data?.cart?.cartItems || [],
+      transformResponse: (res: GetCartResponse) => res.data?.cart?.cartItems || [],
       providesTags: ['Cart'],
     }),
+
+    // POST /cart
     updateCart: builder.mutation<Cart[], { cart: Cart[]; isCartEmpty?: boolean }>({
       query: ({ cart, isCartEmpty }) => ({
         url: '/cart',
         method: 'POST',
         body: { cart, isCartEmpty },
       }),
-      transformResponse: (res: any) => res.data?.cart?.cartItems || [],
+      transformResponse: (res: UpdateCartResponse) => res.data?.cart?.cartItems || [],
       invalidatesTags: ['Cart'],
     }),
+
+    // GET /cart-description
     getCartDescriptions: builder.query<CartDescription[], void>({
       query: () => '/cart-description',
-      transformResponse: (res: any) => res.data?.cartDescription || [],
+      transformResponse: (res: GetCartDescriptionResponse) => res.data?.cartDescription || [],
       providesTags: ['CartDescription'],
     }),
-    // updateCartDescription: builder.mutation<CartDescription[], CartDescription>({
-    //   async queryFn(cartDescription, _queryApi, _extraOptions, fetchWithBQ) {
-    //     const existing = await fetchWithBQ('/cart-description');
-    //     const updated = [...(existing.data?.data?.cartDescription || []), cartDescription];
-    //     const response = await fetchWithBQ({
-    //       url: '/cart',
-    //       method: 'PUT',
-    //       body: { cartDescription },
-    //     });
-    //     return { data: updated };
-    //   },
-    //   invalidatesTags: ['CartDescription'],
-    // }),
+
+    // PUT /cart-description
+    updateCartDescription: builder.mutation<CartDescription[], CartDescription>({
+      query: (cartDescription) => ({
+        url: '/cart-description',
+        method: 'PUT',
+        body: { cartDescription },
+      }),
+      invalidatesTags: ['CartDescription'],
+    }),
   }),
 });
 
+// Export hooks
 export const {
   useGetCartQuery,
   useUpdateCartMutation,
   useGetCartDescriptionsQuery,
-  // useUpdateCartDescriptionMutation,
-  // useUpdateCartDescriptionMutation,
+  useUpdateCartDescriptionMutation,
 } = cartApi;

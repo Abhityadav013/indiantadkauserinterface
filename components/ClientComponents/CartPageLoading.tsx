@@ -10,7 +10,7 @@ interface CartPageLoadingProps {
 }
 const CartPageLoading: React.FC<CartPageLoadingProps> = ({ loadingImage }) => {
     const [showLoader, setShowLoader] = useState(true);
-    const { loading: cartLoading } = useCart();
+    const { isLoading: cartLoading } = useCart();
     const { loading: customerdetailLoading } = useAddressDetails();
 
     useEffect(() => {

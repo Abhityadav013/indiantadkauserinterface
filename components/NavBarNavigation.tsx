@@ -11,7 +11,7 @@ const NavBarNavigation: React.FC<NavBarNavigationSectionProps> = ({ label, isIma
     return (
         <Box
             //ToDo:: need this wehn we have login functionality
-            className="fixed  flex flex-col justify-center items-start h-[8%] w-[100%] lg:w-[60%] md:w-[60%] sm:w-[80%]  pl-28 left-[50%] top-0 transform -translate-x-1/2 bg-white text-white p-4 shadow-lg z-50"
+            className="fixed  flex flex-col justify-center items-start h-[8%] w-[100%] pl-28 left-[50%] top-0 transform -translate-x-1/2 bg-white text-white p-4 shadow-lg z-50"
         >
             <BackSection />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

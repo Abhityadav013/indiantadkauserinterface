@@ -13,7 +13,9 @@ const NavBarWrapper = () => {
       sx={{
         left:0,
         marginInline:'auto',
-        width:{ xs: "100%", sm: "100%", md: "60%", lg: "60%"},
+        width:"100%",
+        px:2,
+      //  width:{ xs: "100%", sm: "100%", md: "60%", lg: "60%"},
         backgroundColor: "white",
         boxShadow: "none",
         height: "100px", // Increase height by 10px (default height is around 60px)

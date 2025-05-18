@@ -1,4 +1,4 @@
-import CartWrapper from '@/components/CartWrapper'
+// import CartWrapper from '@/components/CartWrapper'
 import FooterCopyRights from '@/components/FooterCopyRight'
 import NavBarNavigation from '@/components/NavBarNavigation'
 import { Box } from '@mui/material'
@@ -18,7 +18,7 @@ const page = async () => {
       }}
     >
       <NavBarNavigation label="Your Cart" isImage={true} />
-      <CartWrapper />
+      {/* <CartWrapper /> */}
       <FooterCopyRights />
     </Box>
   )

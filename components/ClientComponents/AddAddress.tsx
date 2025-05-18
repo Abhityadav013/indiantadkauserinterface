@@ -1,4 +1,4 @@
-import { IconButton, TextField, Drawer, Typography, Button, Chip, RadioGroup, FormHelperText, FormControlLabel, Radio, FormControl, Autocomplete, useMediaQuery } from '@mui/material'
+import { IconButton, TextField, Drawer, Typography, Button, Chip, FormHelperText, Autocomplete, useMediaQuery } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import CloseIcon from "@mui/icons-material/Close";
 import HomeIcon from "@mui/icons-material/Home";
@@ -13,6 +13,10 @@ import { fetchPlaceByPostalCode } from '@/lib/api/fetchPlaceByPostalCode';
 import { fetchStreetsByPostalCode } from '@/lib/api/fetchStreetsByPostalCode';
 import PhoneInput from './PhoneInput';
 import { CountryCode, getCountryCallingCode } from 'libphonenumber-js';
+import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
+import { useDispatch } from 'react-redux';
+import { setOrderType } from '@/store/slices/orderSlice';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 
 interface AddressFormProps {
   onSubmit: (values: { userInfo: UserInfo, orderType: OrderType, address?: AddressInput }) => void;
@@ -38,6 +42,10 @@ export interface UserInfo {
   phoneNumber: string
 }
 
+const buttonTextMap = {
+  delivery: 'SAVE ADDRESS & PROCEED',
+  pickup: 'CONFIRM & PROCEED',
+};
 
 
 const AddNewAddress: React.FC<AddressFormProps> = ({
@@ -60,9 +68,10 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
   const [town, setTown] = React.useState("");
   const [pincode, setPincode] = React.useState<string>("");
   const [addressType, setAddressType] = React.useState("");
-  const [orderType, setOrderType] = React.useState<OrderType>(OrderType.DELIVERY);
+  const [orderType, set_Order_Type] = React.useState<OrderType>(OrderType.DELIVERY);
   const [currentFormError, setCurrentFormError] = React.useState<ErrorResponse>([]);
   const [streetOptions, setStreetOptions] = useState<string[]>([]);
+  const dispatch = useDispatch();
   useEffect(() => {
     const hasCustomerDetails =
       formValues.customerDetails &&
@@ -79,7 +88,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
         setPincode(customer.address.pincode || "");
         setAddressType(customer.address.addressType?.toLowerCase() || "home");
       }
-      setOrderType(formValues.orderType || OrderType.DELIVERY);
+      set_Order_Type(formValues.orderType || OrderType.DELIVERY);
     } else if (address) {
       setStreet(address.road || "");
       setPincode(address.postcode || "");
@@ -108,7 +117,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
       } else {
         setTown("")
         setStreetOptions([]);
-        setCurrentFormError([{ key: 'pincode', message: 'Inavlid pincode. Please enter correct pincode' }])
+        setCurrentFormError([{ key: 'pincode', message: 'Invalid pincode. Please enter correct pincode' }])
       }
     } else {
       setTown("")
@@ -121,7 +130,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
   const handleSubmit = async (event: any) => {
     event.preventDefault(); // Prevent default form submission behavior
     try {
-      if (orderType === OrderType.DELIVERY) {         
+      if (orderType === OrderType.DELIVERY) {
         await onSubmit({
           userInfo: { name, phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}` },
           orderType: orderType,
@@ -140,9 +149,16 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
     }
   };
 
-  const handleOrderTypeMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setOrderType(event.target.value as OrderType);
-  };
+  // const handleOrderTypeMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setOrderType(event.target.value as OrderType);
+  // };
+
+
+  const handleOrderTypeMethodChange = (value: OrderType) => {
+    set_Order_Type(value);
+    dispatch(setOrderType(value));
+    sessionStorage.setItem("orderType", value)
+  }
 
 
   const getErrorMessage = (key: string) => {
@@ -165,7 +181,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
           width: "100%",
           maxWidth: "500px",
           height: "100%",
-          padding: isMobile ? "16px" : "32px", // Adjust padding based on screen size
+          //  padding: isMobile ? "16px" : "32px", // Adjust padding based on screen size
           // borderRadius: isMobile ? "20px" : "30px", // Add rounded corners on mobile
         },
       }}
@@ -176,20 +192,15 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
           edge="start"
           color="inherit"
           onClick={onClose}
-          sx={{ position: "absolute", top: 20, left: 10 }}
+          sx={{ position: "absolute", top: 20, right: 20 }}
         >
           <CloseIcon />
         </IconButton>
 
-        <div className="text-center mb-6">
-          <Typography variant="h5" className="text-xl text-black font-semibold">
-            Save Delivery Address
-          </Typography>
-        </div>
 
         {/* Input fields */}
-        <div className={isMobile ? 'pl-4 pr-4' : 'pl-12 pr-12'}>
-          <FormControl component="fieldset">
+        <div className='px-10'>
+          {/* <FormControl component="fieldset">
             <RadioGroup
               aria-label="payment-method"
               value={orderType}
@@ -199,15 +210,43 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
               <FormControlLabel
                 value="PICKUP"
                 control={<Radio />}
-                label="Pickup Order"
+                label="Collection"
+
               />
+              <StorefrontIcon fontSize="small" />
               <FormControlLabel
                 value="DELIVERY"
                 control={<Radio />}
                 label="Delivery"
               />
             </RadioGroup>
-          </FormControl>
+          </FormControl> */}
+
+
+          <div className="w-full flex justify-center mb-4">
+            <div className="flex items-center justify-center gap-2 bg-gray-100 p-1 rounded-full shadow-sm w-fit">
+              <button
+                onClick={() => handleOrderTypeMethodChange(OrderType.DELIVERY)}
+                className={`flex items-center gap-1 px-4 py-1 rounded-full transition-all
+        ${orderType === OrderType.DELIVERY ? 'bg-white shadow font-semibold text-orange-500' : 'text-gray-500'}
+      `}
+              >
+                <DeliveryDiningIcon fontSize="small" />
+                <span className="text-sm">Delivery</span>
+              </button>
+
+              <button
+                onClick={() => handleOrderTypeMethodChange(OrderType.PICKUP)}
+                className={`flex items-center gap-1 px-4 py-1 rounded-full transition-all
+        ${orderType === OrderType.PICKUP ? 'bg-white shadow font-semibold text-orange-500' : 'text-gray-500'}
+      `}
+              >
+                <StorefrontIcon fontSize="small" />
+                <span className="text-sm">Collection</span>
+              </button>
+            </div>
+          </div>
+
           <TextField
             label="Name"
             variant="outlined"
@@ -220,7 +259,7 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
             helperText={getErrorMessage('name')}
           />
 
-          <div className="mb-4">
+          <div className="my-4">
             <PhoneInput
               phoneNumber={phoneNumber}
               setPhoneNumber={setPhoneNumber}
@@ -391,9 +430,10 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
             onClick={(event) => { handleSubmit(event); setFormError([]) }}
             sx={{
               height: '46px',
+              background:'#FF6347'
             }}
           >
-            SAVE ADDRESS & PROCEED
+             {orderType ? buttonTextMap[orderType.toLowerCase() as keyof typeof buttonTextMap] : 'PROCEED'}
           </Button>
         </div>
       </div>

@@ -1,10 +1,15 @@
 'use client';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { OrderType } from '@/lib/types/order_type';
 import Image from 'next/image';
 import { MenuItem } from '@/lib/types/menu_type';
 import { useCart } from '@/hooks/useCartDetails';
+import { useAddressDetails } from '@/hooks/useAddressDetails';
+import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
+import AddressForm from './AddressForm';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 
 interface BillDetailWrapperProps {
@@ -13,11 +18,11 @@ interface BillDetailWrapperProps {
 const BillDetailWrapper: React.FC<BillDetailWrapperProps> = ({ menu }) => {
     const [loading, setLoading] = useState(true);
     const [deliveryFee, setDeliveryFee] = useState(0);
-    const [deliveryTip, setDeliveryTip] = useState(0);
-    const [isDeliveryOrder, setOrderType] = useState<boolean>()
-    const [isFreeDelivery, setFreeDelivery] = useState(false);
+    // const [isFreeDelivery, setFreeDelivery] = useState(false);
     const [cartAmountTotal, setCartAmountTotal] = useState<number>();
     const { menuItems, updateMenuItems, getCartTotal } = useCart();
+    const order_type = useSelector((state: RootState) => state.order.orderType);
+    const { customerDetails, customerOrder, formError, isAddressModelOpen, setFormError, handleAdddressDetailOpen, handleAdddressDetailClose, handleUpdateCustomerDetails } = useAddressDetails();
 
     useEffect(() => {
         if (!menuItems.length) {
@@ -27,38 +32,21 @@ const BillDetailWrapper: React.FC<BillDetailWrapperProps> = ({ menu }) => {
 
     useEffect(() => {
         const deliveryFee = sessionStorage.getItem('deliveryFee');
-        const freeDelivery = sessionStorage.getItem('freeDelivery');
-        const orderType = sessionStorage.getItem('orderType');
+        //const freeDelivery = sessionStorage.getItem('freeDelivery');
         setDeliveryFee(deliveryFee ? Number(deliveryFee) : 0)
-        setFreeDelivery(freeDelivery === 'true')
-        setOrderType(orderType === OrderType.DELIVERY)
-
+ 
     }, [])
-
-    // Load customer delivery details
-
-    // Load tip from session storage
-    useEffect(() => {
-        const tip = sessionStorage.getItem('tipAmount');
-        setDeliveryTip(tip ? Number(tip) : 0);
-    }, []);
 
     // Update cart total in session storage, and set loading timeout
     useEffect(() => {
         const cartTotal = getCartTotal()
         if (cartTotal) {
-            const total = ((cartTotal ?? 0) + deliveryFee + deliveryTip).toFixed(2);
+            const total = ((cartTotal ?? 0) + deliveryFee ).toFixed(2);
             sessionStorage.setItem('cartTotalAmount', total);
             setCartAmountTotal(Number(total))
             setLoading(false);
         }
-    }, [getCartTotal, deliveryFee, deliveryTip]);
-
-
-    const addTipToDelivery = () => {
-        sessionStorage.setItem('tipAmount', '3');
-        setDeliveryTip(3);
-    };
+    }, [getCartTotal, deliveryFee]);
 
     const renderPriceOrLoader = (value: string | number) =>
         loading ? (
@@ -73,59 +61,85 @@ const BillDetailWrapper: React.FC<BillDetailWrapperProps> = ({ menu }) => {
             <span>€{value}</span>
         );
 
+    const handleAddressModalOpen = () => handleAdddressDetailOpen(true);
     return (
-        <Box className="mt-2 text-gray-700 space-y-3">
-            <Typography variant="body2" className="flex justify-between">
-                Order Type
-                <span className="text-orange-500 font-bold">
-                    {isDeliveryOrder ? OrderType.DELIVERY : OrderType.PICKUP}
-                </span>
-            </Typography>
+        <>
+            <Box className="mt-2 text-gray-700">
+                <Typography variant="body2" className="flex justify-between py-[2px]">
+                    Item Total
+                    {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
+                </Typography>
 
-            <Typography variant="body2" className="flex justify-between">
-                Item Total
-                {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
-            </Typography>
-
-            {isDeliveryOrder && (
-                <div className="space-y-2">
-                    <Typography variant="body2" className="flex justify-between">
-                        Delivery Fee
-                        <span className={!deliveryFee ? 'text-emerald-600 text-xs cursor-pointer' : ''}>
-                            {/* {!isCustomerDetailsPresent ? 'Add Delivery Address' : renderPriceOrLoader(deliveryFee)} */}
-                        </span>
-                    </Typography>
-
-                    <Typography variant="caption" className="text-gray-500">
-                        This fee fairly goes to our delivery partners for delivering your food
-                    </Typography>
-
+                <div>
+                    {/* Delivery Fee Section */}
                     <Typography
                         variant="body2"
-                        className={`flex justify-between ${deliveryTip ? '' : 'text-orange-500 cursor-pointer'}`}
+                        className={`flex justify-between ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
                     >
-                        Delivery Tip{' '}
-                        {deliveryTip ? (
-                            <span>€{deliveryTip}</span>
-                        ) : isFreeDelivery ? (
-                            <span>Free</span>
-                        ) : (
-                            <span onClick={addTipToDelivery}>Add tip</span>
-                        )}
+                        Delivery Fee
+                        <span>
+                            {customerDetails ? `€ ${deliveryFee.toFixed(2)}` : '0.00'}
+                        </span>
                     </Typography>
+                    <Divider className="my-2" />
+                    {/* To Pay Section */}
+                    <Typography
+                        variant="body1"
+                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                    >
+                        To Pay
+                        <span>
+                            {customerDetails
+                                ? `€ ${((cartAmountTotal ?? 0) + deliveryFee ).toFixed(2)}`
+                                : '0.00'}
+                        </span>
+                    </Typography>
+                    {/* Show "Add address" button only if no customerDetails */}
+                    {/* Hint & CTA */}
+                    {!customerDetails && (
+                        <Box className="flex flex-col items-center text-center mt-2 space-y-1">
+                            <Typography variant="caption" color="textSecondary">
+                                {order_type === OrderType.DELIVERY
+                                    ? '🔓 Complete your details to unlock delivery & total'
+                                    : '🔓 Let us know who’s picking this up'}
+                            </Typography>
+                            <Button
+                                size="small"
+                                variant="contained"
+                                onClick={handleAddressModalOpen}
+                                sx={{ background: '#FF6347', color: 'white' }}
+                            >
+                                Add Details
+                            </Button>
+                        </Box>
+                    )}
+
                 </div>
-            )}
 
-            <Divider className="my-2" />
+                {/* <Typography
+                    variant="body1"
+                    className="flex justify-between py-[2px] font-semibold"
+                >
+                    To Pay
+                    {customerDetails
+                        ? renderPriceOrLoader(((cartAmountTotal ?? 0) + deliveryFee + deliveryTip).toFixed(2))
+                        : renderPriceOrLoader((cartAmountTotal ?? 0).toFixed(2))}
+                </Typography> */}
+            </Box>
 
-            <Typography
-                variant="body1"
-                sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}
-            >
-                To Pay
-                {renderPriceOrLoader(((cartAmountTotal ?? 0) + deliveryFee + deliveryTip).toFixed(2))}
-            </Typography>
-        </Box>
+            <AddressForm
+                isAddressModelOpen={isAddressModelOpen}
+                customerDetails={customerDetails ?? {} as CustomerDetails}
+                customerOrder={customerOrder ?? {} as CustomerOrder}
+                formError={formError}
+                setFormError={setFormError}
+                handleAdddressDetailClose={handleAdddressDetailClose}
+                handleUpdateCustomerDetails={handleUpdateCustomerDetails}
+            />
+        </>
+
+
+
 
     );
 };

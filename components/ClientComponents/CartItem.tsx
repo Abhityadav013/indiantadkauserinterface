@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import toast from 'react-hot-toast';
 import { useCart } from '@/hooks/useCartDetails';
 import { MenuItem } from '@/lib/types/menu_type';
-import { useUpdateCartMutation } from '@/store/api/cartApi';
 import { motion, AnimatePresence } from "framer-motion";
 import Image from 'next/image';
 
@@ -15,9 +14,8 @@ interface CartItemProps {
 const CartItem: React.FC<CartItemProps> = ({ menu }) => {
     const [showLoader, setShowLoader] = useState(true);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
-    const { isLoading, items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
+    const { isLoading, items, addToCart,removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu } = useCart()
     const [isCartUpdated, setCartUpdated] = useState(false);
-    const [updateCart] = useUpdateCartMutation();
 
     useEffect(() => {
         if (!isLoading) {
@@ -33,13 +31,13 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
         }
     }, [menuItems, menu, updateMenuItems])
 
-    const handleAddToCart = (item: MenuItem) => {
-        const updatedCart = addToCart(item)
-        updateCart({ cart: updatedCart });
-
+    const handleAddToCart = async (item: MenuItem) => {
+        await addToCart(item);
+        //updateCart({ cart: updatedCart });
+    
         setCartUpdated(true);
         const timer = setTimeout(() => {
-            updateCart({ cart: updatedCart });
+            // updateCart({ cart: updatedCart });
             setCartUpdated(false);
         }, 1000); // Show loading indicator for 1 second
         toast.success(`${item.name} Added to cart`, {
@@ -60,14 +58,14 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
             },
         });
         return () => clearTimeout(timer);
-
+    
     };
 
-    const handleRemoveFromCart = (item: MenuItem) => {
-        const updatedCart = removeFromCart(item);
+    const handleRemoveFromCart = async(item: MenuItem) => {
+        await removeFromCart(item);
         setCartUpdated(true);
         const timer = setTimeout(() => {
-            updateCart({ cart: updatedCart });
+            // updateCart({ cart: updatedCart });
             setCartUpdated(false);
         }, 1000); // Show loading indicator for 1 second
         toast(`${item.name} removed from cart`, {
@@ -104,7 +102,7 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
     }
     return (
         <React.Fragment>
-            <Box sx={{ width: '100%', height: 4, mb: 2 }}>
+            <Box sx={{ width: '100%', height: 4, mb: 5 }}>
                 {isCartUpdated && (
                     <motion.div
                         initial={false}
@@ -126,7 +124,8 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
             </Box>
             {
                 items.map((item) => {
-                    const quantity = item.quantity ?? 0
+                    const quantity = getItemQuantity(item.itemId)
+                    //const quantity = item.quantity ?? 0
                     const { totalPrice: itemTotal, menu: currentMenuItem } = getItemPriceWithMenu(item)
                     // const cartDescription = cartDescriptions.find(di => di.itemId === item.id);
 

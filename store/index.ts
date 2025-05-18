@@ -2,12 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { cartApi } from './api/cartApi'; // created in next step
 import { customerDetailsApi } from './api/customerDetailsApi';
 import { orderApi } from './api/orderApi';
-
+import orderReducer from './slices/orderSlice';
 export const store = configureStore({
   reducer: {
     [cartApi.reducerPath]: cartApi.reducer,
     [customerDetailsApi.reducerPath]: customerDetailsApi.reducer, 
-    [orderApi.reducerPath]:orderApi.reducer
+    [orderApi.reducerPath]:orderApi.reducer,
+     order: orderReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(cartApi.middleware,customerDetailsApi.middleware,orderApi.middleware),
