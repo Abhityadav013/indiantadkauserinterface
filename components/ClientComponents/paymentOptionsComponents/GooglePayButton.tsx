@@ -73,6 +73,7 @@ const GooglePayButton = () => {
                 buttonContainerRef.current.style.minWidth = '240px';
                 buttonContainerRef.current.style.minHeight = '40px';
                 buttonContainerRef.current.style.display = 'inline-block';
+                buttonContainerRef.current.style.border = '1px solid red'; // temporary border for debugging
 
                 buttonContainerRef.current.appendChild(button);
                 console.log("🟢 Google Pay button appended");
