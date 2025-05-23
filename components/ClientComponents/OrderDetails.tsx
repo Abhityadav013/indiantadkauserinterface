@@ -28,7 +28,7 @@ export default function OrderDetails() {
   const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string } | null>(null);
   const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
   const { loading, customerDetails } = useAddressDetails()
-  console.log('customerDetails',loading,customerDetails)
+  console.log('customerDetails', loading, customerDetails)
   const order_type = useSelector((state: RootState) => state.order.orderType);
   useEffect(() => {
     // Only run when loading is false
@@ -105,15 +105,11 @@ export default function OrderDetails() {
       setDeliveryNoteInfo(storedData as { notes: string });
     }
   };
-      console.log('userInfo',userInfo)
-    console.log('addressInfo',addressInfo)
-  const isDataReady =
-    userInfo.name &&
-    userInfo.phoneNumber &&
-    addressInfo.pincode &&
-    addressInfo.buildingNumber &&
-    addressInfo.street &&
-    addressInfo.town
+  console.log('userInfo', userInfo)
+  console.log('addressInfo', addressInfo)
+  const isDataReady = Object.keys(userInfo).length && Object.keys(addressInfo).length
+  console.log('isDataReady', isDataReady)
+
   return isDataReady ? (
     <div className="bg-white rounded-lg  mt-10 shadow p-4 space-y-4 max-w-md mx-auto">
       <h2 className="text-xl font-semibold">Order details</h2>

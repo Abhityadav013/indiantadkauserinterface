@@ -17,12 +17,16 @@ interface BaseketSideBarContentProps {
 }
 
 const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) => {
+    const [hydrated, setHydrated] = useState(false);
     const [showLoader, setShowLoader] = useState(true);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
     const { isLoading, items, addToCart, removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu, getCartTotal } = useCart()
     const { loading, customerDetails, customerOrder, formError, isAddressModelOpen, setFormError, handleAdddressDetailOpen, handleAdddressDetailClose, handleUpdateCustomerDetails } = useAddressDetails();
     const [isCartUpdated, setCartUpdated] = useState(false);
     const [cartItem, setCartItems] = useState<Cart[]>(cartItems);
+    useEffect(() => {
+        setHydrated(true);
+    }, []);
 
     useEffect(() => {
         // We define the timer variable here, so it's in scope for cleanup
@@ -39,7 +43,8 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
             }
             timer = setTimeout(() => setShowLoader(false), 1000); // Delay 1 second
         } else {
-            setShowLoader(true); // Show loader if isLoading is true
+             timer = setTimeout(() => setShowLoader(false), 200); // Delay 1 second
+            // setShowLoader(true); // Show loader if isLoading is true
         }
 
         // Cleanup: clear timer if the component unmounts or the effect reruns
@@ -111,9 +116,18 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
 
     };
 
-    if (cartItem.length === 0) {
-        return <EmptyCart />
+    if (!hydrated) {
+        // Before hydration (first render), rely on props
+        if (cartItems.length === 0) {
+            return <EmptyCart />;
+        }
+    } else {
+        // After hydration, rely on client-side state
+        if (cartItem.length === 0) {
+            return <EmptyCart />;
+        }
     }
+    console.log('showLoader:::::::',)
 
     if (showLoader) {
         return (
