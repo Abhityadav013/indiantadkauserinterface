@@ -83,7 +83,7 @@ const BillDetailWrapper = ({
                         transition={{ duration: 0.4, ease: 'easeInOut' }}
                         style={{ overflow: 'hidden', position: 'relative' }}
                     >
-                        <Box className={(!customerDetails || Object.keys(customerDetails).length === 0) ? 'blur-sm' : ''}>
+                        <Box>
                             <Typography variant="body2" className="flex justify-between py-[2px]">
                                 Item Total
                                 {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
@@ -94,7 +94,7 @@ const BillDetailWrapper = ({
 
                                     <Typography
                                         variant="body1"
-                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
                                     >
                                         <span>
                                             Delivery Fee
@@ -107,7 +107,7 @@ const BillDetailWrapper = ({
 
                                     <Typography
                                         variant="body1"
-                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
                                     >
                                         <span>
                                             Service fee 2.5% (max 0.99 €)
@@ -124,7 +124,7 @@ const BillDetailWrapper = ({
 
                             <Typography
                                 variant="body1"
-                                className={`flex justify-between font-bold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                                className={`flex justify-between font-bold ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
                             >
                                 Total
                                 <span>
@@ -181,6 +181,7 @@ const BillDetailWrapper = ({
                         left: '50%',
                         transform: 'translateX(-50%)',
                         width: '80%',
+                        mt:2
                     }}
                 >
                     <Button
