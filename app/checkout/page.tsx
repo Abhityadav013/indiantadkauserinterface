@@ -7,13 +7,11 @@ import { MenuItem } from '@/lib/types/menu_type';
 import { getUserData } from '@/lib/api/fetchUserDetailsApi';
 import { Box } from '@mui/material';
 import PaymentMethodSelector from '@/components/ClientComponents/PaymentMethodSelector';
-import GooglePayButton from '@/components/ClientComponents/paymentOptionsComponents/GooglePayButton';
-
 
 export default async function CheckoutPage() {
   const [menuData, cartdata, userData] = await Promise.all([getMenuData(), getCartData(), getUserData()]);
   const menuItems: MenuItem[] = menuData.menuItems;
-console.log('menuData',menuData.menuItems.length,cartdata,userData)
+  console.log('menuData',menuData.menuItems.length,cartdata,userData) 
   return (
     <main className="min-h-screen bg-gray-50 py-4 px-2 bg-[url('https://testing.indiantadka.eu/assets/bg-checkout-multi.avif')] bg-no-repeat bg-cover bg-center">
       <NavBarNavigation label="Checkout" isImage={false} />
@@ -37,7 +35,6 @@ console.log('menuData',menuData.menuItems.length,cartdata,userData)
           <Box sx={{ flex: 1 }}>
             <OrderDetails />
             <PaymentMethodSelector />
-            <GooglePayButton />
           </Box>
 
           <Box sx={{ flex: 1 }}>
