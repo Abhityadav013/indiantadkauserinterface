@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import ResponsiveWrapper from "@/components/ClientComponents/ResponsiveLayoutWrapper";
 import { StoreProvider } from "@/components/StoreProvider";
 import { SessionProvider } from "@/components/ClientComponents/SessionProvider";
+import Script from "next/script";
 // import Script from "next/script";
 
 const geistSans = Geist({
@@ -38,10 +39,10 @@ export default function RootLayout({
             async
           ></script> */}
 
-          <script async
+          <Script
             src="https://pay.google.com/gp/p/js/pay.js"
-          ></script>
-          {/* <script async src="https://pay.google.com/gp/p/js/pay.js"></script> */}
+            strategy="beforeInteractive"
+          />
         </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased w-[100%] px-2 mx-auto bg-white min-h-screen shadow-md`}
