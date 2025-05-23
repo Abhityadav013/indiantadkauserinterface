@@ -5,6 +5,7 @@ import BillDetailWrapper from './ClientComponents/BillDetailWrapper';
 import AddressForm from './ClientComponents/AddressForm';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
 import { ErrorResponse } from '@/lib/types/error_type';
+
 interface BillDetailProps {
     getCartTotal: () => number,
     isAddressModelOpen: boolean
@@ -17,8 +18,6 @@ interface BillDetailProps {
     handleAdddressDetailOpen: (value: boolean) => void
 }
 
-
-
 const BillDetails = ({
     getCartTotal,
     isAddressModelOpen,
@@ -29,40 +28,37 @@ const BillDetails = ({
     handleAdddressDetailClose,
     handleUpdateCustomerDetails,
     handleAdddressDetailOpen
-
 }: BillDetailProps) => {
     return (
-        <>
+        <Box
+            sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                backgroundColor: '#fff', // optional for visibility
+                boxShadow: '0 -2px 4px rgba(0,0,0,0.05)', // optional
+                p: 2
+            }}
+        >
             <Box
                 sx={{
                     minWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
                     maxWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
-                    borderRadius: 0,
+                    margin: '0 auto',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    mt:0,
-                }}>
-                <Box
-                    sx={{
-                        display: 'flex',              // Use Flexbox layout
-                        justifyContent: 'center',     // Center horizontally
-                        alignItems: 'center',         // Center vertically (if needed)
-                        gap: 2,                       // Adds space between the items
-                    }}
-                >
-                    <Typography variant="h6" sx={{ fontWeight: 300, display: 'flex', alignItems: 'center' }}>
-                        {/* Receipt Icon */}
-                        <IconButton>
-                            <ReceiptIcon fontSize="medium" className="text-gray-700" />
-                        </IconButton>
-
-                        {/* Text */}
-                        Bill Details
-                    </Typography>
-                </Box>
-
+                }}
+            >
+                <Typography variant="h6" sx={{ fontWeight: 300, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton>
+                        <ReceiptIcon fontSize="medium" className="text-gray-700" />
+                    </IconButton>
+                    Bill Details
+                </Typography>
             </Box>
+
             <BillDetailWrapper
                 customerDetails={customerDetails ?? {} as CustomerDetails}
                 getCartTotal={getCartTotal}
@@ -77,8 +73,8 @@ const BillDetails = ({
                 handleAdddressDetailClose={handleAdddressDetailClose}
                 handleUpdateCustomerDetails={handleUpdateCustomerDetails}
             />
-        </>
-    )
-}
+        </Box>
+    );
+};
 
-export default BillDetails
+export default BillDetails;

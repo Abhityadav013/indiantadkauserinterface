@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import EmptyCart from '../EmptyCart';
 import CartHistory from './CartHistory';
-import { Divider } from '@mui/material';
 import BillDetails from '../BillDetails';
 import { useCart } from '@/hooks/useCartDetails';
 import { Cart } from '@/lib/types/cart_type';
@@ -139,7 +138,6 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
                 getItemPriceWithMenu={getItemPriceWithMenu}
                 setCustomizeModal={setCustomizeModal}
             />
-            <Divider sx={{ backgroundColor: '#E0E0E0' }} />
             <BillDetails
                 getCartTotal={getCartTotal}
                 isAddressModelOpen={isAddressModelOpen}

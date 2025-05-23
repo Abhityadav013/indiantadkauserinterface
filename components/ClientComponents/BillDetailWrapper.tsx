@@ -11,6 +11,7 @@ import ServiceFeeDilaog from '../ServiceFeeDilaog';
 import { formatPrice } from '@/utils/valueInEuros';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+
 interface BillDetailWrapperProps {
     customerDetails: CustomerDetails;
     getCartTotal: () => number;
@@ -25,17 +26,16 @@ const BillDetailWrapper = ({
     const [loading, setLoading] = useState(true);
     const [deliveryFee, setDeliveryFee] = useState(0);
     const [cartAmountTotal, setCartAmountTotal] = useState<number>();
-    const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
-    const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false); // State to control dialog visibility
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false);
     const order_type = useSelector((state: RootState) => state.order.orderType);
-    const router = useRouter()
+    const router = useRouter();
 
     useEffect(() => {
         const deliveryFee = sessionStorage.getItem('deliveryFee');
         setDeliveryFee(deliveryFee ? Number(deliveryFee) : 0);
     }, []);
 
-    // Update cart total in session storage, and set loading timeout
     useEffect(() => {
         const cartTotal = getCartTotal();
         if (cartTotal) {
@@ -47,46 +47,32 @@ const BillDetailWrapper = ({
     }, [getCartTotal, deliveryFee]);
 
     const renderPriceOrLoader = (value: string | number) => {
-        if (loading) return <span>Loading...</span>;  // Or any other fallback content while loading
-        if (value === 0) {
-            return <span>Free</span>
-        } else {
-            return <span>{formatPrice(Number(value))}</span>
-        }
-    }
-
-    const renderServiceFee = (value: string | number) => {
-        if (loading) return <span>Loading...</span>;  // Or any other fallback content while loading
-
-        const serviceFee = (Number(value) * 2.5) / 100;
-        if (serviceFee < 0.99) {
-            return <span>{formatPrice(Number(serviceFee.toFixed(2)))}</span>;  // Ensure we are returning the fee with the € symbol
-        }
-
-        return <span>€0,99</span>;  // Return the capped fee with the € symbol
+        if (loading) return <span>Loading...</span>;
+        if (value === 0) return <span>Free</span>;
+        return <span>{formatPrice(Number(value))}</span>;
     };
 
+    const renderServiceFee = (value: string | number) => {
+        if (loading) return <span>Loading...</span>;
+        const serviceFee = (Number(value) * 2.5) / 100;
+        return <span>{formatPrice(serviceFee < 0.99 ? Number(serviceFee.toFixed(2)) : 0.99)}</span>;
+    };
 
-    // Function to handle opening the dialog
-    const handleDialogOpen = () => setDialogOpen(true);
-
-    const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
-
-    // Calculate the total (cartTotal + deliveryFee + serviceFee)
     const calculateTotal = () => {
-
         if (order_type === OrderType.DELIVERY) {
-            const serviceFee = (cartAmountTotal ? (cartAmountTotal * 2.5) / 100 : 0);
+            const serviceFee = cartAmountTotal ? (cartAmountTotal * 2.5) / 100 : 0;
             const cappedServiceFee = serviceFee < 0.99 ? serviceFee : 0.99;
             return formatPrice((cartAmountTotal ?? 0) + deliveryFee + cappedServiceFee);
         }
-         return formatPrice((cartAmountTotal ?? 0));
-
+        return formatPrice(cartAmountTotal ?? 0);
     };
 
+    const handleDialogOpen = () => setDialogOpen(true);
+    const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
+console.log('BillDetailWrapper customerDetails' ,customerDetails)
     return (
         <>
-            <Box className="mt-2 text-gray-700">
+            <Box sx={{ position: 'relative', paddingBottom: '100px' }} className="mt-2 text-gray-700">
                 <AnimatePresence initial={false} mode="wait">
                     <motion.div
                         key={order_type}
@@ -138,7 +124,7 @@ const BillDetailWrapper = ({
                         </Typography>
 
                         {!customerDetails && (
-                            <Box className="flex flex-col items-center text-center space-y-1">
+                            <Box className="flex flex-col items-center text-center space-y-1 mt-2">
                                 <Typography variant="h6" color="textSecondary">
                                     {order_type === OrderType.DELIVERY
                                         ? '🔓 Complete your details to unlock delivery & total'
@@ -157,7 +143,7 @@ const BillDetailWrapper = ({
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Checkout Button - NOT animated */}
+                {/* Checkout Button - absolutely positioned inside this container */}
                 <Box
                     sx={{
                         display: 'flex',
@@ -172,9 +158,7 @@ const BillDetailWrapper = ({
                 >
                     <Button
                         variant="contained"
-                        onClick={() => {
-                            router.push('/checkout');
-                        }}
+                        onClick={() => router.push('/checkout')}
                         sx={{
                             width: '100%',
                             backgroundColor: '#f36805',
@@ -194,7 +178,7 @@ const BillDetailWrapper = ({
                 </Box>
             </Box>
 
-            {/* Dialog for Delivery Fee Details */}
+            {/* Dialogs */}
             <DeliveryFeeDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
             <ServiceFeeDilaog open={serviceFeeDialogOpen} onClose={() => setServiceFeeDialogOpen(false)} />
         </>
