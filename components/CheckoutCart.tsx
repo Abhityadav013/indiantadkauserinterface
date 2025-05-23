@@ -12,7 +12,7 @@ interface CheckoutCartProps {
 }
 
 const CheckoutCart: React.FC<CheckoutCartProps> = ({ cart, menu, userData }) => {
-
+    console.log('cart:::::::',cart)
     const getItemPriceWithMenu = (item: Cart) => {
         const fetchMenuItem = menu.find((mi) => mi.id === item.itemId);
         const itemPrice = fetchMenuItem?.price ?? 0;

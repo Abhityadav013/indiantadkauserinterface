@@ -6,8 +6,8 @@ import { MenuCategory } from '@/lib/types/menu_category';
 export async function getMenuData() {
     try {
         const [menuItemsRaw, categoryData] = await Promise.all([
-            fetchFromApi<{ menu: MenuItem[] }>(`/menu`),
-            fetchFromApi<{ category: MenuCategory[] }>(`/category`),
+            fetchFromApi<{ menu: MenuItem[] }>(`/menu`,true),
+            fetchFromApi<{ category: MenuCategory[] }>(`/category`,true),
         ]);
         const menuItems: MenuItem[] = menuItemsRaw.menu;
         const menuCategoriesDetails: MenuCategory[] = categoryData.category;

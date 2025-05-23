@@ -6,6 +6,7 @@ interface FetchParams {
 
 export async function fetchFromApi<T>(
   endpoint: string,
+  isCached: boolean = true,
   params?: FetchParams // Optional query parameters
 ): Promise<T> {
   // Construct query string if params are passed
@@ -27,7 +28,7 @@ export async function fetchFromApi<T>(
     headers: {
       ssid: _device_id || '',
     },
-    next: { revalidate: 3600 },
+    ...(isCached && { next: { revalidate: 3600 } }),
     // next: { tags: ['cart'] },
   });
 
