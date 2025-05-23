@@ -127,8 +127,6 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
             return <EmptyCart />;
         }
     }
-    console.log('showLoader:::::::',)
-
     if (showLoader) {
         return (
             <Image

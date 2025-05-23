@@ -10,7 +10,6 @@ interface BasketSidebarProps {
 
 const BasketSidebar = async ({ menu }: BasketSidebarProps) => {
     const cartItems = await getCartData();
-    console.log('BasketSidebar cartItems:::::',cartItems)
     return (
         <Box
             sx={{

@@ -9,7 +9,6 @@ export async function getMenuData() {
             fetchFromApi<{ menu: MenuItem[] }>(`/menu`,true),
             fetchFromApi<{ category: MenuCategory[] }>(`/category`,true),
         ]);
-        console.log('menuItemsRaw::::::::::',menuItemsRaw)
         const menuItems: MenuItem[] = menuItemsRaw.menu;
         const menuCategoriesDetails: MenuCategory[] = categoryData.category;
         return { menuItems, menuCategoriesDetails };
