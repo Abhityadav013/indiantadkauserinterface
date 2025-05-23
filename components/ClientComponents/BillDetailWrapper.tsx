@@ -72,6 +72,7 @@ const BillDetailWrapper = ({
     console.log('BillDetailWrapper customerDetails', customerDetails)
     return (
         <>
+
             <Box sx={{ position: 'relative', paddingBottom: '100px' }} className="mt-2 text-gray-700">
                 <AnimatePresence initial={false} mode="wait">
                     <motion.div
@@ -80,52 +81,78 @@ const BillDetailWrapper = ({
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.4, ease: 'easeInOut' }}
-                        style={{ overflow: 'hidden' }}
+                        style={{ overflow: 'hidden', position: 'relative' }}
                     >
-                        <Typography variant="body2" className="flex justify-between py-[2px]">
-                            Item Total
-                            {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
-                        </Typography>
+                        <Box className={(!customerDetails || Object.keys(customerDetails).length === 0) ? 'blur-sm' : ''}>
+                            <Typography variant="body2" className="flex justify-between py-[2px]">
+                                Item Total
+                                {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
+                            </Typography>
 
-                        {order_type === OrderType.DELIVERY && (
-                            <>
-                                <Typography variant="body2" className="flex justify-between">
-                                    <span>
-                                        Delivery Fee
-                                        <IconButton onClick={handleDialogOpen} sx={{ paddingLeft: '5px' }}>
-                                            <InfoIcon sx={{ fontSize: 12 }} />
-                                        </IconButton>
-                                    </span>
-                                    {renderPriceOrLoader(deliveryFee)}
-                                </Typography>
+                            {order_type === OrderType.DELIVERY && (
+                                <>
 
-                                <Typography variant="body2" className="flex justify-between">
-                                    <span>
-                                        Service fee 2.5% (max 0.99 €)
-                                        <IconButton onClick={handleServiceFeeDialogOpen} sx={{ paddingLeft: '5px' }}>
-                                            <InfoIcon sx={{ fontSize: 12 }} />
-                                        </IconButton>
-                                    </span>
-                                    {renderServiceFee(cartAmountTotal?.toFixed(2) || '0.00')}
-                                </Typography>
-                            </>
-                        )}
+                                    <Typography
+                                        variant="body1"
+                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                                    >
+                                        <span>
+                                            Delivery Fee
+                                            <IconButton onClick={handleDialogOpen} sx={{ paddingLeft: '5px' }}>
+                                                <InfoIcon sx={{ fontSize: 12 }} />
+                                            </IconButton>
+                                        </span>
+                                        {renderPriceOrLoader(deliveryFee)}
+                                    </Typography>
 
-                        <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
+                                    <Typography
+                                        variant="body1"
+                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                                    >
+                                        <span>
+                                            Service fee 2.5% (max 0.99 €)
+                                            <IconButton onClick={handleServiceFeeDialogOpen} sx={{ paddingLeft: '5px' }}>
+                                                <InfoIcon sx={{ fontSize: 12 }} />
+                                            </IconButton>
+                                        </span>
+                                        {renderServiceFee(cartAmountTotal?.toFixed(2) || '0.00')}
+                                    </Typography>
+                                </>
+                            )}
 
-                        <Typography
-                            variant="body1"
-                            className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
-                        >
-                            Total
-                            <span>
-                                {customerDetails ? `€ ${calculateTotal()}` : '0.00'}
-                            </span>
-                        </Typography>
+                            <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
 
+                            <Typography
+                                variant="body1"
+                                className={`flex justify-between font-bold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                            >
+                                Total
+                                <span>
+                                    {`€ ${calculateTotal()}`}
+                                </span>
+                            </Typography>
+                        </Box>
+
+                        {/* Mask with message */}
                         {!customerDetails || Object.keys(customerDetails).length === 0 && (
-                            <Box className="flex flex-col items-center text-center space-y-1 mt-2">
-                                <Typography variant="h6" color="textSecondary">
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 10,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    textAlign: 'center',
+                                    p: 2,
+                                }}
+                            >
+                                <Typography variant="h6" color="textSecondary" gutterBottom>
                                     {order_type === OrderType.DELIVERY
                                         ? '🔓 Complete your details to unlock delivery & total'
                                         : '🔓 Let us know who’s picking this up'}
@@ -143,7 +170,7 @@ const BillDetailWrapper = ({
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Checkout Button - absolutely positioned inside this container */}
+                {/* Checkout Button */}
                 <Box
                     sx={{
                         display: 'flex',
@@ -158,6 +185,7 @@ const BillDetailWrapper = ({
                 >
                     <Button
                         variant="contained"
+                        hidden={!customerDetails || Object.keys(customerDetails).length === 0}
                         onClick={() => router.push('/checkout')}
                         sx={{
                             width: '100%',
@@ -168,6 +196,7 @@ const BillDetailWrapper = ({
                             fontWeight: 'bold',
                             borderRadius: '50px',
                             textTransform: 'none',
+                            opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
                             '&:hover': {
                                 backgroundColor: '#f36805',
                             },
