@@ -13,7 +13,7 @@ import GooglePayButton from '@/components/ClientComponents/paymentOptionsCompone
 export default async function CheckoutPage() {
   const [menuData, cartdata, userData] = await Promise.all([getMenuData(), getCartData(), getUserData()]);
   const menuItems: MenuItem[] = menuData.menuItems;
-
+console.log('menuData',menuData.menuItems.length,cartdata,userData)
   return (
     <main className="min-h-screen bg-gray-50 py-4 px-2 bg-[url('https://testing.indiantadka.eu/assets/bg-checkout-multi.avif')] bg-no-repeat bg-cover bg-center">
       <NavBarNavigation label="Checkout" isImage={false} />
