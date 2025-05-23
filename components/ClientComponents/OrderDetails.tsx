@@ -28,6 +28,7 @@ export default function OrderDetails() {
   const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string } | null>(null);
   const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
   const { loading, customerDetails } = useAddressDetails()
+  console.log('customerDetails',loading,customerDetails)
   const order_type = useSelector((state: RootState) => state.order.orderType);
   useEffect(() => {
     // Only run when loading is false
@@ -104,6 +105,8 @@ export default function OrderDetails() {
       setDeliveryNoteInfo(storedData as { notes: string });
     }
   };
+      console.log('userInfo',userInfo)
+    console.log('addressInfo',addressInfo)
   const isDataReady =
     userInfo.name &&
     userInfo.phoneNumber &&
