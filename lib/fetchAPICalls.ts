@@ -14,7 +14,9 @@ export async function fetchFromApi<T>(
   const cookieStore = await cookies();
   const cookiesHeader = cookieStore.get('_device_id');
   const _device_id = cookiesHeader ? cookiesHeader.value : '';
-
+  if (endpoint === '/cart') {
+    console.log('dhgjhdkjkhjdkjdk', cookieStore.get('_device_id'));
+  }
   const queryString = params
     ? '?' +
       new URLSearchParams(
