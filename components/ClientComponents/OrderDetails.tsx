@@ -12,7 +12,7 @@ import AddressInfo from './checkoutComponents/AddressInfo';
 // import { UserAddress } from '@/lib/types/address_type';
 import DeliveryTime from './checkoutComponents/DeliveryTime';
 import DeliveryNote from './checkoutComponents/DeliveryNote';
-import OrderDetailsSkeleton from '../Skeletons/OrderDetailsSkeleton';
+// import OrderDetailsSkeleton from '../Skeletons/OrderDetailsSkeleton';
 import { OrderType } from '@/lib/types/order_type';
 import { getIndianTadkaAddress } from '@/utils/getRestroAddress';
 import { RootState } from '@/store';
@@ -111,8 +111,60 @@ export default function OrderDetails() {
     addressInfo.buildingNumber &&
     addressInfo.street &&
     addressInfo.town
-  return isDataReady ? (
-    <div className="bg-white rounded-lg  mt-10 shadow p-4 space-y-4 max-w-md mx-auto">
+    console.log('isDataReady:::::::::',isDataReady)
+        console.log('userInfo:::::::::',userInfo)
+           console.log('addressInfo:::::::::',addressInfo)
+  // return isDataReady ? (
+  //   <div className="bg-white rounded-lg  mt-10 shadow p-4 space-y-4 max-w-md mx-auto">
+  //     <h2 className="text-xl font-semibold">Order details</h2>
+
+  //     <UserInfo
+  //       openDialog={openDialog}
+  //       handleOpen={handleOpen}
+  //       handleClose={handleClose}
+  //       customerDetails={userInfo}
+  //       handleDialogAction={handleDialogAction}
+  //     />
+  //     <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
+
+  //     <AddressInfo
+  //       isPickup={order_type === OrderType.PICKUP}
+  //       openDialog={openDialog}
+  //       customerAddress={addressInfo}
+  //       handleOpen={handleOpen}
+  //       handleClose={handleClose}
+  //       handleDialogAction={handleDialogAction}
+  //     />
+  //     <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
+
+  //     <DeliveryTime
+  //       isPickup={order_type === OrderType.PICKUP}
+  //       openDialog={openDialog}
+  //       initialTime={timeInfo?.scheduledTime ?? ""}
+  //       handleOpen={handleOpen}
+  //       handleClose={handleClose}
+  //       handleDialogAction={handleDialogAction}
+  //     />
+  //     {
+  //       order_type === OrderType.DELIVERY && (
+  //         <>
+  //           <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
+
+  //           <DeliveryNote
+  //             openDialog={openDialog}
+  //             deliveryNote={deliveryNoteInfo}
+  //             handleOpen={handleOpen}
+  //             handleClose={handleClose}
+  //             handleDialogAction={handleDialogAction} />
+  //         </>
+  //       )}
+  //   </div>
+  // ) : (
+  //   <OrderDetailsSkeleton />
+  // );
+
+  return (
+        <div className="bg-white rounded-lg  mt-10 shadow p-4 space-y-4 max-w-md mx-auto">
       <h2 className="text-xl font-semibold">Order details</h2>
 
       <UserInfo
@@ -156,9 +208,7 @@ export default function OrderDetails() {
           </>
         )}
     </div>
-  ) : (
-    <OrderDetailsSkeleton />
-  );
+  )
 
 }
 

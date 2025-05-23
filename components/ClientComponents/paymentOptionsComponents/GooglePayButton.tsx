@@ -116,6 +116,7 @@ const GooglePayButton = () => {
       });
   };
 
+  console.log('isReady::::::::',isReady)
   return (
     <div>
       {isReady ? (
