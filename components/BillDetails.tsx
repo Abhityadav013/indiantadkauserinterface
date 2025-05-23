@@ -1,12 +1,9 @@
-'use client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Box, Typography, IconButton } from "@mui/material";
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import BillDetailWrapper from './ClientComponents/BillDetailWrapper';
-import EditIcon from '@mui/icons-material/Edit';
 import AddressForm from './ClientComponents/AddressForm';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
-import { OrderType } from '@/lib/types/order_type';
 import { ErrorResponse } from '@/lib/types/error_type';
 interface BillDetailProps {
     getCartTotal: () => number,
@@ -34,14 +31,6 @@ const BillDetails = ({
     handleAdddressDetailOpen
 
 }: BillDetailProps) => {
-    const [isDeliveryOrder, setDeliveryOrder] = useState<boolean>(true);
-
-    useEffect(() => {
-        if (customerOrder) {
-            const isDelivery = customerOrder.orderType === OrderType.DELIVERY
-            setDeliveryOrder(isDelivery);
-        }
-    }, [customerOrder])
     return (
         <>
             <Box
@@ -52,7 +41,7 @@ const BillDetails = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    px: 2,
+                    mt:0,
                 }}>
                 <Box
                     sx={{
@@ -70,17 +59,11 @@ const BillDetails = ({
 
                         {/* Text */}
                         Bill Details
-
-                        {/* Edit Icon */}
-                        <IconButton size="small" onClick={() => handleAdddressDetailOpen(true)}>
-                            <EditIcon fontSize="small" />
-                        </IconButton>
                     </Typography>
                 </Box>
 
             </Box>
             <BillDetailWrapper
-                isDeliveryOrder={isDeliveryOrder}
                 customerDetails={customerDetails ?? {} as CustomerDetails}
                 getCartTotal={getCartTotal}
                 handleAddressModalOpen={handleAdddressDetailOpen}

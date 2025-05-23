@@ -12,14 +12,21 @@ import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
 import HomeIcon from "@mui/icons-material/Home";
 import WorkIcon from "@mui/icons-material/Work";
 import { ErrorResponse } from '@/lib/types/error_type';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+
+const RestaurantMap = dynamic(() => import('@/components/ClientComponents/RestaurantMap'), {
+    ssr: false,
+});
 interface AddressInfoProps {
+    isPickup: boolean,
     openDialog: DialogType,
     customerAddress: { pincode: string, buildingNumber: string, street: string, town: string },
     handleOpen: (dialog: DialogType) => void,
     handleClose: () => void,
     handleDialogAction: <T extends Exclude<DialogType, null>>(data: OrderDetailsSummary<T>) => void
 }
-const AddressInfo = ({ openDialog, customerAddress, handleOpen, handleClose, handleDialogAction }: AddressInfoProps) => {
+const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handleClose, handleDialogAction }: AddressInfoProps) => {
     const [buildingNumber, setBuildingNumber] = React.useState("");
     const [street, setStreet] = React.useState<string>("");
     const [town, setTown] = React.useState<string>("");
@@ -105,169 +112,205 @@ const AddressInfo = ({ openDialog, customerAddress, handleOpen, handleClose, han
 
                 <DialogContent>
                     <div className="w-[720px] p-6 relative">
-                        {/* Pin Code and Building Number in one line */}
-                        <Box className="mb-4" display="flex" gap={2}>
-                            <div className="flex-1">
-                                <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Pin code
-                                </label>
-                                <TextField
-                                    id="pincode"
-                                    placeholder="Type pin code"
-                                    variant="outlined"
-                                    onChange={(e) => handlePostalCodeChange(e.target.value)}
-                                    fullWidth
-                                    value={pincode}
-                                    required
-                                    error={!!getErrorMessage("pincode")}
-                                    helperText={getErrorMessage("pincode")}
-                                    InputProps={{
-                                        sx: {
-                                            borderRadius: '15px',
-                                        },
-                                    }}
-                                />
-                            </div>
-
-                            <div className="flex-1">
-                                <label htmlFor="buildingNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                                    House Number
-                                </label>
-                                <TextField
-                                    variant="outlined"
-                                    fullWidth
-                                    value={buildingNumber}
-                                    onChange={(e) => setBuildingNumber(e.target.value)}
-                                    sx={{ marginBottom: 1 }}
-                                    required
-                                    slotProps={{
-                                        input: {
-                                            readOnly: pincode.length < 5,
-                                            sx: {
-                                                borderRadius: '15px',
-                                            },
-                                        },
-                                    }}
-                                    error={!!getErrorMessage("buildingNumber")}
-                                    helperText={getErrorMessage("buildingNumber")}
-                                />
-                            </div>
-                        </Box>
-
-                        {/* Street and Town in one line */}
-                        <Box className="mb-4" display="flex" gap={2}>
-                            <div className="flex-1">
-                                <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Street Name
-                                </label>
-                                <Autocomplete
-                                    freeSolo
-                                    options={streetOptions}
-                                    inputValue={street}
-                                    onInputChange={(event, newInputValue) => setStreet(newInputValue)}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            fullWidth
-                                            required
-                                            placeholder='Type street name'
-                                            inputProps={{
-                                                ...params.inputProps,
-                                                readOnly: pincode.length < 5,
+                        {isPickup ?
+                            <>
+                                <Box display="flex" alignItems="stretch" gap={3} mb={4}>
+                                    <Box flexShrink={0} display="flex">
+                                        <Image
+                                            src="https://testing.indiantadka.eu/assets/restaurant.png"
+                                            alt="Indian Tadka"
+                                            width={60}
+                                            height={60} // use a reasonable default for fallback
+                                            style={{
+                                                borderRadius: '10px',
+                                                objectFit: 'cover',
+                                                height: '100%', // stretch to parent height
+                                                width: 'auto',
                                             }}
-                                            error={!!getErrorMessage("street")}
-                                            helperText={getErrorMessage("street")}
-                                            sx={{
-                                                marginBottom: 1,
-                                                '& .MuiInputBase-root': {
-                                                    borderRadius: '15px !important',  // Force borderRadius here for the input base element
-                                                },
-                                                '& .MuiOutlinedInput-root': {
-                                                    borderRadius: '15px !important',  // For the root of the TextField
+                                        />
+                                    </Box>
+                                    <Box display="flex" flexDirection="column" justifyContent="center">
+                                        <Typography variant="h5" fontWeight="bold" gutterBottom>
+                                            Indian Tadka
+                                        </Typography>
+                                        <Typography variant="body1" fontWeight={500}>
+                                            {customerAddress.street}, {customerAddress.buildingNumber} {customerAddress.pincode}, {customerAddress.town}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                                <RestaurantMap />
+                            </>
+                            : <>
+                                {/* Pin Code and Building Number in one line */}
+                                <Box className="mb-4" display="flex" gap={2}>
+                                    <div className="flex-1">
+                                        <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Pin code
+                                        </label>
+                                        <TextField
+                                            id="pincode"
+                                            placeholder="Type pin code"
+                                            variant="outlined"
+                                            onChange={(e) => handlePostalCodeChange(e.target.value)}
+                                            fullWidth
+                                            value={pincode}
+                                            required
+                                            error={!!getErrorMessage("pincode")}
+                                            helperText={getErrorMessage("pincode")}
+                                            InputProps={{
+                                                sx: {
+                                                    borderRadius: '15px',
                                                 },
                                             }}
                                         />
-                                    )}
-                                />
-                            </div>
+                                    </div>
 
-                            <div className="flex-1">
-                                <label htmlFor="town" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Town
-                                </label>
-                                <TextField
-                                    variant="outlined"
-                                    fullWidth
-                                    placeholder='Type your city or town'
-                                    value={town}
-                                    onChange={(e) => setTown(e.target.value)}
-                                    sx={{ marginBottom: 1 }}
-                                    required
-                                    error={!!getErrorMessage("town")}
-                                    helperText={getErrorMessage("town")}
-                                    slotProps={{
-                                        input: {
-                                            readOnly: pincode.length < 5,
-                                            sx: {
-                                                borderRadius: '15px',
-                                            },
-                                        },
-                                    }}
-                                />
-                            </div>
-                        </Box>
+                                    <div className="flex-1">
+                                        <label htmlFor="buildingNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                            House Number
+                                        </label>
+                                        <TextField
+                                            variant="outlined"
+                                            fullWidth
+                                            value={buildingNumber}
+                                            onChange={(e) => setBuildingNumber(e.target.value)}
+                                            sx={{ marginBottom: 1 }}
+                                            required
+                                            slotProps={{
+                                                input: {
+                                                    readOnly: pincode.length < 5,
+                                                    sx: {
+                                                        borderRadius: '15px',
+                                                    },
+                                                },
+                                            }}
+                                            error={!!getErrorMessage("buildingNumber")}
+                                            helperText={getErrorMessage("buildingNumber")}
+                                        />
+                                    </div>
+                                </Box>
 
-                        {/* Address Type Chips */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <Chip
-                                icon={<HomeIcon />}
-                                label="Home"
-                                clickable
-                                color={addressType === "home" ? "primary" : "default"}
-                                onClick={() => setAddressType("home")}
-                                variant={addressType === "home" ? "filled" : "outlined"}
-                            />
-                            <Chip
-                                icon={<WorkIcon />}
-                                label="Work"
-                                clickable
-                                color={addressType === "work" ? "primary" : "default"}
-                                onClick={() => setAddressType("work")}
-                                variant={addressType === "work" ? "filled" : "outlined"}
-                            />
-                            <Chip
-                                icon={<NotListedLocationIcon />}
-                                label="Other"
-                                clickable
-                                color={addressType === "other" ? "primary" : "default"}
-                                onClick={() => setAddressType("other")}
-                                variant={addressType === "other" ? "filled" : "outlined"}
-                            />
-                        </div>
+                                {/* Street and Town in one line */}
+                                <Box className="mb-4" display="flex" gap={2}>
+                                    <div className="flex-1">
+                                        <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Street Name
+                                        </label>
+                                        <Autocomplete
+                                            freeSolo
+                                            options={streetOptions}
+                                            inputValue={street}
+                                            onInputChange={(event, newInputValue) => setStreet(newInputValue)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    required
+                                                    placeholder='Type street name'
+                                                    inputProps={{
+                                                        ...params.inputProps,
+                                                        readOnly: pincode.length < 5,
+                                                    }}
+                                                    error={!!getErrorMessage("street")}
+                                                    helperText={getErrorMessage("street")}
+                                                    sx={{
+                                                        marginBottom: 1,
+                                                        '& .MuiInputBase-root': {
+                                                            borderRadius: '15px !important',  // Force borderRadius here for the input base element
+                                                        },
+                                                        '& .MuiOutlinedInput-root': {
+                                                            borderRadius: '15px !important',  // For the root of the TextField
+                                                        },
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="flex-1">
+                                        <label htmlFor="town" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Town
+                                        </label>
+                                        <TextField
+                                            variant="outlined"
+                                            fullWidth
+                                            placeholder='Type your city or town'
+                                            value={town}
+                                            onChange={(e) => setTown(e.target.value)}
+                                            sx={{ marginBottom: 1 }}
+                                            required
+                                            error={!!getErrorMessage("town")}
+                                            helperText={getErrorMessage("town")}
+                                            slotProps={{
+                                                input: {
+                                                    readOnly: pincode.length < 5,
+                                                    sx: {
+                                                        borderRadius: '15px',
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    </div>
+                                </Box>
+
+                                {/* Address Type Chips */}
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <Chip
+                                        icon={<HomeIcon />}
+                                        label="Home"
+                                        clickable
+                                        color={addressType === "home" ? "primary" : "default"}
+                                        onClick={() => setAddressType("home")}
+                                        variant={addressType === "home" ? "filled" : "outlined"}
+                                    />
+                                    <Chip
+                                        icon={<WorkIcon />}
+                                        label="Work"
+                                        clickable
+                                        color={addressType === "work" ? "primary" : "default"}
+                                        onClick={() => setAddressType("work")}
+                                        variant={addressType === "work" ? "filled" : "outlined"}
+                                    />
+                                    <Chip
+                                        icon={<NotListedLocationIcon />}
+                                        label="Other"
+                                        clickable
+                                        color={addressType === "other" ? "primary" : "default"}
+                                        onClick={() => setAddressType("other")}
+                                        variant={addressType === "other" ? "filled" : "outlined"}
+                                    />
+                                </div>
+                            </>}
+
                     </div>
                 </DialogContent>
 
                 <DialogActions sx={{ justifyContent: 'center' }}>
-                    <Button
-                        variant="contained"
-                        onClick={handleUserInfoSave}
-                        sx={{
-                            width: '80%',
-                            backgroundColor: '#f36805',
-                            color: 'white',
-                            padding: '6px 24px',
-                            fontSize: '20px',
-                            fontWeight: 'bold',
-                            borderRadius: '50px',
-                            textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: '#f36805',
-                            },
-                        }}
-                    >
-                        Save
-                    </Button>
+                    {
+                        !isPickup && (
+                            <Button
+                                variant="contained"
+                                onClick={handleUserInfoSave}
+                                sx={{
+                                    width: '80%',
+                                    backgroundColor: '#f36805',
+                                    color: 'white',
+                                    padding: '6px 24px',
+                                    fontSize: '20px',
+                                    fontWeight: 'bold',
+                                    borderRadius: '50px',
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        backgroundColor: '#f36805',
+                                    },
+                                }}
+                            >
+                                Save
+                            </Button>
+                        )
+                    }
+
                 </DialogActions>
             </Dialog>
         </>

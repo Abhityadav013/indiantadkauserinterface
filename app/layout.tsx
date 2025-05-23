@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import ResponsiveWrapper from "@/components/ClientComponents/ResponsiveLayoutWrapper";
 import { StoreProvider } from "@/components/StoreProvider";
 import { SessionProvider } from "@/components/ClientComponents/SessionProvider";
+// import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,19 @@ export default function RootLayout({
   return (
     <StoreProvider >
       <html lang="en" >
-        {/* <head>
-          <script
+        <head>
+          {/* <script
             id="usercentrics-cmp"
             src="https://web.cmp.usercentrics.eu/ui/loader.js"
             data-settings-id="367RVaF9HFZbR9"
             async
+          ></script> */}
+
+          <script async
+            src="https://pay.google.com/gp/p/js/pay.js"
           ></script>
-        </head> */}
+          {/* <script async src="https://pay.google.com/gp/p/js/pay.js"></script> */}
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased w-[100%] px-2 mx-auto bg-white min-h-screen shadow-md`}
         >

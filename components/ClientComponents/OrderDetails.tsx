@@ -12,6 +12,12 @@ import AddressInfo from './checkoutComponents/AddressInfo';
 // import { UserAddress } from '@/lib/types/address_type';
 import DeliveryTime from './checkoutComponents/DeliveryTime';
 import DeliveryNote from './checkoutComponents/DeliveryNote';
+import OrderDetailsSkeleton from '../Skeletons/OrderDetailsSkeleton';
+import { OrderType } from '@/lib/types/order_type';
+import { getIndianTadkaAddress } from '@/utils/getRestroAddress';
+import { RootState } from '@/store';
+import { useSelector } from 'react-redux';
+
 export default function OrderDetails() {
   const [openDialog, setOpenDialog] = useState<null | 'contact' | 'address' | 'time' | 'notes'>(null);
 
@@ -22,7 +28,7 @@ export default function OrderDetails() {
   const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string } | null>(null);
   const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
   const { loading, customerDetails } = useAddressDetails()
-
+  const order_type = useSelector((state: RootState) => state.order.orderType);
   useEffect(() => {
     // Only run when loading is false
     if (!loading) {
@@ -48,12 +54,22 @@ export default function OrderDetails() {
           town: string;
         });
       } else if (customerDetails?.address) {
-        setAddressInfo({
-          buildingNumber: customerDetails.address?.buildingNumber ?? '',
-          town: customerDetails.address?.town ?? '',
-          pincode: customerDetails.address?.pincode ?? '',
-          street: customerDetails.address?.street ?? '',
-        });
+        if (order_type === OrderType.PICKUP) {
+          const address = getIndianTadkaAddress()
+          setAddressInfo({
+            buildingNumber: address?.buildingNumber ?? '',
+            town: address?.town ?? '',
+            pincode: address?.pincode ?? '',
+            street: address?.street ?? '',
+          });
+        } else {
+          setAddressInfo({
+            buildingNumber: customerDetails.address?.buildingNumber ?? '',
+            town: customerDetails.address?.town ?? '',
+            pincode: customerDetails.address?.pincode ?? '',
+            street: customerDetails.address?.street ?? '',
+          });
+        }
       }
 
       if (deliveryTimeData) {
@@ -64,10 +80,7 @@ export default function OrderDetails() {
         setDeliveryNoteInfo(deliverNoteData as { notes: string })
       }
     }
-  }, [loading, customerDetails]);
-
-
-
+  }, [loading, customerDetails, order_type]);
 
   const handleDialogAction = <T extends Exclude<DialogType, null>>(data: OrderDetailsSummary<T>): void => {
     const handler = dialogHandlers[data.type];
@@ -97,11 +110,7 @@ export default function OrderDetails() {
     addressInfo.pincode &&
     addressInfo.buildingNumber &&
     addressInfo.street &&
-    addressInfo.town &&
-    timeInfo;
-
-
-
+    addressInfo.town
   return isDataReady ? (
     <div className="bg-white rounded-lg  mt-10 shadow p-4 space-y-4 max-w-md mx-auto">
       <h2 className="text-xl font-semibold">Order details</h2>
@@ -116,6 +125,7 @@ export default function OrderDetails() {
       <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
 
       <AddressInfo
+        isPickup={order_type === OrderType.PICKUP}
         openDialog={openDialog}
         customerAddress={addressInfo}
         handleOpen={handleOpen}
@@ -125,57 +135,30 @@ export default function OrderDetails() {
       <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
 
       <DeliveryTime
+        isPickup={order_type === OrderType.PICKUP}
         openDialog={openDialog}
-        initialTime={timeInfo.scheduledTime}
+        initialTime={timeInfo?.scheduledTime ?? ""}
         handleOpen={handleOpen}
         handleClose={handleClose}
         handleDialogAction={handleDialogAction}
       />
-      <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
+      {
+        order_type === OrderType.DELIVERY && (
+          <>
+            <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
 
-      <DeliveryNote
-        openDialog={openDialog}
-        deliveryNote={deliveryNoteInfo}
-        handleOpen={handleOpen}
-        handleClose={handleClose}
-        handleDialogAction={handleDialogAction} />
-
+            <DeliveryNote
+              openDialog={openDialog}
+              deliveryNote={deliveryNoteInfo}
+              handleOpen={handleOpen}
+              handleClose={handleClose}
+              handleDialogAction={handleDialogAction} />
+          </>
+        )}
     </div>
   ) : (
-    <CreateSkeleton />
+    <OrderDetailsSkeleton />
   );
 
 }
 
-function CreateSkeleton() {
-  const Box = () => (
-    <div className="flex items-center justify-between p-3 bg-white hover:bg-gray-100 rounded cursor-pointer animate-pulse">
-      <div className="flex items-center gap-2 w-full">
-        <div className="h-5 w-5 rounded-full bg-gray-300" />
-        <div className="flex-1 h-4 bg-gray-300 rounded" />
-      </div>
-      <div className="h-4 w-4 bg-gray-300 rounded" />
-    </div>
-  );
-
-  const StyledDivider = () => (
-    <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
-  );
-
-  return (
-    <div className="bg-white rounded-lg shadow p-4 space-y-4 max-w-md mx-auto">
-      <h2 className="text-xl font-semibold">Order details</h2>
-
-      <Box />
-      <StyledDivider />
-
-      <Box />
-      <StyledDivider />
-
-      <Box />
-      <StyledDivider />
-
-      <Box />
-    </div>
-  );
-}

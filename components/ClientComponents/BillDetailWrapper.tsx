@@ -10,16 +10,14 @@ import DeliveryFeeDialog from '../DeliveryFeeDialog';
 import ServiceFeeDilaog from '../ServiceFeeDilaog';
 import { formatPrice } from '@/utils/valueInEuros';
 import { useRouter } from 'next/navigation';
-
+import { motion, AnimatePresence } from 'framer-motion';
 interface BillDetailWrapperProps {
-    isDeliveryOrder: boolean;
     customerDetails: CustomerDetails;
     getCartTotal: () => number;
     handleAddressModalOpen: (value: boolean) => void;
 }
 
 const BillDetailWrapper = ({
-    isDeliveryOrder,
     customerDetails,
     getCartTotal,
     handleAddressModalOpen
@@ -76,112 +74,124 @@ const BillDetailWrapper = ({
 
     // Calculate the total (cartTotal + deliveryFee + serviceFee)
     const calculateTotal = () => {
-        const serviceFee = (cartAmountTotal ? (cartAmountTotal * 2.5) / 100 : 0);
-        const cappedServiceFee = serviceFee < 0.99 ? serviceFee : 0.99;
 
-        return formatPrice((cartAmountTotal ?? 0) + deliveryFee + cappedServiceFee);
+        if (order_type === OrderType.DELIVERY) {
+            const serviceFee = (cartAmountTotal ? (cartAmountTotal * 2.5) / 100 : 0);
+            const cappedServiceFee = serviceFee < 0.99 ? serviceFee : 0.99;
+            return formatPrice((cartAmountTotal ?? 0) + deliveryFee + cappedServiceFee);
+        }
+         return formatPrice((cartAmountTotal ?? 0));
+
     };
 
     return (
         <>
             <Box className="mt-2 text-gray-700">
-                <Typography variant="body2" className="flex justify-between py-[2px]">
-                    Item Total
-                    {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
-                </Typography>
-                <div>
-                    {/* Delivery Fee Section */}
-                    {isDeliveryOrder && (
-                        <>
-                            <Typography variant="body2" className="flex justify-between">
-                                <span>
-                                    Delivery Fee
-                                    <IconButton onClick={handleDialogOpen} sx={{ paddingLeft: '5px' }}>
-                                        <InfoIcon sx={{ fontSize: 12 }} /> {/* You can adjust the font size here */}
-                                    </IconButton>
-                                </span>
-
-                                {renderPriceOrLoader(deliveryFee)}
-
-                            </Typography>
-                            <Typography variant="body2" className="flex justify-between">
-                                <span>
-                                    Service fee 2.5% (max 0.99 €)
-                                    <IconButton onClick={handleServiceFeeDialogOpen} sx={{ paddingLeft: '5px' }}>
-                                        <InfoIcon sx={{ fontSize: 12 }} /> {/* You can adjust the font size here */}
-                                    </IconButton>
-                                </span>
-
-                                {renderServiceFee(cartAmountTotal?.toFixed(2) || '0.00')}
-
-                            </Typography>
-                        </>
-                    )}
-                    <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
-                    {/* To Pay Section */}
-                    <Typography
-                        variant="body1"
-                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                <AnimatePresence initial={false} mode="wait">
+                    <motion.div
+                        key={order_type}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden' }}
                     >
-                        Total
-                        <span>
-                            {customerDetails
-                                ? `€ ${calculateTotal()}`
-                                : '0.00'}
-                        </span>
-                    </Typography>
-                    {/* Show "Add address" button only if no customerDetails */}
-                    {!customerDetails && (
-                        <Box className="flex flex-col items-center text-center space-y-1">
-                            <Typography variant="h6" color="textSecondary">
-                                {order_type === OrderType.DELIVERY
-                                    ? '🔓 Complete your details to unlock delivery & total'
-                                    : '🔓 Let us know who’s picking this up'}
-                            </Typography>
-                            <Button
-                                size="medium"
-                                variant="contained"
-                                onClick={() => handleAddressModalOpen(true)}
-                                sx={{ background: '#FF6347', color: 'white' }}
-                            >
-                                Add Details
-                            </Button>
-                        </Box>
-                    )}
-                    <Box
+                        <Typography variant="body2" className="flex justify-between py-[2px]">
+                            Item Total
+                            {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
+                        </Typography>
+
+                        {order_type === OrderType.DELIVERY && (
+                            <>
+                                <Typography variant="body2" className="flex justify-between">
+                                    <span>
+                                        Delivery Fee
+                                        <IconButton onClick={handleDialogOpen} sx={{ paddingLeft: '5px' }}>
+                                            <InfoIcon sx={{ fontSize: 12 }} />
+                                        </IconButton>
+                                    </span>
+                                    {renderPriceOrLoader(deliveryFee)}
+                                </Typography>
+
+                                <Typography variant="body2" className="flex justify-between">
+                                    <span>
+                                        Service fee 2.5% (max 0.99 €)
+                                        <IconButton onClick={handleServiceFeeDialogOpen} sx={{ paddingLeft: '5px' }}>
+                                            <InfoIcon sx={{ fontSize: 12 }} />
+                                        </IconButton>
+                                    </span>
+                                    {renderServiceFee(cartAmountTotal?.toFixed(2) || '0.00')}
+                                </Typography>
+                            </>
+                        )}
+
+                        <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
+
+                        <Typography
+                            variant="body1"
+                            className={`flex justify-between font-semibold ${!customerDetails ? 'blur-sm text-gray-400' : ''}`}
+                        >
+                            Total
+                            <span>
+                                {customerDetails ? `€ ${calculateTotal()}` : '0.00'}
+                            </span>
+                        </Typography>
+
+                        {!customerDetails && (
+                            <Box className="flex flex-col items-center text-center space-y-1">
+                                <Typography variant="h6" color="textSecondary">
+                                    {order_type === OrderType.DELIVERY
+                                        ? '🔓 Complete your details to unlock delivery & total'
+                                        : '🔓 Let us know who’s picking this up'}
+                                </Typography>
+                                <Button
+                                    size="medium"
+                                    variant="contained"
+                                    onClick={() => handleAddressModalOpen(true)}
+                                    sx={{ background: '#FF6347', color: 'white' }}
+                                >
+                                    Add Details
+                                </Button>
+                            </Box>
+                        )}
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Checkout Button - NOT animated */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        position: 'absolute',
+                        bottom: '20px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '80%',
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            router.push('/checkout');
+                        }}
                         sx={{
-                            display: 'flex',             // Enable flexbox layout
-                            justifyContent: 'center',    // Center horizontally
-                            alignItems: 'center',        // Center vertically
-                            position: 'absolute',        // Position it inside the parent container
-                            bottom: '20px',              // Space from the bottom of the parent container (adjust as needed)
-                            left: '50%',                 // Center horizontally with respect to the parent container
-                            transform: 'translateX(-50%)', // Offset by 50% of its width to truly center it
-                            width: '80%',               // Full width of the parent container
+                            width: '100%',
+                            backgroundColor: '#f36805',
+                            color: 'white',
+                            padding: '12px 24px',
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            borderRadius: '50px',
+                            textTransform: 'none',
+                            '&:hover': {
+                                backgroundColor: '#f36805',
+                            },
                         }}
                     >
-                        <Button
-                            variant="contained"
-                            onClick={() => {router.push('/checkout')}}
-                            sx={{
-                                width: '100%',  // Button will fill the available width of the container
-                                backgroundColor: '#f36805', // Orange background
-                                color: 'white', // White text
-                                padding: '12px 24px', // Some padding for the button
-                                fontSize: '20px', // Font size for the button text
-                                fontWeight: 'bold', // Make the text bold
-                                borderRadius: '50px', // Rounded corners for a more curved button
-                                textTransform: 'none', // Prevent text from becoming uppercase
-                                '&:hover': {
-                                    backgroundColor: '#f36805', // Darker orange on hover
-                                },
-                            }}
-                        >
-                            Checkout ({calculateTotal()}) {/* Display the total amount */}
-                        </Button>
-                    </Box>
-
-                </div>
+                        Checkout ({calculateTotal()})
+                    </Button>
+                </Box>
             </Box>
 
             {/* Dialog for Delivery Fee Details */}

@@ -39,8 +39,8 @@ const CartHistory =  ({
                 borderRadius: 0,
                 boxShadow: "none",
                 // marginTop: 2,
-                minHeight: { sm: '35vh', lg: '45vh' },
-                maxHeight: { sm: '35vh', lg: '45vh' }
+                // minHeight: { sm: '35vh', lg: '45vh' },
+                // maxHeight: { sm: '35vh', lg: '45vh' }
             }}
         >
             <CardContent

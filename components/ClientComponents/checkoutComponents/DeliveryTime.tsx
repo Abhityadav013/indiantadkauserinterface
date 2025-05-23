@@ -6,14 +6,14 @@ import { OrderDetailsSummary } from '@/lib/types/order_details_type';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, IconButton, MenuItem, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 interface DeliveryTimeProps {
+    isPickup: boolean,
     openDialog: DialogType,
     initialTime?: 'asap' | string;
     handleOpen: (dialog: DialogType) => void,
     handleClose: () => void,
     handleDialogAction: <T extends Exclude<DialogType, null>>(data: OrderDetailsSummary<T>) => void
 }
-const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handleDialogAction }: DeliveryTimeProps) => {
-
+const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClose, handleDialogAction }: DeliveryTimeProps) => {
     const [selectedOption, setSelectedOption] = useState('asap');
     const [scheduledTime, setScheduledTime] = useState('');
     const [timeOptions, setTimeOptions] = useState<string[]>([]);
@@ -22,27 +22,28 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
 
         if (initialTime) {
             const isAsap: boolean = initialTime === 'asap';
-            console.log('initialTime:::::::::', isAsap)
             if (isAsap) {
-                setSelectedOption('asap')
+                setSelectedOption('asap');
             } else {
-                setSelectedOption('schedule')
-                setScheduledTime(initialTime)
+                setSelectedOption('schedule');
+                setScheduledTime(initialTime);
             }
+        } else if (isPickup) {
+            // For pickup with empty time, default to schedule
+            setSelectedOption('schedule');
         }
-    }, [initialTime])
+    }, [initialTime, isPickup]);
 
     useEffect(() => {
         const currentTime = new Date();
         const timeOptions = [];
 
-        // Round up to next 5 minutes
         const nextTime = new Date(currentTime);
         nextTime.setMinutes(Math.ceil(currentTime.getMinutes() / 5) * 5);
         nextTime.setSeconds(0);
         nextTime.setMilliseconds(0);
 
-        const totalSlots = (2 * 60) / 5; // next 2 hours in 5 min intervals
+        const totalSlots = (2 * 60) / 5;
 
         for (let i = 0; i < totalSlots; i++) {
             const slotTime = new Date(nextTime.getTime() + i * 5 * 60 * 1000);
@@ -53,31 +54,19 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
         }
 
         setTimeOptions(timeOptions);
-        setScheduledTime(timeOptions[0]); // default to first available time
+        //setScheduledTime(timeOptions[0]);
     }, []);
 
-    interface OptionChangeEvent {
-        target: {
-            value: string;
-        };
-    }
-
-    const handleOptionChange = (event: OptionChangeEvent) => {
-        setSelectedOption(event.target.value);
+    const handleOptionChange = (e: { target: { value: string } }) => {
+        setSelectedOption(e.target.value);
     };
 
-    interface TimeChangeEvent {
-        target: {
-            value: string;
-        };
-    }
-
-    const handleTimeChange = (event: TimeChangeEvent) => {
-        setScheduledTime(event.target.value);
+    const handleTimeChange = (e: { target: { value: string } }) => {
+        setScheduledTime(e.target.value);
     };
 
     const handleSave = () => {
-        const isAsap: boolean = selectedOption === 'asap';
+        const isAsap = selectedOption === 'asap';
         handleDialogAction({
             type: "time",
             payload: {
@@ -92,19 +81,38 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
                 <div className="flex items-center gap-2">
                     <AccessTimeIcon className="text-orange-500" />
                     <div>
-                        <p className="font-medium">Delivery time</p>
-                        <p className="text-sm text-gray-600">
-                            {selectedOption === 'asap' ? 'As soon as possible' : scheduledTime}
-                        </p>
+                        {selectedOption === 'asap' ? (
+                            <div>
+                                <p className="font-medium">
+                                  Deliver As Soon As Possible
+                                </p>
+                            </div>
+                        ) : scheduledTime ? (
+                            <div>
+                                <p className="font-medium">
+                                    {isPickup ? 'Collection scheduled' : 'Delivery scheduled'}
+                                </p>
+                                <p className="text-sm text-gray-600">{scheduledTime}</p>
+                            </div>
+                        ) : (
+                            <div>
+                                <p className="font-medium">
+                                    {isPickup ? 'Choose a collection time' : 'Choose a delivery time'}
+                                </p>
+                            </div>
+                        )}
                     </div>
+
+
                 </div>
-                <span ><ArrowForwardIosOutlinedIcon className="text-gray-400" /></span>
+                <span><ArrowForwardIosOutlinedIcon className="text-gray-400" /></span>
             </div>
+
             <Dialog open={openDialog === 'time'} onClose={handleClose} maxWidth={"lg"}>
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography component="div" variant="h5" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center' }}>
                         <AccessTimeIcon sx={{ mr: 2 }} />
-                        Delivery time
+                        {isPickup ? 'Collection time' : 'Delivery time'}
                     </Typography>
                     <IconButton edge="end" onClick={handleClose}>
                         <CloseIcon />
@@ -114,54 +122,42 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
                 <DialogContent>
                     <div className="w-[420px] p-6 relative">
                         <RadioGroup value={selectedOption} onChange={handleOptionChange}>
-                            <FormControlLabel
-                                value="asap"
-                                control={
-                                    <Radio
+                            {isPickup ? (
+                                <FormControlLabel
+                                    value="schedule"
+                                    control={<Radio sx={{ color: '#f36805', '&.Mui-checked': { color: '#f36805' } }} />}
+                                    label="Schedule as collection time"
+                                    sx={{
+                                        padding: '8px 16px',
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
+                            ) : (
+                                <>
+                                    <FormControlLabel
+                                        value="asap"
+                                        control={<Radio sx={{ color: '#f36805', '&.Mui-checked': { color: '#f36805' } }} />}
+                                        label="As soon as possible"
                                         sx={{
-                                            color: '#f36805',
-                                            '&.Mui-checked': {
-                                                color: '#f36805',
-                                            },
+                                            padding: '8px 16px',
+                                            marginBottom: '8px',
+                                            backgroundColor: selectedOption === 'asap' ? '#f5f5f5' : 'transparent',
                                         }}
                                     />
-                                }
-                                label="As soon as possible"
-                                sx={{
-                                    padding: '8px 16px',
-                                    marginBottom: '8px',
-                                    backgroundColor: selectedOption === 'asap' ? '#f5f5f5' : 'transparent',
-                                    '&:hover': {
-                                        backgroundColor: '#f0f0f0',
-                                    },
-                                }}
-                            />
-                            <Divider sx={{ marginY: 1 }} />
-                            <FormControlLabel
-                                value="schedule"
-                                control={
-                                    <Radio
+                                    <Divider sx={{ marginY: 1 }} />
+                                    <FormControlLabel
+                                        value="schedule"
+                                        control={<Radio sx={{ color: '#f36805', '&.Mui-checked': { color: '#f36805' } }} />}
+                                        label="Schedule for later"
                                         sx={{
-                                            color: '#f36805',
-                                            '&.Mui-checked': {
-                                                color: '#f36805',
-                                            },
+                                            padding: '8px 16px',
+                                            backgroundColor: selectedOption === 'schedule' ? '#f5f5f5' : 'transparent',
                                         }}
                                     />
-                                }
-                                label="Schedule for later"
-                                sx={{
-
-                                    padding: '8px 16px',
-                                    backgroundColor: selectedOption === 'schedule' ? '#f5f5f5' : 'transparent',
-                                    '&:hover': {
-                                        backgroundColor: '#f0f0f0',
-                                    },
-                                }}
-                            />
+                                </>
+                            )}
                         </RadioGroup>
-                        {/* backgroundColor: '#f36805', // Darker orange on hover */}
-                        {/* If "Schedule for Later" is selected, show dropdown */}
+
                         {selectedOption === 'schedule' && (
                             <TextField
                                 select
@@ -170,23 +166,12 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
                                 fullWidth
                                 margin="normal"
                                 helperText="Select or type a time within the next 2 hours"
-                                inputProps={{
-                                    pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$', // Validate HH:mm format
-                                    maxLength: 5,
-                                }}
                                 sx={{
                                     marginBottom: 1,
-                                    '& .MuiInputBase-root': {
-                                        borderRadius: '15px',
-                                    },
+                                    '& .MuiInputBase-root': { borderRadius: '15px' },
                                     '& .MuiOutlinedInput-root': {
                                         borderRadius: '15px',
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: '#9e9e9e', // gray border on focus
-                                        },
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: '#9e9e9e', // label color on focus
+                                        '&.Mui-focused fieldset': { borderColor: '#9e9e9e' },
                                     },
                                 }}
                             >
@@ -196,8 +181,6 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
                                     </MenuItem>
                                 ))}
                             </TextField>
-
-
                         )}
                     </div>
                 </DialogContent>
@@ -214,9 +197,7 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
                             fontWeight: 'bold',
                             borderRadius: '50px',
                             textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: '#f36805',
-                            },
+                            '&:hover': { backgroundColor: '#f36805' },
                         }}
                         onClick={handleSave}
                         disabled={selectedOption === 'schedule' && !scheduledTime}
@@ -226,7 +207,8 @@ const DeliveryTime = ({ openDialog, initialTime, handleOpen, handleClose, handle
                 </DialogActions>
             </Dialog>
         </>
-    )
-}
+    );
 
-export default DeliveryTime
+};
+
+export default DeliveryTime;

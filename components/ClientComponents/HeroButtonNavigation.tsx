@@ -11,7 +11,7 @@ const HeroButtonNavigation = () => {
   }
   const handleOrderOnline = () => {
     // Logic to see the menu goes here
-    route.push("/menu")
+    route.push("/menu-list")
   }
   const handleDigitalMenu = () => {
     route.push("/digital-menu")

@@ -139,7 +139,7 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
                 getItemPriceWithMenu={getItemPriceWithMenu}
                 setCustomizeModal={setCustomizeModal}
             />
-            <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
+            <Divider sx={{ backgroundColor: '#E0E0E0' }} />
             <BillDetails
                 getCartTotal={getCartTotal}
                 isAddressModelOpen={isAddressModelOpen}

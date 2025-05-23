@@ -27,7 +27,7 @@ export async function fetchFromApi<T>(
     headers: {
       ssid: _device_id || '',
     },
-    next: { revalidate: 3600 },
+   // next: { revalidate: 3600 },
     // next: { tags: ['cart'] },
   });
 
