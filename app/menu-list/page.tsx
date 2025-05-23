@@ -52,7 +52,7 @@ export default async function MenuPage(props: { searchParams?: Promise<SearchPar
                                     <Divider sx={{ mb: 1, borderBottomWidth: '1.5px' }} />
                                     <h2 className="text-2xl font-bold text-gray-800 mb-4">{category.categoryName}</h2>
                                     {items.map(item => (
-                                        <div key={item.id} className="flex p-4 mb-4 border rounded-lg shadow-sm max-h-[180px]">
+                                        <div key={item.id} className="flex p-4 mb-4 border-none rounded-lg shadow-sm max-h-[180px]">
                                             <div className="w-36 h-36 relative rounded-md overflow-hidden flex-shrink-0">
                                                 <Image
                                                     src={item.imageURL || "/placeholder.svg"}

@@ -69,7 +69,7 @@ const BillDetailWrapper = ({
 
     const handleDialogOpen = () => setDialogOpen(true);
     const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
-console.log('BillDetailWrapper customerDetails' ,customerDetails)
+    console.log('BillDetailWrapper customerDetails', customerDetails)
     return (
         <>
             <Box sx={{ position: 'relative', paddingBottom: '100px' }} className="mt-2 text-gray-700">
@@ -123,7 +123,7 @@ console.log('BillDetailWrapper customerDetails' ,customerDetails)
                             </span>
                         </Typography>
 
-                        {!customerDetails && (
+                        {!customerDetails || Object.keys(customerDetails).length === 0 && (
                             <Box className="flex flex-col items-center text-center space-y-1 mt-2">
                                 <Typography variant="h6" color="textSecondary">
                                     {order_type === OrderType.DELIVERY
