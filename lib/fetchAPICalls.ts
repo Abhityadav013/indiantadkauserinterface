@@ -14,20 +14,12 @@ export async function fetchFromApi<T>(
   const cookieStore = await cookies();
   const cookiesHeader = cookieStore.get('_device_id');
   const _device_id = cookiesHeader ? cookiesHeader.value : '';
-  if (endpoint === '/cart') {
-    console.log('dhgjhdkjkhjdkjdk', cookieStore.get('_device_id'));
-  }
   const queryString = params
     ? '?' +
       new URLSearchParams(
         Object.entries(params).map(([key, value]) => [key, value.toString()])
       ).toString()
     : '';
-
-  if (endpoint === '/cart') {
-    console.log('isCached::::::', isCached);
-    isCached = false;
-  }
 
   // Fetch request with query parameters (if provided)
   const res = await fetch(`${process.env.API_BASE_URL}${endpoint}${queryString}`, {
