@@ -14,81 +14,87 @@ const GooglePayButton = () => {
   const [isReady, setIsReady] = useState(false);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
 
-useEffect(() => {
-  let interval: NodeJS.Timeout;
-  let timeout: NodeJS.Timeout;
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    let timeout: NodeJS.Timeout;
 
-  const waitForGoogle = () => {
-    if (typeof window !== 'undefined' && window.google?.payments?.api) {
-      clearInterval(interval);
-      clearTimeout(timeout);
-      initGooglePay();
-    }
-  };
-
-  const initGooglePay = () => {
-    console.log("🔧 Initializing Google Pay...");
-
-    const paymentsClient = new window.google.payments.api.PaymentsClient({
-      environment: 'TEST',
-    });
-
-    const isReadyToPayRequest = {
-      apiVersion: 2,
-      apiVersionMinor: 0,
-      allowedPaymentMethods: [
-        {
-          type: 'CARD',
-          parameters: {
-            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-            allowedCardNetworks: ['MASTERCARD', 'VISA'],
-          },
-        },
-      ],
+    const waitForGoogle = () => {
+      if (typeof window !== 'undefined' && window.google?.payments?.api) {
+        clearInterval(interval);
+        clearTimeout(timeout);
+        initGooglePay();
+      }
     };
 
-    paymentsClient.isReadyToPay(isReadyToPayRequest)
-      .then((response: any) => {
-        console.log("✅ Google Pay is ready to pay", response);
+    const initGooglePay = () => {
+      console.log("🔧 Initializing Google Pay...");
 
-        if (response.result) {
-          setIsReady(true);
+      const paymentsClient = new window.google.payments.api.PaymentsClient({
+        environment: 'TEST',
+      });
 
-          const button = paymentsClient.createButton({
-            buttonType: 'buy',
-            onClick: () => onGooglePayClick(paymentsClient),
-          });
+      const isReadyToPayRequest = {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [
+          {
+            type: 'CARD',
+            parameters: {
+              allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+              allowedCardNetworks: ['MASTERCARD', 'VISA'],
+            },
+          },
+        ],
+      };
 
-          console.log("Created button:", button);
-          console.log("button instanceof HTMLElement?", button instanceof HTMLElement);
+      paymentsClient.isReadyToPay(isReadyToPayRequest)
+        .then((response: any) => {
+          console.log("✅ Google Pay is ready to pay", response);
 
-          if (buttonContainerRef.current) {
-            buttonContainerRef.current.innerHTML = ""; // clear previous children
-            if (button instanceof HTMLElement) {
-              button.style.width = '240px';
-              button.style.height = '40px';
-              button.style.display = 'inline-block';
-              buttonContainerRef.current.appendChild(button);
-              console.log("🟢 Google Pay button appended");
-            } else {
-              console.error("❌ Google Pay button is not an HTMLElement, cannot append");
+          if (response.result) {
+            setIsReady(true);
+
+            const button = paymentsClient.createButton({
+              buttonType: 'buy',
+              onClick: () => onGooglePayClick(paymentsClient),
+            });
+
+            console.log("Created button:", button);
+            console.log("button instanceof HTMLElement?", button instanceof HTMLElement);
+
+            if (buttonContainerRef.current) {
+              buttonContainerRef.current.innerHTML = ""; // clear previous children
+              if (button instanceof HTMLElement) {
+                // Set explicit size for the button container and button to be visible
+                button.style.width = '240px';
+                button.style.height = '40px';
+                button.style.display = 'inline-block';
+
+                buttonContainerRef.current.style.minWidth = '240px';
+                buttonContainerRef.current.style.minHeight = '40px';
+                buttonContainerRef.current.style.display = 'inline-block';
+
+                buttonContainerRef.current.appendChild(button);
+                console.log("🟢 Google Pay button appended");
+              } else {
+                console.error("❌ Google Pay button is not an HTMLElement, cannot append");
+              }
             }
           }
-        }
-      })
-      .catch((err: any) => {
-        console.error('Google Pay isReadyToPay failed:', err);
-      });
-  };
+        })
+        .catch((err: any) => {
+          console.error('Google Pay isReadyToPay failed:', err);
+        });
+    };
 
-  interval = setInterval(waitForGoogle, 200);
-  timeout = setTimeout(() => clearInterval(interval), 5000);
+    interval = setInterval(waitForGoogle, 200);
+    timeout = setTimeout(() => clearInterval(interval), 5000);
 
-  return () => {
-    clearInterval(interval);
-    clearTimeout(timeout);
-  };
-}, []);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
 
 
   const onGooglePayClick = (paymentsClient: any) => {
