@@ -1,39 +1,49 @@
-import { Box, Divider } from '@mui/material';
-import CartHistory from './CartHistory';
-import BillDetails from '../BillDetails';
+import { Box } from '@mui/material';
 import BasketToggle from './BasketToggle';
 import { MenuItem } from '@/lib/types/menu_type';
+import BaseketSideBarContent from './BaseketSideBarContent';
+import { getCartData } from '@/lib/api/fetchCartDataApi';
 
-interface BasketSidebarProps{
+interface BasketSidebarProps {
     menu: MenuItem[];
 }
 
-const BasketSidebar = async ({menu}:BasketSidebarProps) => {
+const BasketSidebar = async ({ menu }: BasketSidebarProps) => {
+    const cartItems = await getCartData();
+
     return (
         <Box
             sx={{
                 position: 'sticky',
-                top: '58px',
+                top: 0,
                 height: '100vh',
-                width: '460px',
+                width: '480px', // Dynamic width depending on screen size
                 backgroundColor: 'white',
-                borderLeft: '1px solid #e0e0e0',
+                borderLeft: { xs: 'none', lg: '1px solid #e0e0e0' }, // Hide left border on smaller screens
                 boxShadow: '0 0 10px rgba(0,0,0,0.1)',
                 padding: '1rem',
-                display: { xs: 'none', lg: 'block' },
-                overflow: 'auto',
+                display: 'block',
+                overflowY: 'auto',
                 mx: 'auto',
+                zIndex: 1200, // Ensure it stays on top when scrolling
+                // Mobile-specific styles
+                '@media (max-width: 600px)': {
+                    position: 'absolute',  // Make it absolute on mobile for better positioning
+                    top: 0,
+                    left: 0,
+                    zIndex: 2000,
+                    height: 'auto', // Let the height grow on mobile
+                    width: '100%',  // Full width on mobile
+                    boxShadow: 'none', // Optional: Remove box shadow on small screens
+                    borderLeft: 'none', // Remove border for mobile view
+                },
             }}
-
         >
             <h2 className="text-xl font-bold mb-4 text-center">Basket</h2>
-
             <div className="flex justify-center mb-2">
                 <BasketToggle />
             </div>
-            <CartHistory menu={menu} />
-            <Divider sx={{ my: 1 }} />
-            <BillDetails menu={menu} />
+            <BaseketSideBarContent cartItems={cartItems} menu={menu} />
         </Box>
     );
 };

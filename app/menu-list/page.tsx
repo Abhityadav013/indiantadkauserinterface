@@ -1,6 +1,6 @@
 import BasketSidebar from '@/components/ClientComponents/BasketSidebar';
 import AddToCartButton from '@/components/ClientComponents/AddToCart';
-import CategoryTabs from '@/components/ClientComponents/CategoryFilter';
+// import CategoryTabs from '@/components/ClientComponents/CategoryFilter';
 import SearchBar from '@/components/ClientComponents/SearchBar';
 import NavBarNavigation from '@/components/NavBarNavigation';
 import { Box, Divider } from '@mui/material';
@@ -8,6 +8,7 @@ import Image from 'next/image';
 import TruncatedDescription from '@/components/ClientComponents/TruncatedDescription';
 import FooterCopyRights from '@/components/FooterCopyRight';
 import { getMenuData } from '@/lib/api/fetchMenuDataApi';
+import { formatPrice } from '@/utils/valueInEuros';
 
 type SearchParams = {
   category?: string;
@@ -39,7 +40,7 @@ export default async function MenuPage(props: { searchParams?: Promise<SearchPar
                     <NavBarNavigation label="Our Menu" isImage={false} />
                     <div className="sticky top-14 z-10 bg-white shadow">
                         <SearchBar />
-                        <CategoryTabs categories={menuCategoriesDetails} />
+                        {/* <CategoryTabs categories={menuCategoriesDetails} /> */}
                     </div>
 
                     {filtered.length === 0 ? (
@@ -63,7 +64,7 @@ export default async function MenuPage(props: { searchParams?: Promise<SearchPar
                                             <div className="flex flex-col justify-between flex-grow pl-4">
                                                 <div className="flex justify-between items-start">
                                                     <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                                                    <span className="text-lg font-bold text-[#FF6347]">€{item.price.toFixed(2)}</span>
+                                                    <span className="text-lg font-bold text-[#FF6347]">{formatPrice(Number(item.price.toFixed(2)))}</span>
                                                 </div>
                                                 <TruncatedDescription
                                                     name={item.name}

@@ -221,10 +221,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(new ApiResponse(404, {}, 'User info not found.'));
     }
 
+    const formatPhoneNumber = (phone: string): string => {
+      // Remove any non-digit characters like '+' or spaces
+      const cleaned = phone.replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{2})(\d+)$/); // e.g., '49' and the rest
+      if (!match) return phone;
+      return match[2];
+    };
     const userDetails: CustomerOrder = {
       customerDetails: {
         name: userInfo.name,
-        phoneNumber: userInfo.phoneNumber,
+        phoneNumber: formatPhoneNumber(userInfo.phoneNumber),
         address: userInfo.address || {},
         isFreeDelivery: userInfo.isFreeDelivery,
         deliveryFee: userInfo.deliveryFee,

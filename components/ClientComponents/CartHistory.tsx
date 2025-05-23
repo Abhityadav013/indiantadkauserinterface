@@ -2,12 +2,32 @@ import React from "react";
 import { Card, CardContent, Divider, Box, Typography } from "@mui/material";
 import CartItem from "./CartItem";
 import { MenuItem } from "@/lib/types/menu_type";
+import { Cart } from "@/lib/types/cart_type";
 
 interface CartHistoryProps {
-    menu: MenuItem[]
+    isCartUpdated: boolean
+    isCustomizeModal: boolean,
+    items: Cart[],
+    handleAddToCart: (item: MenuItem) => Promise<() => void>,
+    handleRemoveFromCart: (item: MenuItem) => Promise<() => void>,
+    getItemQuantity: (itemId: string) => number,
+    getItemPriceWithMenu: (item: Cart) => {
+        totalPrice: number;
+        menu: MenuItem | undefined;
+    }
+    setCustomizeModal: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-const CartHistory = async ({ menu }: CartHistoryProps) => {
+const CartHistory =  ({
+    isCartUpdated,
+    isCustomizeModal,
+    items,
+    handleAddToCart,
+    handleRemoveFromCart,
+    getItemQuantity,
+    getItemPriceWithMenu,
+    setCustomizeModal,
+}: CartHistoryProps) => {
     return (
         <Card
             sx={{
@@ -53,9 +73,6 @@ const CartHistory = async ({ menu }: CartHistoryProps) => {
                         color: 'grey.600',
                     }}
                 >
-                    {/* <Box sx={{ width: '55%' }}>Item Name</Box>
-                    <Box sx={{ width: '25%' }}>Qty</Box>
-                    <Box sx={{ width: '20%', textAlign: 'right' }}>Price</Box> */}
                     <Box sx={{ width: '55%' }}>Item Name</Box>
                     <Box sx={{ width: '25%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>Qty</Box>
                     <Box sx={{ width: '20%', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'center', lg: 'flex-start' } }}>Price</Box>
@@ -66,11 +83,19 @@ const CartHistory = async ({ menu }: CartHistoryProps) => {
                         flexDirection: 'column',
                         maxHeight: { xs: '35vh', sm: '35vh', lg: '35vh' },
                         overflowY: 'auto',
-
                         justifyContent: 'space-between',
                         alignItems: 'center',
                     }}>
-                    <CartItem menu={menu} />
+                    <CartItem
+                        isCartUpdated={isCartUpdated}
+                        isCustomizeModal={isCustomizeModal}
+                        items={items}
+                        handleAddToCart={handleAddToCart}
+                        handleRemoveFromCart={handleRemoveFromCart}
+                        getItemQuantity={getItemQuantity}
+                        getItemPriceWithMenu={getItemPriceWithMenu}
+                        setCustomizeModal={setCustomizeModal}
+                    />
                 </Box>
             </CardContent>
         </Card>

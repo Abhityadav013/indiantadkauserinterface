@@ -430,10 +430,10 @@ const AddNewAddress: React.FC<AddressFormProps> = ({
             onClick={(event) => { handleSubmit(event); setFormError([]) }}
             sx={{
               height: '46px',
-              background:'#FF6347'
+              background: '#FF6347'
             }}
           >
-             {orderType ? buttonTextMap[orderType.toLowerCase() as keyof typeof buttonTextMap] : 'PROCEED'}
+            {orderType ? buttonTextMap[orderType.toLowerCase() as keyof typeof buttonTextMap] : 'PROCEED'}
           </Button>
         </div>
       </div>

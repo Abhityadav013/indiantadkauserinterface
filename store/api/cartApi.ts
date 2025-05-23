@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { base_url } from '@/lib/apiEndpoints';
 import { Cart, CartDescription } from '@/lib/types/cart_type';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
@@ -6,17 +5,15 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // Define response types
 interface GetCartResponse {
   data: {
-    cart: {
-      cartItems: Cart[];
-    };
+    id: string;
+    cartItems: Cart[];
   };
 }
 
 interface UpdateCartResponse {
   data: {
-    cart: {
-      cartItems: Cart[];
-    };
+    id: string;
+    cartItems: Cart[];
   };
 }
 
@@ -48,7 +45,7 @@ export const cartApi = createApi({
     // GET /cart
     getCart: builder.query<Cart[], void>({
       query: () => '/cart',
-      transformResponse: (res: GetCartResponse) => res.data?.cart?.cartItems || [],
+      transformResponse: (res: GetCartResponse) => res.data?.cartItems || [],
       providesTags: ['Cart'],
     }),
 
@@ -59,7 +56,7 @@ export const cartApi = createApi({
         method: 'POST',
         body: { cart, isCartEmpty },
       }),
-      transformResponse: (res: UpdateCartResponse) => res.data?.cart?.cartItems || [],
+      transformResponse: (res: UpdateCartResponse) => res.data?.cartItems || [],
       invalidatesTags: ['Cart'],
     }),
 

@@ -6,15 +6,15 @@ import { CardFooter } from '../ui/card'
 import { Button } from '../ui/button'
 import toast from "react-hot-toast"
 import { Plus } from 'lucide-react'
-import { motion, AnimatePresence } from "framer-motion";
+
 
 interface Props {
     item: MenuItem
 }
 
 export default function AddToCartButton({ item }: Props) {
-    const { addToCart, getItemQuantity, removeFromCart } = useCart()
-    const quantity = getItemQuantity(item.id)
+    const { addToCart } = useCart()
+    // const quantity = getItemQuantity(item.id)
 
     const handleAddToCart = async (item: MenuItem) => {
         await addToCart(item)
@@ -29,7 +29,7 @@ export default function AddToCartButton({ item }: Props) {
                 backgroundColor: "#28a745", // Green color for success
                 color: "#fff", // White text
                 borderRadius: "10px",
-                marginTop: '50px'
+                marginTop: '20px'
             },
             iconTheme: {
                 primary: "#fff", // White icon
@@ -39,31 +39,38 @@ export default function AddToCartButton({ item }: Props) {
     };
 
 
-    const handleRemoveFromCart = async (item: MenuItem) => {
-        await removeFromCart(item);
-        //  updateCart({ cart: updatedCart });
-        toast(`${item.name} removed from cart`, {
-            id: `remove-${item.id}`,
-            duration: 2000,
-            style: {
-                padding: "16px 24px",
-                height: "60px",
-                fontSize: "16px",
-                backgroundColor: "#dc3545", // Red color for removal
-                color: "#fff",
-                borderRadius: "10px",
-                marginTop: "50px",
-            },
-            iconTheme: {
-                primary: "#fff",
-                secondary: "#dc3545",
-            },
-        });
-    };
+    // const handleRemoveFromCart = async (item: MenuItem) => {
+    //     await removeFromCart(item);
+    //     //  updateCart({ cart: updatedCart });
+    //     toast(`${item.name} removed from cart`, {
+    //         id: `remove-${item.id}`,
+    //         duration: 2000,
+    //         style: {
+    //             padding: "16px 24px",
+    //             height: "60px",
+    //             fontSize: "16px",
+    //             backgroundColor: "#dc3545", // Red color for removal
+    //             color: "#fff",
+    //             borderRadius: "10px",
+    //             marginTop: "50px",
+    //         },
+    //         iconTheme: {
+    //             primary: "#fff",
+    //             secondary: "#dc3545",
+    //         },
+    //     });
+    // };
 
     return (
         <CardFooter className="flex justify-end p-4 pt-0 mt-auto">
-            {quantity === 0 ? (
+               <Button
+                    onClick={() => handleAddToCart(item)}
+                    className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
+                    size="sm"
+                >
+                    <Plus className="mr-1 h-4 w-4" /> Add
+                </Button>
+            {/* {quantity === 0 ? (
                 <Button
                     onClick={() => handleAddToCart(item)}
                     className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
@@ -102,7 +109,7 @@ export default function AddToCartButton({ item }: Props) {
                         +
                     </Button>
                 </div>
-            )}
+            )} */}
         </CardFooter>
     )
 }
