@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
   try {
     const deviceIdFromHeaders = req.headers.get('ssid') || ''; // Try headers if deviceId in cookies is not available
     await connectToDatabase();
-
+    console.log('APicalling in  backend:::::::');
     const cartFilter = { deviceId: deviceIdFromHeaders };
     const cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
 
