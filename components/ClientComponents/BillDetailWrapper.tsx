@@ -69,11 +69,10 @@ const BillDetailWrapper = ({
 
     const handleDialogOpen = () => setDialogOpen(true);
     const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
-    console.log('BillDetailWrapper customerDetails', customerDetails)
     return (
         <>
 
-            <Box sx={{ position: 'relative', paddingBottom: '100px' }} className="mt-2 text-gray-700">
+            <Box sx={{ position: 'relative', paddingBottom: '5px', height: '25vh' }} className="mt-2 text-gray-700">
                 <AnimatePresence initial={false} mode="wait">
                     <motion.div
                         key={order_type}
@@ -94,7 +93,7 @@ const BillDetailWrapper = ({
 
                                     <Typography
                                         variant="body1"
-                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
+                                        className={`flex justify-between font-semibold ${Object.keys(customerDetails).length === 0 ? 'blur-xs text-gray-400' : ''}`}
                                     >
                                         <span>
                                             Delivery Fee
@@ -107,7 +106,7 @@ const BillDetailWrapper = ({
 
                                     <Typography
                                         variant="body1"
-                                        className={`flex justify-between font-semibold ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
+                                        className={`flex justify-between font-semibold ${Object.keys(customerDetails).length === 0 ? 'blur-xs text-gray-400' : ''}`}
                                     >
                                         <span>
                                             Service fee 2.5% (max 0.99 €)
@@ -120,11 +119,14 @@ const BillDetailWrapper = ({
                                 </>
                             )}
 
-                            <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
+                            {
+                                Object.keys(customerDetails).length > 0 && <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
+                            }
+
 
                             <Typography
                                 variant="body1"
-                                className={`flex justify-between font-bold ${!customerDetails ? 'blur-xs text-gray-400' : ''}`}
+                                className={`flex justify-between font-bold ${Object.keys(customerDetails).length === 0 ? 'blur-xs text-gray-400' : ''}`}
                             >
                                 Total
                                 <span>
@@ -134,78 +136,78 @@ const BillDetailWrapper = ({
                         </Box>
 
                         {/* Mask with message */}
-                        {!customerDetails || Object.keys(customerDetails).length === 0 && (
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                    zIndex: 10,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    textAlign: 'center',
-                                    p: 2,
-                                }}
-                            >
-                                <Typography variant="h6" color="textSecondary" gutterBottom>
-                                    {order_type === OrderType.DELIVERY
-                                        ? '🔓 Complete your details to unlock delivery & total'
-                                        : '🔓 Let us know who’s picking this up'}
-                                </Typography>
-                                <Button
-                                    size="medium"
-                                    variant="contained"
-                                    onClick={() => handleAddressModalOpen(true)}
-                                    sx={{ background: '#FF6347', color: 'white' }}
-                                >
-                                    Add Details
-                                </Button>
-                            </Box>
-                        )}
                     </motion.div>
                 </AnimatePresence>
 
                 {/* Checkout Button */}
-                <Box
-                    sx={{
+                {!customerDetails || Object.keys(customerDetails).length === 0 ? (
+                    <Box sx={{
+                        position: 'absolute',
+                        top: 85,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        zIndex: 10,
                         display: 'flex',
+                        flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        position: 'absolute',
-                        bottom: '20px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '80%',
-                        mt:2
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        hidden={!customerDetails || Object.keys(customerDetails).length === 0}
-                        onClick={() => router.push('/checkout')}
+                        textAlign: 'center',
+                        p: 2,
+                    }}>
+                        <Typography variant="h6" color="textSecondary" gutterBottom>
+                            {order_type === OrderType.DELIVERY
+                                ? '🔓 Complete your details to unlock delivery & total'
+                                : '🔓 Let us know who’s picking this up'}
+                        </Typography>
+                        <Button
+                            size="medium"
+                            variant="contained"
+                            onClick={() => handleAddressModalOpen(true)}
+                            sx={{ background: '#FF6347', color: 'white' }}
+                        >
+                            Add Details
+                        </Button>
+                    </Box>
+                ) :
+                    <Box
                         sx={{
-                            width: '100%',
-                            backgroundColor: '#f36805',
-                            color: 'white',
-                            padding: '12px 24px',
-                            fontSize: '20px',
-                            fontWeight: 'bold',
-                            borderRadius: '50px',
-                            textTransform: 'none',
-                            opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
-                            '&:hover': {
-                                backgroundColor: '#f36805',
-                            },
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'absolute',
+                            bottom: '5px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: '80%',
+                            mt: 2
                         }}
                     >
-                        Checkout ({calculateTotal()})
-                    </Button>
-                </Box>
+                        <Button
+                            variant="contained"
+                            hidden={!customerDetails || Object.keys(customerDetails).length === 0}
+                            onClick={() => router.push('/checkout')}
+                            sx={{
+                                width: '100%',
+                                backgroundColor: '#f36805',
+                                color: 'white',
+                                padding: '6px 12px',
+                                fontSize: '20px',
+                                fontWeight: 'bold',
+                                borderRadius: '50px',
+                                textTransform: 'none',
+                                opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
+                                '&:hover': {
+                                    backgroundColor: '#f36805',
+                                },
+                            }}
+                        >
+                            Checkout ({calculateTotal()})
+                        </Button>
+                    </Box>
+                }
+
             </Box>
 
             {/* Dialogs */}

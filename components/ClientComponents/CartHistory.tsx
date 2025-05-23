@@ -81,7 +81,7 @@ const CartHistory =  ({
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        maxHeight: { xs: '35vh', sm: '35vh', lg: '35vh' },
+                        maxHeight: { xs: '35vh', sm: '35vh', lg: '40vh' },
                         overflowY: 'auto',
                         justifyContent: 'space-between',
                         alignItems: 'center',
