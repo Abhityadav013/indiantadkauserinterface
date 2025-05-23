@@ -82,6 +82,7 @@ export async function GET(req: NextRequest) {
       id: cart.id,
       cartItems: cart.cartItems,
     };
+    console.log('cartResponse:::::::', cartResponse);
     return NextResponse.json(
       new ApiResponse(
         200,

@@ -6,7 +6,7 @@ interface FetchParams {
 
 export async function fetchFromApi<T>(
   endpoint: string,
-  isCached: boolean = true,
+  isCached: boolean,
   params?: FetchParams // Optional query parameters
 ): Promise<T> {
   // Construct query string if params are passed
@@ -24,13 +24,18 @@ export async function fetchFromApi<T>(
       ).toString()
     : '';
 
+  if (endpoint === '/cart') {
+    console.log('isCached::::::', isCached);
+    isCached = false;
+  }
+
   // Fetch request with query parameters (if provided)
   const res = await fetch(`${process.env.API_BASE_URL}${endpoint}${queryString}`, {
     credentials: 'include',
     headers: {
       ssid: _device_id || '',
     },
-    ...(isCached && { next: { revalidate: 3600 } }),
+    ...(isCached ? { next: { revalidate: 3600 } } : { next: { revalidate: 0 } }),
     // next: { tags: ['cart'] },
   });
 
