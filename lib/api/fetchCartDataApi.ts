@@ -11,6 +11,7 @@ interface GetCartResponse {
 export async function getCartData() {
   try {
     const cartRaw = await fetchFromApi<GetCartResponse>(`/cart`, false);
+    console.log('Cart data fetched:', cartRaw);
     return [...cartRaw.cart?.cartItems];
   } catch (error) {
     console.error('Error fetching menu data:', error);
