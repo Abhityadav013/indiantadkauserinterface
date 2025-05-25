@@ -1,29 +1,45 @@
 'use client';
-import { ValidationError, ValidationErrorResponse } from '@/lib/types/api_response';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
-import { ErrorResponse } from '@/lib/types/error_type';
+import { OrderType } from '@/lib/types/order_type';
+import { useFetchCustomerDetailsQuery } from '@/store/api/customerDetailsApi';
 import {
-  useFetchCustomerDetailsQuery,
-  useUpdateCustomerDetailsMutation,
-} from '@/store/api/customerDetailsApi';
+  fetchCustomerDetailsStart,
+  fetchCustomerDetailsSuccess,
+  setCustomerOrderState,
+} from '@/store/slices/addressSlice';
+import { setOrderType } from '@/store/slices/orderSlice';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 export function useAddressDetails() {
   const [isAddressModelOpen, setAddressModelOpen] = useState<boolean>(false);
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>();
   const [customerOrder, setCustomerOrder] = useState<CustomerOrder>();
-  const [formError, setFormError] = useState<ErrorResponse>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const { data: fetchedCustomerOrder, isLoading } = useFetchCustomerDetailsQuery();
-  const [updateCustomerDetails] = useUpdateCustomerDetailsMutation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-   
     if (!isLoading) {
+      sessionStorage.setItem(
+        'notDeliverable',
+        fetchedCustomerOrder?.customerDetails?.notDeliverable ? 'true' : 'false'
+      );
+      // If the data is not loading, we can set the customer details and order
+      dispatch(fetchCustomerDetailsStart());
       setCustomerDetails(fetchedCustomerOrder?.customerDetails);
       setCustomerOrder(fetchedCustomerOrder);
+      dispatch(setCustomerOrderState(fetchedCustomerOrder ?? ({} as CustomerOrder)));
+      dispatch(
+        fetchCustomerDetailsSuccess(
+          fetchedCustomerOrder?.customerDetails ?? ({} as CustomerDetails)
+        )
+      );
+      if (!sessionStorage.getItem('orderType')) {
+        dispatch(setOrderType(fetchedCustomerOrder?.orderType ?? OrderType.DELIVERY));
+        sessionStorage.setItem('orderType', fetchedCustomerOrder?.orderType ?? OrderType.DELIVERY);
+      }
     }
-  }, [isLoading, fetchedCustomerOrder]);
+  }, [isLoading, fetchedCustomerOrder, dispatch]);
 
   const handleAdddressDetailOpen = (value: boolean) => {
     setAddressModelOpen(value);
@@ -31,30 +47,6 @@ export function useAddressDetails() {
 
   const handleAdddressDetailClose = () => {
     setAddressModelOpen(false);
-  };
-
-  const handleUpdateCustomerDetails = async (customerDetails: CustomerOrder) => {
-    try {
-      // Update customer details using RTK Query mutation
-      setLoading(true);
-      const response = await updateCustomerDetails(customerDetails).unwrap();
-      setCustomerOrder(response.data);
-      setCustomerDetails(response.data.customerDetails);
-      handleAdddressDetailClose(); // Close the model after success
-      setLoading(false);
-    } catch (error) {
-      // Check if the error is validation-related
-      if (error instanceof Error && error.message === 'Validation Failed') {
-        // If validation failed, we should extract and show the validation errors
-        const validationErrors: ValidationError[] =
-          (error as unknown as ValidationErrorResponse).data || [];
-        setFormError(validationErrors.map((e) => ({ key: e.key, message: e.message })));
-      } else {
-        setFormError([
-          { key: 'unknown', message: 'An error occurred while updating the customer details.' },
-        ]);
-      }
-    }
   };
 
   const getCustomerOrderDetail = async () => {
@@ -65,16 +57,12 @@ export function useAddressDetails() {
   };
 
   return {
-    loading,
-    formError,
     customerDetails,
     customerOrder,
     isAddressModelOpen,
     getCustomerOrderDetail,
-    setFormError,
     handleAdddressDetailOpen,
     handleAdddressDetailClose,
-    handleUpdateCustomerDetails,
     setAddressModelOpen,
   };
 }

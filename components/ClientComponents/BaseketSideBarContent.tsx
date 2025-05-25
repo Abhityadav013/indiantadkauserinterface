@@ -8,22 +8,24 @@ import BillDetails from '../BillDetails';
 import { useCart } from '@/hooks/useCartDetails';
 import { Cart } from '@/lib/types/cart_type';
 import Image from 'next/image';
-import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
-import { useAddressDetails } from '@/hooks/useAddressDetails';
+import { CustomerDetails } from '@/lib/types/customer_order_type';
 
 interface BaseketSideBarContentProps {
     cartItems: Cart[]
     menu: MenuItem[];
+    loading:boolean;
+    customerDetails: CustomerDetails;
+    handleAdddressDetailOpen: () => void;
 }
 
-const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) => {
+const BaseketSideBarContent = ({ menu, cartItems,loading,customerDetails,handleAdddressDetailOpen }: BaseketSideBarContentProps) => {
     const [hydrated, setHydrated] = useState(false);
     const [showLoader, setShowLoader] = useState(true);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
     const { isLoading, items, addToCart, removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu, getCartTotal } = useCart()
-    const { loading, customerDetails, customerOrder, formError, isAddressModelOpen, setFormError, handleAdddressDetailOpen, handleAdddressDetailClose, handleUpdateCustomerDetails } = useAddressDetails();
     const [isCartUpdated, setCartUpdated] = useState(false);
     const [cartItem, setCartItems] = useState<Cart[]>(cartItems);
+
     useEffect(() => {
         setHydrated(true);
     }, []);
@@ -43,7 +45,7 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
             }
             timer = setTimeout(() => setShowLoader(false), 1000); // Delay 1 second
         } else {
-             timer = setTimeout(() => setShowLoader(false), 200); // Delay 1 second
+            timer = setTimeout(() => setShowLoader(false), 200); // Delay 1 second
             // setShowLoader(true); // Show loader if isLoading is true
         }
 
@@ -152,13 +154,7 @@ const BaseketSideBarContent = ({ menu, cartItems }: BaseketSideBarContentProps) 
             />
             <BillDetails
                 getCartTotal={getCartTotal}
-                isAddressModelOpen={isAddressModelOpen}
                 customerDetails={customerDetails ?? {} as CustomerDetails}
-                customerOrder={customerOrder ?? {} as CustomerOrder}
-                formError={formError}
-                setFormError={setFormError}
-                handleAdddressDetailClose={handleAdddressDetailClose}
-                handleUpdateCustomerDetails={handleUpdateCustomerDetails}
                 handleAdddressDetailOpen={handleAdddressDetailOpen}
             />
         </>

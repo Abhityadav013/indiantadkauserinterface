@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Divider } from '@mui/material';
 import UserInfo from './checkoutComponents/UserInfo';
-import { useAddressDetails } from '@/hooks/useAddressDetails';
 import { getCountryCallingCode } from 'libphonenumber-js';
 import { OrderDetailsSummary } from '@/lib/types/order_details_type';
 import { DialogType } from '@/lib/types/dialog_type';
@@ -27,7 +26,7 @@ export default function OrderDetails() {
   const [addressInfo, setAddressInfo] = useState<{ pincode: string, buildingNumber: string, street: string, town: string }>({ pincode: '', buildingNumber: '', street: '', town: '' })
   const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string } | null>(null);
   const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
-  const { loading, customerDetails } = useAddressDetails()
+  const { loading,customerDetails } = useSelector((state: RootState) => state.address);
   const order_type = useSelector((state: RootState) => state.order.orderType);
   useEffect(() => {
     // Only run when loading is false

@@ -76,10 +76,12 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const cartFilter = { deviceId: deviceIdFromHeaders };
     const cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
-
+   if(!cart) {
+    return NextResponse.json( new ApiResponse(200, {}, 'Cart is empty.'));
+   }
     const cartResponse: CartData = {
-      id: cart.id,
-      cartItems: cart.cartItems,
+      id: cart?.id,
+      cartItems: cart?.cartItems,
     };
     return NextResponse.json(
       new ApiResponse(

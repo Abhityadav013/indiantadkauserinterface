@@ -8,8 +8,9 @@ import { FilterList } from '@mui/icons-material'
 import {
     Dialog,
     IconButton,
-
 } from '@mui/material'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store'
 
 interface CategoryTabsProps {
     categories: MenuCategory[]
@@ -18,12 +19,17 @@ interface CategoryTabsProps {
 export default function CategoryTabs({ categories }: CategoryTabsProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [selected, setSelected] = useState<string | null>(null)
+    const [selected, setSelected] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null)
     const [showLeftArrow, setShowLeftArrow] = useState(false)
     const [showRightArrow, setShowRightArrow] = useState(true)
     const [filterOpen, setFilterOpen] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const isMobile = useSelector((state: RootState) => state.mobile.isMobile)
+
+    // Create a map of refs for each category button
+    const buttonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+
     useEffect(() => {
         const handleScroll = () => {
             for (const category of categories) {
@@ -31,12 +37,12 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
                 if (!el) continue;
 
                 const rect = el.getBoundingClientRect();
-                const triggerPoint = window.innerHeight * 0.3; // 30% from the top of the screen
+                const triggerPoint = isMobile ? window.innerHeight * 0.25 : window.innerHeight * 0.35;
 
-                // Check if the top of the element is above the trigger point and its bottom is below it
                 if (rect.top <= triggerPoint && rect.bottom > triggerPoint) {
                     if (selected !== category.id) {
                         setSelected(category.id);
+                        scrollCategoryButtonIntoView(category.id);
 
                         const params = new URLSearchParams(searchParams.toString());
                         params.set('category', category.id);
@@ -48,29 +54,38 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // run once initially
+        handleScroll();
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [categories, selected, searchParams, router]);
+    }, [categories, selected, searchParams, router, isMobile]);
 
+    const scrollCategoryButtonIntoView = (categoryId: string) => {
+        const buttonEl = buttonRefs.current[categoryId];
+        if (buttonEl) {
+            buttonEl.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'start',
+                block: 'nearest',
+            });
+        }
+    }
 
     const handleClick = (categoryId: string) => {
         setSelected(categoryId);
+        scrollCategoryButtonIntoView(categoryId);
 
         const element = document.getElementById(`category-${categoryId}`);
         if (element) {
-            const yOffset = -window.innerHeight * 0.3; // same 30% offset logic
+            const yOffset = -window.innerHeight * 0.3;
             const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
             window.scrollTo({ top: y, behavior: 'smooth' });
         }
 
-        // Optional: update the URL
         const params = new URLSearchParams(searchParams.toString());
         params.set('category', categoryId);
         router.push(`/menu-list?${params.toString()}`);
     };
-
 
     const scrollLeft = () => {
         scrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })
@@ -98,26 +113,27 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
     }, [])
 
     return (
-        <div className="flex items-start gap-2 w-[100%] relative">
+        <div className="flex items-start gap-2 w-[100%] relative bg-white">
             {showLeftArrow && (
                 <button
                     onClick={scrollLeft}
-                    className="absolute left-2 z-10 bg-white px-1"
+                    className="absolute left-2 top-[15px] -translate-y-1/2 z-10 bg-white px-1 hidden md:block"
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </button>
             )}
 
-            <div className="flex-1 mx-6 overflow-hidden">
+            <div className="flex-1 px-1 mx-0 lg:px-4 lg:mx-5 overflow-hidden">
                 <div
                     ref={scrollRef}
-                    className="flex overflow-x-auto gap-3 scroll-smooth scrollbar-hide px-2"
+                    className="flex overflow-x-auto gap-1 scroll-smooth scrollbar-hide px-2"
                 >
                     {categories.map((c) => (
                         <button
                             key={c.id}
+                            ref={el => { buttonRefs.current[c.id] = el }}
                             onClick={() => handleClick(c.id)}
-                            className={`px-4 py-1 rounded-full whitespace-nowrap text-sm font-medium transition-colors duration-200
+                            className={`px-2 py-1 rounded-full whitespace-nowrap text-sm font-medium transition-colors duration-200
                             ${selected === c.id
                                     ? 'bg-[#FF6347] text-white'
                                     : 'hover:bg-gray-100 text-gray-800'
@@ -132,13 +148,12 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
             {showRightArrow && (
                 <button
                     onClick={scrollRight}
-                    className="absolute right-12 z-10 bg-white px-1"
+                    className="absolute right-12 top-[15px] -translate-y-1/2 z-10 bg-white px-1 hidden md:block"
                 >
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="h-7 w-5" />
                 </button>
             )}
 
-            {/* Filter Icon */}
             <IconButton
                 onClick={() => setFilterOpen(true)}
                 className="ml-2 z-10 bg-white"
@@ -147,20 +162,24 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
                 <FilterList />
             </IconButton>
 
-            {/* Filter Dialog */}
-
             <Dialog
                 open={filterOpen}
                 onClose={() => setFilterOpen(false)}
                 PaperProps={{
                     sx: {
-                        width: '35%',
-                        maxWidth: 'none', // to prevent MUI's default maxWidth from constraining it
+                        width: {
+                            xs: '90%',   // Mobile
+                            sm: '70%',   // Small tablets
+                            md: '50%',   // Tablets
+                            lg: '35%',   // Laptops and up
+                        },
+                        maxWidth: 'none',
+                        borderRadius: 2,
+                        m: 1, // adds margin around for smaller screens
                     },
                 }}
             >
-                <div className="p-4 min-w-[300px] relative">
-                    {/* Close icon in top-right */}
+                <div className="p-4 relative min-w-[250px] sm:min-w-[300px]">
                     <button
                         onClick={() => setFilterOpen(false)}
                         className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
@@ -169,41 +188,57 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
                         ✕
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4">Catgories</h2>
+                    <h2 className="text-xl font-bold mb-4">Categories</h2>
 
                     <ul className="flex flex-col">
-                        {categories.sort((a, b) => a.order - b.order).map((category, index) => (
-                            <li
-                                key={category.id}
-                                onClick={() => {
-                                    setSelected(category.id)
-                                    setSelectedCategory(category.id)
-                                    setFilterOpen(false)
+                        {categories
+                            .sort((a, b) => a.order - b.order)
+                            .map((category, index) => (
+                                <li
+                                    key={category.id}
+                                    onClick={() => {
+                                        setSelected(category.id);
+                                        setSelectedCategory(category.id);
+                                        setFilterOpen(false);
 
-                                    const element = document.getElementById(`category-${category.id}`)
-                                    if (element) {
-                                        const yOffset = -window.innerHeight * 0.3; // same 30% offset logic
-                                        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                        scrollCategoryButtonIntoView(category.id);
 
-                                        window.scrollTo({ top: y, behavior: 'smooth' });
-                                    }
+                                        const element = document.getElementById(`category-${category.id}`);
 
-                                    const params = new URLSearchParams(searchParams.toString())
-                                    params.set('category', category.id)
-                                    router.push(`/menu-list?${params.toString()}`)
-                                }}
-                                className={`cursor-pointer px-4 py-3 transition-colors ${selectedCategory === category.id
-                                    ? 'bg-[#FF6347] text-white'
-                                    : 'hover:bg-gray-100 text-gray-800'
-                                    } ${index < categories.length - 1 ? 'border-b border-gray-200' : ''}`}
-                            >
-                                {category.categoryName}
-                            </li>
-                        ))}
+
+                                        if (element) {
+                                            const rect = element.getBoundingClientRect();
+                                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                                            let headerOffset = 0;
+                                            if (window.innerWidth >= 1024) {
+                                                headerOffset = 100; // Desktop
+                                            } else if (window.innerWidth >= 640) {
+                                                headerOffset = 80; // Tablet
+                                            } else {
+                                                headerOffset = 75; // Adjusted for mobile
+                                            }
+                                            const yOffset = -window.innerHeight * 0.15;
+                                            const y = rect.top + scrollTop + yOffset - headerOffset;
+                                            window.scrollTo({ top: y, behavior: 'smooth' });
+                                        }
+
+                                        const params = new URLSearchParams(searchParams.toString());
+                                        params.set('category', category.id);
+                                        router.push(`/menu-list?${params.toString()}`);
+                                    }}
+                                    className={`cursor-pointer px-4 py-3 transition-colors ${selectedCategory === category.id
+                                        ? 'bg-[#FF6347] text-white'
+                                        : 'hover:bg-gray-100 text-gray-800'
+                                        } ${index < categories.length - 1 ? 'border-b border-gray-200' : ''}`}
+                                >
+                                    {category.categoryName}
+                                </li>
+                            ))}
                     </ul>
-
                 </div>
             </Dialog>
+
         </div>
     )
 }

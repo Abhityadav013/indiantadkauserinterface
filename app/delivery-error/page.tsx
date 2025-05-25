@@ -3,18 +3,19 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAddressDetails } from "@/hooks/useAddressDetails";
 import ButtonAction from "@/components/ClientComponents/ButtonAction";
+import { useUpdateAddressDetails } from "@/hooks/useUpdateAddressDetails";
 
 export default function DeliveryError() {
-    const { loading, customerDetails,handleAdddressDetailOpen } = useAddressDetails();
+    const { loading, handleAdddressDetailOpen } = useUpdateAddressDetails();
     const router = useRouter();
     useEffect(() => {
+        const notDeliverable = sessionStorage.getItem('notDeliverable');
 
-        if (!loading &&customerDetails && !customerDetails?.notDeliverable) {
+        if (!loading && notDeliverable && notDeliverable === 'true') {
             router.push('/cart')
         }
-    }, [loading,customerDetails, router])
+    }, [loading, router])
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 bg-white-50">

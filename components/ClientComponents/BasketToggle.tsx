@@ -1,11 +1,10 @@
-'use client'
+'use client';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { OrderType } from '@/lib/types/order_type';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOrderType } from '@/store/slices/orderSlice';
 import { RootState } from '@/store';
-
 
 export default function BasketToggle() {
   const dispatch = useDispatch();

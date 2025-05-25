@@ -31,8 +31,8 @@ const CartHistory =  ({
     return (
         <Card
             sx={{
-                minWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
-                maxWidth: { xs: '92vw', sm: '90vw', lg: '28vw' },
+                minWidth: { xs: '92vw', sm: '90vw', lg: '25vw' },
+                maxWidth: { xs: '92vw', sm: '90vw', lg: '28w' },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -75,7 +75,7 @@ const CartHistory =  ({
                 >
                     <Box sx={{ width: '55%' }}>Item Name</Box>
                     <Box sx={{ width: '25%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>Qty</Box>
-                    <Box sx={{ width: '20%', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'center', lg: 'flex-start' } }}>Price</Box>
+                    <Box sx={{ width: '30%', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'center', lg: 'center' } }}>Price</Box>
                 </Box>
                 <Box
                     sx={{

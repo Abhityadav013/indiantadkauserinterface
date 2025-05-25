@@ -15,13 +15,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface BillDetailWrapperProps {
     customerDetails: CustomerDetails;
     getCartTotal: () => number;
-    handleAddressModalOpen: (value: boolean) => void;
+    handleAddressModalOpen: () => void;
 }
 
 const BillDetailWrapper = ({
     customerDetails,
     getCartTotal,
-    handleAddressModalOpen
 }: BillDetailWrapperProps) => {
     const [loading, setLoading] = useState(true);
     const [deliveryFee, setDeliveryFee] = useState(0);
@@ -93,7 +92,7 @@ const BillDetailWrapper = ({
 
                                     <Typography
                                         variant="body1"
-                                        className={`flex justify-between font-semibold ${Object.keys(customerDetails).length === 0 ? 'blur-xs text-gray-400' : ''}`}
+                                        className={`flex justify-between font-semibold`}
                                     >
                                         <span>
                                             Delivery Fee
@@ -106,7 +105,7 @@ const BillDetailWrapper = ({
 
                                     <Typography
                                         variant="body1"
-                                        className={`flex justify-between font-semibold ${Object.keys(customerDetails).length === 0 ? 'blur-xs text-gray-400' : ''}`}
+                                        className={`flex justify-between font-semibold`}
                                     >
                                         <span>
                                             Service fee 2.5% (max 0.99 €)
@@ -126,7 +125,7 @@ const BillDetailWrapper = ({
 
                             <Typography
                                 variant="body1"
-                                className={`flex justify-between font-bold ${Object.keys(customerDetails).length === 0 ? 'blur-xs text-gray-400' : ''}`}
+                                className={`flex justify-between font-bold`}
                             >
                                 Total
                                 <span>
@@ -139,39 +138,7 @@ const BillDetailWrapper = ({
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Checkout Button */}
-                {!customerDetails || Object.keys(customerDetails).length === 0 ? (
-                    <Box sx={{
-                        position: 'absolute',
-                        top: 85,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        zIndex: 10,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        p: 2,
-                    }}>
-                        <Typography variant="h6" color="textSecondary" gutterBottom>
-                            {order_type === OrderType.DELIVERY
-                                ? '🔓 Complete your details to unlock delivery & total'
-                                : '🔓 Let us know who’s picking this up'}
-                        </Typography>
-                        <Button
-                            size="medium"
-                            variant="contained"
-                            onClick={() => handleAddressModalOpen(true)}
-                            sx={{ background: '#FF6347', color: 'white' }}
-                        >
-                            Add Details
-                        </Button>
-                    </Box>
-                ) :
-                    <Box
+                     <Box
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -206,7 +173,6 @@ const BillDetailWrapper = ({
                             Checkout ({calculateTotal()})
                         </Button>
                     </Box>
-                }
 
             </Box>
 

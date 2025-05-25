@@ -77,10 +77,13 @@ export function useCart() {
   };
 
   const getCartTotal = () => {
-    return cart.reduce((total, cartItem) => {
+    const cartTotal =  cart.reduce((total, cartItem) => {
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
+    sessionStorage.setItem('cartTotal', JSON.stringify(cartTotal));
+    return cartTotal
+
   };
 
   return {

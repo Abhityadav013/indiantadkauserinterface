@@ -2,31 +2,17 @@ import React from 'react'
 import { Box, Typography, IconButton } from "@mui/material";
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import BillDetailWrapper from './ClientComponents/BillDetailWrapper';
-import AddressForm from './ClientComponents/AddressForm';
-import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
-import { ErrorResponse } from '@/lib/types/error_type';
+import { CustomerDetails } from '@/lib/types/customer_order_type';
 
 interface BillDetailProps {
     getCartTotal: () => number,
-    isAddressModelOpen: boolean
-    customerOrder: CustomerOrder,
     customerDetails: CustomerDetails,
-    formError: ErrorResponse,
-    setFormError: React.Dispatch<React.SetStateAction<ErrorResponse>>,
-    handleAdddressDetailClose: () => void,
-    handleUpdateCustomerDetails: (value: CustomerOrder) => void,
-    handleAdddressDetailOpen: (value: boolean) => void
+    handleAdddressDetailOpen: () => void
 }
 
 const BillDetails = ({
     getCartTotal,
-    isAddressModelOpen,
-    customerOrder,
     customerDetails,
-    formError,
-    setFormError,
-    handleAdddressDetailClose,
-    handleUpdateCustomerDetails,
     handleAdddressDetailOpen
 }: BillDetailProps) => {
     return (
@@ -63,15 +49,6 @@ const BillDetails = ({
                 customerDetails={customerDetails ?? {} as CustomerDetails}
                 getCartTotal={getCartTotal}
                 handleAddressModalOpen={handleAdddressDetailOpen}
-            />
-            <AddressForm
-                isAddressModelOpen={isAddressModelOpen}
-                customerDetails={customerDetails ?? {} as CustomerDetails}
-                customerOrder={customerOrder ?? {} as CustomerOrder}
-                formError={formError}
-                setFormError={setFormError}
-                handleAdddressDetailClose={handleAdddressDetailClose}
-                handleUpdateCustomerDetails={handleUpdateCustomerDetails}
             />
         </Box>
     );
