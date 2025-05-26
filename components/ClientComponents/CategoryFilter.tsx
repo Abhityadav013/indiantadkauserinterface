@@ -113,7 +113,7 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
     }, [])
 
     return (
-        <div className="flex items-start gap-2 w-[100%] relative bg-white">
+        <div className="flex items-start gap-2 mt-4 w-[100%] relative bg-white">
             {showLeftArrow && (
                 <button
                     onClick={scrollLeft}

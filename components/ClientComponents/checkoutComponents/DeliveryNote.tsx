@@ -6,6 +6,8 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconBut
 import CloseIcon from '@mui/icons-material/Close';
 import { OrderDetailsSummary } from '@/lib/types/order_details_type';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 interface DeliveryNoteProps {
     openDialog: DialogType,
     deliveryNote: {
@@ -18,6 +20,7 @@ interface DeliveryNoteProps {
 const DeliveryNote = ({ openDialog, deliveryNote, handleOpen, handleClose, handleDialogAction }: DeliveryNoteProps) => {
     const [note, setNote] = React.useState<string>('');
     const maxChars = 160;
+    const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
 
     React.useEffect(() => {
         if (deliveryNote) {
@@ -67,20 +70,43 @@ const DeliveryNote = ({ openDialog, deliveryNote, handleOpen, handleClose, handl
                 <span ><ControlPointOutlinedIcon className='text-gray-400' /></span>
             </div>
 
-            <Dialog open={openDialog === 'notes'} onClose={handleClose} maxWidth={"lg"}>
-                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography component="div" variant='h5' fontWeight="bold">
-                        <NoteAddOutlinedIcon className="text-black mr-5" />
-                        Delivery notes</Typography>
+            <Dialog
+                open={openDialog === 'notes'}
+                onClose={handleClose}
+                maxWidth="md"
+                fullWidth
+                fullScreen={isMobile} // 👈 makes it full screen only on small devices
+            >
+                <DialogTitle
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <Typography component="div" variant="h5" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <NoteAddOutlinedIcon className="text-black mr-3" />
+                        Delivery notes
+                    </Typography>
                     <IconButton edge="end" onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
+
                 <DialogContent>
-                    <div className="w-[620px] p-6 relative">
-                        <Typography variant='h6' fontWeight={"bold"} >Leave a note for the courier. Please don&apos;t add allergy info here. This note is not visible to the seller.</Typography>
+                    <Box
+                        sx={{
+                            width: '100%',
+                            p: { xs: 2, sm: 3, md: 4 },
+                        }}
+                    >
+                        <Typography variant="h6" fontWeight="bold">
+                            Leave a note for the courier. Please don&apos;t add allergy info here. This note is not visible to the seller.
+                        </Typography>
+
                         <Box sx={{ width: '100%', mt: 3 }}>
-                            {/* Word count on top right */}
+                            {/* Word count and label */}
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                                 <Typography variant="subtitle2" color="textSecondary">
                                     <b>Add your note</b> <span style={{ fontWeight: 400 }}>(Optional)</span>
@@ -111,15 +137,15 @@ const DeliveryNote = ({ openDialog, deliveryNote, handleOpen, handleClose, handl
                                 }}
                             />
                         </Box>
-                    </div>
-
+                    </Box>
                 </DialogContent>
 
                 <DialogActions
                     sx={{
-                        flexDirection: 'column',
+                        flexDirection: { xs: 'column', sm: 'row' },
                         alignItems: 'stretch',
-                        gap: 2, // spacing between buttons
+                        justifyContent: 'center',
+                        gap: 2,
                         px: 4,
                         pb: 3,
                     }}
@@ -135,6 +161,7 @@ const DeliveryNote = ({ openDialog, deliveryNote, handleOpen, handleClose, handl
                             fontWeight: 'bold',
                             borderRadius: '50px',
                             textTransform: 'none',
+                            width: { xs: '100%', sm: 'auto' },
                             '&:hover': {
                                 backgroundColor: '#f36805',
                             },
@@ -152,13 +179,14 @@ const DeliveryNote = ({ openDialog, deliveryNote, handleOpen, handleClose, handl
                             fontWeight: 'bold',
                             borderRadius: '50px',
                             textTransform: 'none',
+                            width: { xs: '100%', sm: 'auto' },
                         }}
                     >
                         Delete
                     </Button>
                 </DialogActions>
-
             </Dialog>
+
         </>
     )
 }

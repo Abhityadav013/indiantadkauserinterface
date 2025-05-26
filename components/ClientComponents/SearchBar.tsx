@@ -46,10 +46,9 @@ export default function SearchBar() {
                     ),
                 }}
                 sx={{
-
+                    mt: {xs:0, sm:0, lg:10 },
                     display: 'flex',
-                    p: 4,
-
+                    // px: 4,
                     justifyContent: 'center',
                     width: isMobile ? '100%' : '70%',
                     backgroundColor: '#fff',

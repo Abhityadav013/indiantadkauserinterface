@@ -4,14 +4,19 @@ import React, { useEffect } from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
 import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlined';
 import { formatPrice } from '@/utils/valueInEuros';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { handleBasketState } from '@/store/slices/basketSlice';
 
 interface ViewCartProps {
     itmesCount: number;
-    setBasektOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, setBasektOpen }) => {
+const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
     const [cartTotal, setCartTotal] = React.useState<string>('0,00 €');
+    const [isBasketOpen, setBasektOpen] = React.useState<boolean>(false);
+    const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const cartTotal = sessionStorage.getItem('cartTotalAmount');
@@ -19,10 +24,16 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, setBasektOpen }) 
             const total = JSON.parse(cartTotal);
             setCartTotal(formatPrice(Number(total)));
         }
+
     }, []);
 
     if (itmesCount <= 0) return null;
+    if(!isMobile) return null; // Hide on mobile view
 
+    const handleBasketToggle = () => {
+        setBasektOpen(!isBasketOpen);   
+        dispatch(handleBasketState(!isBasketOpen));
+    };
     return (
         <Box
             className="fixed left-1/2 bottom-0 transform -translate-x-1/2 bg-[#f36805] text-white shadow-lg z-50"
@@ -36,7 +47,7 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, setBasektOpen }) 
                 justifyContent: 'space-between',
                 cursor: 'pointer',
             }}
-            onClick={() => setBasektOpen(true)}
+            onClick={() => handleBasketToggle()}
         >
             {/* Left Section: Icon + Text */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

@@ -19,16 +19,20 @@ export default async function CheckoutPage() {
         sx={{
           display: 'flex',
           justifyContent: 'center',
-          mt: 4
+          mt: 4,
         }}
       >
         <Box
           sx={{
             display: 'flex',
-            gap: 4, // spacing between columns
+            flexDirection: {
+              xs: 'column', // Stacked on extra-small screens (mobile)
+              sm: 'column', // Optional: stacked on small screens
+              md: 'row',    // Side-by-side on medium and up (tablet/laptop)
+            },
+            gap: 4,
             maxWidth: '1000px',
             width: '100%',
-            px: 2 // optional padding for smaller screens
           }}
         >
           <Box sx={{ flex: 1 }}>

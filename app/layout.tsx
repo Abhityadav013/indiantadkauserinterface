@@ -51,7 +51,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] px-2 mx-auto bg-white min-h-screen shadow-md`}
+          className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] mx-auto bg-white min-h-screen shadow-md`}
         >
           <Toaster position="top-right" reverseOrder={false} />
           <SessionProvider />

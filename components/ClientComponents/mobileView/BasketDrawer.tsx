@@ -1,25 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
-import ViewCartFooter from '@/components/ViewCartFooter';
+import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { Drawer, IconButton } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { handleBasketState } from '@/store/slices/basketSlice';
 
 interface BasketDrawerProps {
-  cartItemCount: number;
   children: React.ReactNode;
 }
 
-const BasketDrawer = ({ cartItemCount, children }: BasketDrawerProps) => {
-  const [mobileBasketOpen, setMobileBasketOpen] = useState(false);
-
+const BasketDrawer = ({ children }: BasketDrawerProps) => {
+  const isBasketOpen = useSelector((state: RootState) => state.basket.isBasketOpen);
+  const dispatch=  useDispatch();
+  const handleBasketToggle = () => {
+    dispatch(handleBasketState(false))
+  }
   return (
     <>
-      <ViewCartFooter setBasektOpen={setMobileBasketOpen} itmesCount={cartItemCount} />
       <Drawer
         anchor="bottom"
-        open={mobileBasketOpen}
-        onClose={() => setMobileBasketOpen(false)}
+        open={isBasketOpen}
+        onClose={handleBasketToggle}
         sx={{
           "& .MuiDrawer-paper": {
             width: "100%",
@@ -35,7 +38,7 @@ const BasketDrawer = ({ cartItemCount, children }: BasketDrawerProps) => {
           <IconButton
             edge="start"
             color="inherit"
-            onClick={() => setMobileBasketOpen(false)}
+            onClick={handleBasketToggle}
             sx={{ position: "absolute", top: 20, right: 20 }}
           >
             <CloseIcon />

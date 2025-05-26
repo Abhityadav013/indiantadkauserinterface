@@ -16,8 +16,8 @@ interface OrderSummaryProps {
 
 export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps) {
   return (
-    <Paper className="p-5 border mt-10 w-[100%] border-gray-200 rounded-lg shadow-sm">
-      <Box className="flex items-center mb-4">
+    <Paper className="bg-white rounded-lg lg:mt-10 shadow p-4 max-w-md mx-auto">      
+      <Box className="flex items-center">
         <LocalDining className="mr-2 text-orange-500" />
         <Typography variant="h6" className="font-bold">
           Order summary

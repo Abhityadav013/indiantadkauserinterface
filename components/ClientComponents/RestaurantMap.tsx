@@ -2,7 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -41,6 +42,8 @@ const restaurantIcon = new L.Icon({
 
 export default function RestaurantMap() {
     const [mounted, setMounted] = useState(false);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         fixLeafletIcons();
@@ -50,23 +53,35 @@ export default function RestaurantMap() {
     if (!mounted) return null;
 
     return (
-        <MapContainer
-            center={[lat, lng]}
-            zoom={16}
-            scrollWheelZoom={true}
-            style={{ height: '350px', width: '650px' }}
+        <Box
+            sx={{
+                width: '100%',
+                maxWidth: 650,
+                height: isMobile ? 250 : 350,
+                mx: 'auto',
+                borderRadius: 2,
+                overflow: 'hidden',
+                boxShadow: 2,
+            }}
         >
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={[lat, lng]} icon={restaurantIcon}>
-                <Tooltip direction="top" offset={[0, -30]} opacity={1} permanent={false}>
-                    <Typography variant='body2' fontWeight="bold">
-                        🍛 Here’s your favorite spot — Indian Tadka!
-                    </Typography>
-                </Tooltip>
-            </Marker>
-        </MapContainer>
+            <MapContainer
+                center={[lat, lng]}
+                zoom={16}
+                scrollWheelZoom={true}
+                style={{ height: '100%', width: '100%' }}
+            >
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={[lat, lng]} icon={restaurantIcon}>
+                    <Tooltip direction="top" offset={[0, -30]} opacity={1} permanent={false}>
+                        <Typography variant='body2' fontWeight="bold">
+                            🍛 Here’s your favorite spot — Indian Tadka!
+                        </Typography>
+                    </Tooltip>
+                </Marker>
+            </MapContainer>
+        </Box>
     );
 }

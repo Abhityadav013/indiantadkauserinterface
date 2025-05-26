@@ -24,7 +24,7 @@ const BasketSidebar = ({ menu, cartItems }: BasketSidebarProps) => {
     if (isMobile) {
         return (
             <>
-                <BasketDrawer cartItemCount={cartItems.length}>
+                <BasketDrawer>
                     <h2 className="text-xl font-bold mb-4 text-center">Basket</h2>
                     <div className="flex justify-center mb-2">
                         <BasketToggle />

@@ -48,7 +48,7 @@ export default function AddToCartButton({ item }: Props) {
     };
 
     return (
-        <CardFooter className="flex justify-end pt-0 mt-auto">
+        <CardFooter className="flex justify-end right-0 pt-0 mt-auto">
                <Button
                     onClick={() => handleAddToCart(item)}
                     className="bg-white border rounded-none border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import Person4OutlinedIcon from '@mui/icons-material/Person4Outlined';
 import { DialogType } from '@/lib/types/dialog_type';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { OrderDetailsSummary } from '@/lib/types/order_details_type';
+import { RootState } from '@/store';
+import { useSelector } from 'react-redux';
 
 interface UserInfoProps {
     openDialog: DialogType,
@@ -17,6 +19,7 @@ interface UserInfoProps {
     handleDialogAction: <T extends Exclude<DialogType, null>>(data: OrderDetailsSummary<T>) => void
 }
 const UserInfo = ({ openDialog, customerDetails, handleOpen, handleClose, handleDialogAction }: UserInfoProps) => {
+    const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
     const [name, setName] = useState<string>(customerDetails.name);
     const [phoneNumber, setPhoneNumber] = useState<string>(customerDetails.phoneNumber)
     useEffect(() => {
@@ -48,21 +51,42 @@ const UserInfo = ({ openDialog, customerDetails, handleOpen, handleClose, handle
                 <span ><ArrowForwardIosOutlinedIcon className="text-gray-400" /></span>
             </div>
 
-            <Dialog open={openDialog === 'contact'} onClose={handleClose} maxWidth={"lg"}>
-                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography component="div" variant='h5' fontWeight="bold">
-                        <Person4OutlinedIcon className="text-black mr-5" />
-                        Your details</Typography>
+            <Dialog
+                open={openDialog === 'contact'}
+                onClose={handleClose}
+                fullWidth
+                maxWidth="sm"
+                fullScreen={isMobile} // 👈 makes it full screen only on small devices
+            >
+                <DialogTitle
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        px: { xs: 2, sm: 3 },
+                        pt: 2,
+                    }}
+                >
+                    <Typography
+                        component="div"
+                        variant="h6"
+                        fontWeight="bold"
+                        sx={{ display: 'flex', alignItems: 'center' }}
+                    >
+                        <Person4OutlinedIcon className="text-black mr-2" />
+                        Your details
+                    </Typography>
                     <IconButton edge="end" onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
-                <DialogContent>
-                    <div className="w-[420px] p-6 relative">
-                        <div className="mb-4">
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+
+                <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
+                    <Box sx={{ width: '100%' }}>
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="body2" fontWeight={500} mb={1}>
                                 First Name
-                            </label>
+                            </Typography>
                             <TextField
                                 id="name"
                                 placeholder="Enter your first name"
@@ -77,11 +101,12 @@ const UserInfo = ({ openDialog, customerDetails, handleOpen, handleClose, handle
                                     },
                                 }}
                             />
-                        </div>
-                        <div>
-                            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                        </Box>
+
+                        <Box>
+                            <Typography variant="body2" fontWeight={500} mb={1}>
                                 Phone Number
-                            </label>
+                            </Typography>
                             <TextField
                                 id="phoneNumber"
                                 placeholder="Enter your phone number"
@@ -96,26 +121,31 @@ const UserInfo = ({ openDialog, customerDetails, handleOpen, handleClose, handle
                                     },
                                 }}
                             />
-                        </div>
-                    </div>
-
+                        </Box>
+                    </Box>
                 </DialogContent>
 
-                <DialogActions sx={{ justifyContent: 'center' }}>
+                <DialogActions
+                    sx={{
+                        justifyContent: 'center',
+                        px: { xs: 2, sm: 3 },
+                        pb: 3,
+                    }}
+                >
                     <Button
                         variant="contained"
                         onClick={handleUserInfoSave}
+                        fullWidth
                         sx={{
-                            width: '80%',  // Button will fill the available width of the container
-                            backgroundColor: '#f36805', // Orange background
-                            color: 'white', // White text
-                            padding: '6px 24px', // 6px top/bottom, 24px left/right
-                            fontSize: '20px', // Font size for the button text
-                            fontWeight: 'bold', // Make the text bold
-                            borderRadius: '50px', // Rounded corners for a more curved button
-                            textTransform: 'none', // Prevent text from becoming uppercase
+                            backgroundColor: '#f36805',
+                            color: 'white',
+                            py: 1.5,
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            borderRadius: '50px',
+                            textTransform: 'none',
                             '&:hover': {
-                                backgroundColor: '#f36805', // Darker orange on hover
+                                backgroundColor: '#f36805',
                             },
                         }}
                     >
@@ -123,6 +153,8 @@ const UserInfo = ({ openDialog, customerDetails, handleOpen, handleClose, handle
                     </Button>
                 </DialogActions>
             </Dialog>
+
+
         </>
 
     )

@@ -5,6 +5,8 @@ import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutl
 import { OrderDetailsSummary } from '@/lib/types/order_details_type';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, IconButton, MenuItem, Radio, RadioGroup, TextField, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 interface DeliveryTimeProps {
     isPickup: boolean,
     openDialog: DialogType,
@@ -17,6 +19,7 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
     const [selectedOption, setSelectedOption] = useState('asap');
     const [scheduledTime, setScheduledTime] = useState('');
     const [timeOptions, setTimeOptions] = useState<string[]>([]);
+    const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
 
     useEffect(() => {
 
@@ -84,7 +87,7 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                         {selectedOption === 'asap' ? (
                             <div>
                                 <p className="font-medium">
-                                  Deliver As Soon As Possible
+                                    Deliver As Soon As Possible
                                 </p>
                             </div>
                         ) : scheduledTime ? (
@@ -108,10 +111,29 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                 <span><ArrowForwardIosOutlinedIcon className="text-gray-400" /></span>
             </div>
 
-            <Dialog open={openDialog === 'time'} onClose={handleClose} maxWidth={"lg"}>
-                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography component="div" variant="h5" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <AccessTimeIcon sx={{ mr: 2 }} />
+            <Dialog
+                open={openDialog === 'time'}
+                onClose={handleClose}
+                fullWidth
+                maxWidth="sm" // limit size on larger screens
+                fullScreen={isMobile} // make fullscreen on small screens
+            >
+                <DialogTitle
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        px: isMobile ? 2 : 4,
+                        pt: isMobile ? 2 : 3,
+                    }}
+                >
+                    <Typography
+                        component="div"
+                        variant="h6"
+                        fontWeight="bold"
+                        sx={{ display: 'flex', alignItems: 'center', fontSize: isMobile ? '1rem' : '1.25rem' }}
+                    >
+                        <AccessTimeIcon sx={{ mr: 1 }} />
                         {isPickup ? 'Collection time' : 'Delivery time'}
                     </Typography>
                     <IconButton edge="end" onClick={handleClose}>
@@ -119,18 +141,15 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                     </IconButton>
                 </DialogTitle>
 
-                <DialogContent>
-                    <div className="w-[420px] p-6 relative">
+                <DialogContent sx={{ px: isMobile ? 2 : 4 }}>
+                    <div className="w-full p-0 sm:p-4">
                         <RadioGroup value={selectedOption} onChange={handleOptionChange}>
                             {isPickup ? (
                                 <FormControlLabel
                                     value="schedule"
                                     control={<Radio sx={{ color: '#f36805', '&.Mui-checked': { color: '#f36805' } }} />}
                                     label="Schedule as collection time"
-                                    sx={{
-                                        padding: '8px 16px',
-                                        backgroundColor: '#f5f5f5',
-                                    }}
+                                    sx={{ padding: '8px 16px', backgroundColor: '#f5f5f5', borderRadius: 2 }}
                                 />
                             ) : (
                                 <>
@@ -142,9 +161,10 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                                             padding: '8px 16px',
                                             marginBottom: '8px',
                                             backgroundColor: selectedOption === 'asap' ? '#f5f5f5' : 'transparent',
+                                            borderRadius: 2,
                                         }}
                                     />
-                                    <Divider sx={{ marginY: 1 }} />
+                                    <Divider sx={{ my: 1 }} />
                                     <FormControlLabel
                                         value="schedule"
                                         control={<Radio sx={{ color: '#f36805', '&.Mui-checked': { color: '#f36805' } }} />}
@@ -152,6 +172,7 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                                         sx={{
                                             padding: '8px 16px',
                                             backgroundColor: selectedOption === 'schedule' ? '#f5f5f5' : 'transparent',
+                                            borderRadius: 2,
                                         }}
                                     />
                                 </>
@@ -185,15 +206,16 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                     </div>
                 </DialogContent>
 
-                <DialogActions sx={{ justifyContent: 'center' }}>
+                <DialogActions sx={{ justifyContent: 'center', px: isMobile ? 2 : 4, pb: isMobile ? 2 : 3 }}>
                     <Button
                         variant="contained"
                         sx={{
-                            width: '80%',
+                            width: '100%',
+                            maxWidth: 400,
                             backgroundColor: '#f36805',
                             color: 'white',
-                            padding: '6px 24px',
-                            fontSize: '20px',
+                            padding: isMobile ? '8px 16px' : '10px 24px',
+                            fontSize: isMobile ? '1rem' : '1.1rem',
                             fontWeight: 'bold',
                             borderRadius: '50px',
                             textTransform: 'none',
@@ -206,6 +228,7 @@ const DeliveryTime = ({ isPickup, openDialog, initialTime, handleOpen, handleClo
                     </Button>
                 </DialogActions>
             </Dialog>
+
         </>
     );
 

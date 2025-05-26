@@ -12,6 +12,7 @@ import { MenuItem } from "@/lib/types/menu_type";
 import { Cart } from "@/lib/types/cart_type";
 import SearchBar from "./ClientComponents/SearchBar";
 import CategoryTabs from "./ClientComponents/CategoryFilter";
+import ViewCartFooter from "./ViewCartFooter";
 
 interface MenuContentProps {
     groupedMenu: {
@@ -30,13 +31,12 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                 {/* Left Content */}
                 <Box sx={{ flex: 1, pl: { xs: 1, md: 2 }, pr: { xs: 1, md: 2 }, maxWidth: { md: 'calc(100% - 460px)' } }}>
                     <NavBarNavigation label="Our Menu" isImage={false} />
-
                     <div className="sticky top-12 z-10 w-[100%] bg-white">
                         <Box
                             display={{ xs: 'flex', sm: 'flex', md: 'none' }}
                             justifyContent="center"
                             p={3}
-                            sx={{ mt: 14 }}
+                            sx={{ mt: { xs:7,sm:7,lg: 14 } }}
                         >
                             <BasketToggle />
                         </Box>
@@ -47,11 +47,11 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                     {filtered.length === 0 ? (
                         <p className="mt-4">No items found for your search.</p>
                     ) : (
-                        <Box sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 }, p:2 }}>
+                        <Box sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 } }}>
                             {groupedMenu.map(({ category, items }) => (
                                 <Box key={category.id} id={`category-${category.id}`} className="mb-6">
                                     <Divider sx={{ mb: 1, borderBottomWidth: '1.5px' }} />
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-4">{category.categoryName}</h2>
+                                    <h2 className="text-2xl font-bold p-2 text-gray-800 mb-4">{category.categoryName}</h2>
 
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                         {items.map((item) => (
@@ -120,7 +120,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                     />
 
                                                     {/* Add button aligned to bottom right */}
-                                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt:4 }}>
                                                         <AddToCartButton item={item} />
                                                     </Box>
                                                 </Box>
@@ -134,6 +134,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                     )}
                 </Box>
                 <BasketSidebar menu={menuItems} cartItems={cartItems} />
+                <ViewCartFooter itmesCount={cartItems.length ?? 0} />
             </Box>
             <FooterCopyRights />
         </>

@@ -99,10 +99,15 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                 </div>
                 <span ><ArrowForwardIosOutlinedIcon className="text-gray-400" /></span>
             </div>
-            <Dialog open={openDialog === 'address'} onClose={handleClose} maxWidth={"lg"}>
+            <Dialog
+                open={openDialog === 'address'}
+                onClose={handleClose}
+                maxWidth="lg"
+                fullScreen={true}
+            >
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography component="div" variant="h5" fontWeight="bold">
-                        <LocationOnOutlinedIcon className="text-black mr-5" />
+                    <Typography component="div" variant="h6" fontWeight="bold" display="flex" alignItems="center" gap={1}>
+                        <LocationOnOutlinedIcon className="text-black" />
                         Edit address
                     </Typography>
                     <IconButton edge="end" onClick={handleClose}>
@@ -111,38 +116,39 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                 </DialogTitle>
 
                 <DialogContent>
-                    <div className="w-[720px] p-6 relative">
-                        {isPickup ?
+                    <div className="w-full max-w-[720px] px-4 md:px-6 py-4 md:py-6 mx-auto">
+                        {isPickup ? (
                             <>
-                                <Box display="flex" alignItems="stretch" gap={3} mb={4}>
-                                    <Box flexShrink={0} display="flex">
+                                <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={3} mb={4}>
+                                    <Box flexShrink={0} display="flex" justifyContent="center">
                                         <Image
                                             src="https://testing.indiantadka.eu/assets/restaurant.png"
                                             alt="Indian Tadka"
                                             width={60}
-                                            height={60} // use a reasonable default for fallback
+                                            height={60}
                                             style={{
                                                 borderRadius: '10px',
                                                 objectFit: 'cover',
-                                                height: '100%', // stretch to parent height
+                                                height: '100%',
                                                 width: 'auto',
                                             }}
                                         />
                                     </Box>
                                     <Box display="flex" flexDirection="column" justifyContent="center">
-                                        <Typography variant="h5" fontWeight="bold" gutterBottom>
+                                        <Typography variant="h6" fontWeight="bold" gutterBottom>
                                             Indian Tadka
                                         </Typography>
-                                        <Typography variant="body1" fontWeight={500}>
+                                        <Typography variant="body2" fontWeight={500}>
                                             {customerAddress.street}, {customerAddress.buildingNumber} {customerAddress.pincode}, {customerAddress.town}
                                         </Typography>
                                     </Box>
                                 </Box>
                                 <RestaurantMap />
                             </>
-                            : <>
-                                {/* Pin Code and Building Number in one line */}
-                                <Box className="mb-4" display="flex" gap={2}>
+                        ) : (
+                            <>
+                                {/* Pin Code and Building Number */}
+                                <Box className="mb-4" display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={2}>
                                     <div className="flex-1">
                                         <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-1">
                                             Pin code
@@ -157,11 +163,7 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                             required
                                             error={!!getErrorMessage("pincode")}
                                             helperText={getErrorMessage("pincode")}
-                                            InputProps={{
-                                                sx: {
-                                                    borderRadius: '15px',
-                                                },
-                                            }}
+                                            InputProps={{ sx: { borderRadius: '15px' } }}
                                         />
                                     </div>
 
@@ -174,14 +176,12 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                             fullWidth
                                             value={buildingNumber}
                                             onChange={(e) => setBuildingNumber(e.target.value)}
-                                            sx={{ marginBottom: 1 }}
                                             required
+                                            sx={{ mb: 1 }}
                                             slotProps={{
                                                 input: {
                                                     readOnly: pincode.length < 5,
-                                                    sx: {
-                                                        borderRadius: '15px',
-                                                    },
+                                                    sx: { borderRadius: '15px' },
                                                 },
                                             }}
                                             error={!!getErrorMessage("buildingNumber")}
@@ -190,8 +190,8 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                     </div>
                                 </Box>
 
-                                {/* Street and Town in one line */}
-                                <Box className="mb-4" display="flex" gap={2}>
+                                {/* Street and Town */}
+                                <Box className="mb-4" display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={2}>
                                     <div className="flex-1">
                                         <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
                                             Street Name
@@ -204,10 +204,10 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
+                                                    placeholder="Type street name"
                                                     variant="outlined"
                                                     fullWidth
                                                     required
-                                                    placeholder='Type street name'
                                                     inputProps={{
                                                         ...params.inputProps,
                                                         readOnly: pincode.length < 5,
@@ -215,12 +215,9 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                                     error={!!getErrorMessage("street")}
                                                     helperText={getErrorMessage("street")}
                                                     sx={{
-                                                        marginBottom: 1,
-                                                        '& .MuiInputBase-root': {
-                                                            borderRadius: '15px !important',  // Force borderRadius here for the input base element
-                                                        },
+                                                        mb: 1,
                                                         '& .MuiOutlinedInput-root': {
-                                                            borderRadius: '15px !important',  // For the root of the TextField
+                                                            borderRadius: '15px !important',
                                                         },
                                                     }}
                                                 />
@@ -233,21 +230,19 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                             Town
                                         </label>
                                         <TextField
+                                            placeholder="Type your city or town"
                                             variant="outlined"
                                             fullWidth
-                                            placeholder='Type your city or town'
+                                            required
                                             value={town}
                                             onChange={(e) => setTown(e.target.value)}
-                                            sx={{ marginBottom: 1 }}
-                                            required
+                                            sx={{ mb: 1 }}
                                             error={!!getErrorMessage("town")}
                                             helperText={getErrorMessage("town")}
                                             slotProps={{
                                                 input: {
                                                     readOnly: pincode.length < 5,
-                                                    sx: {
-                                                        borderRadius: '15px',
-                                                    },
+                                                    sx: { borderRadius: '15px' },
                                                 },
                                             }}
                                         />
@@ -281,38 +276,34 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                                         variant={addressType === "other" ? "filled" : "outlined"}
                                     />
                                 </div>
-                            </>}
-
+                            </>
+                        )}
                     </div>
                 </DialogContent>
 
-                <DialogActions sx={{ justifyContent: 'center' }}>
-                    {
-                        !isPickup && (
-                            <Button
-                                variant="contained"
-                                onClick={handleUserInfoSave}
-                                sx={{
-                                    width: '80%',
-                                    backgroundColor: '#f36805',
-                                    color: 'white',
-                                    padding: '6px 24px',
-                                    fontSize: '20px',
-                                    fontWeight: 'bold',
-                                    borderRadius: '50px',
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                        backgroundColor: '#f36805',
-                                    },
-                                }}
-                            >
-                                Save
-                            </Button>
-                        )
-                    }
-
-                </DialogActions>
+                {!isPickup && (
+                    <DialogActions sx={{ justifyContent: 'center' }}>
+                        <Button
+                            variant="contained"
+                            onClick={handleUserInfoSave}
+                            sx={{
+                                width: { xs: '100%', sm: '80%' },
+                                backgroundColor: '#f36805',
+                                color: 'white',
+                                py: 1.5,
+                                fontSize: '18px',
+                                fontWeight: 'bold',
+                                borderRadius: '50px',
+                                textTransform: 'none',
+                                '&:hover': { backgroundColor: '#f36805' },
+                            }}
+                        >
+                            Save
+                        </Button>
+                    </DialogActions>
+                )}
             </Dialog>
+
         </>
     )
 }
