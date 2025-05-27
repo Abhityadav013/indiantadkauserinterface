@@ -55,10 +55,8 @@ export default function RestaurantMap() {
     return (
         <Box
             sx={{
-                width: '100%',
-                maxWidth: 650,
-                height: isMobile ? 250 : 350,
-                mx: 'auto',
+                width: '100%',         // fill parent width fully
+                height: isMobile ? 250 : 400,  // match parent container height (400 on desktop)
                 borderRadius: 2,
                 overflow: 'hidden',
                 boxShadow: 2,

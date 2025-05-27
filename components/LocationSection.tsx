@@ -1,4 +1,5 @@
 import { MapPin, Phone, Mail } from "lucide-react"
+import RestaurantMap from "./ClientComponents/RestaurantMap"
 
 export default function LocationSection() {
   return (
@@ -8,14 +9,7 @@ export default function LocationSection() {
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="lg:w-1/2">
             <div className="h-[400px] w-full overflow-hidden rounded-lg bg-gray-200">
-              {/* Google Maps embed would go here in production */}
-              <div className="flex h-full w-full items-center justify-center bg-gray-200 p-4 text-center text-gray-500">
-                <div>
-                  <MapPin className="mx-auto mb-4 h-12 w-12" />
-                  <p>Google Maps Embed</p>
-                  <p className="text-sm">(Replace with actual Google Maps embed in production)</p>
-                </div>
-              </div>
+              <RestaurantMap />
             </div>
           </div>
           <div className="flex flex-col justify-center lg:w-1/2">
@@ -35,7 +29,11 @@ export default function LocationSection() {
                 <Phone className="mr-4 h-6 w-6 text-[#FF6347]" />
                 <div>
                   <h4 className="font-semibold">Phone</h4>
-                  <p className="text-gray-700">(+49)-1521 2628877</p>
+                  <p className="text-gray-700">
+                    <a href="tel:+4915212628877" className="hover:underline">
+                      (+49)-1521 2628877
+                    </a>
+                  </p>
                 </div>
               </div>
 
@@ -43,7 +41,11 @@ export default function LocationSection() {
                 <Mail className="mr-4 h-6 w-6 text-[#FF6347]" />
                 <div>
                   <h4 className="font-semibold">Email</h4>
-                  <p className="text-gray-700">info@indiantadka.com</p>
+                  <p className="text-gray-700">
+                    <a href="mailto:info@indiantadka.com" className="hover:underline">
+                      info@indiantadka.com
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>

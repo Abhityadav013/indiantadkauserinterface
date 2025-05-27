@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { Container, Typography, Box } from "@mui/material"
 import HeroSlider from "@/components/offersComponents/hero-slider"
-import SeasonalOffers from "@/components/offersComponents/seasonal-offers"
+// import SeasonalOffers from "@/components/offersComponents/seasonal-offers"
 import CouponList from "@/components/offersComponents/coupon-list"
 import ComboGrid from "@/components/offersComponents/combo-grid"
 import CallToAction from "@/components/offersComponents/call-to-action"
@@ -136,9 +136,9 @@ export default function OffersPage() {
       </Container>
 
       {/* Seasonal Offers */}
-      <Suspense fallback={<div className="h-32 bg-gray-200 animate-pulse mx-4 rounded-lg" />}>
+      {/* <Suspense fallback={<div className="h-32 bg-gray-200 animate-pulse mx-4 rounded-lg" />}>
         <SeasonalOffers offer={offersData.seasonalOffer} />
-      </Suspense>
+      </Suspense> */}
 
       {/* Available Coupons */}
       <Container maxWidth="lg" className="py-12">

@@ -78,7 +78,7 @@ const NavBar = () => {
         top: '20px',
         marginBottom: '5px',
       }}>
-        <Link href="/checkout" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image
             src="https://testing.indiantadka.eu/assets/basket_icon.png"
             alt="Cart Icon"

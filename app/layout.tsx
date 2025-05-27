@@ -5,7 +5,6 @@ import { Toaster } from "react-hot-toast";
 import ResponsiveWrapper from "@/components/ClientComponents/ResponsiveLayoutWrapper";
 import { StoreProvider } from "@/components/StoreProvider";
 import { SessionProvider } from "@/components/ClientComponents/SessionProvider";
-import Script from "next/script";
 import MobileViewDetector from "@/components/ClientComponents/mobileView/MobileViewDetector";
 // import Script from "next/script";
 
@@ -38,17 +37,6 @@ export default function RootLayout({
     <StoreProvider >
       <html lang="en" >
         <head>
-          {/* <script
-            id="usercentrics-cmp"
-            src="https://web.cmp.usercentrics.eu/ui/loader.js"
-            data-settings-id="367RVaF9HFZbR9"
-            async
-          ></script> */}
-
-          <Script
-            src="https://pay.google.com/gp/p/js/pay.js"
-            strategy="beforeInteractive"
-          />
         </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] mx-auto bg-white min-h-screen shadow-md`}
