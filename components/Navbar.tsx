@@ -28,7 +28,7 @@ const NavBar = () => {
   const [isClient, setIsClient] = useState(false);
 
   const navLinks = [
-    { label: 'Menu', href: '/menu' },
+    { label: 'Menu', href: '/digital-menu' },
     { label: 'About Us', href: '/about-us' },
     { label: 'Offer', href: '/offers' },
     { label: 'Contact Us', href: '/contact-us' },

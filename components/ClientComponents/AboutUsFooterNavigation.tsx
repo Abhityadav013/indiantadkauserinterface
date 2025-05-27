@@ -18,7 +18,7 @@ const AboutUsFooterNavigation = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                     <Button
-                        onClick={() => handleNavigation('/reservations')}
+                        onClick={() => handleNavigation('/reservation')}
                         className="!px-6 !md:px-8 !py-3 !text-sm !md:text-base !bg-orange-600 !text-white !font-semibold !rounded-lg hover:!bg-orange-700 transition-colors"
                     >
                         Make a Reservation

@@ -10,8 +10,19 @@ const HeroButtonNavigation = () => {
     route.push("/reservation")
   }
   const handleOrderOnline = () => {
-    // Logic to see the menu goes here
-    route.push("/menu-list")
+    const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
+    const message = `Hi, I would like to place an order.
+
+👋 Welcome to Indian Tadka!
+
+You can:
+📋 View our menu: https://indiantadka.eu/digital-menu
+🧑‍🍳 Ask for today’s specials
+🚚 Place an order directly here`;
+
+
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+    window.open(url, '_blank')
   }
   const handleDigitalMenu = () => {
     route.push("/digital-menu")

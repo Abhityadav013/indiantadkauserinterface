@@ -5,51 +5,52 @@ import OffersSectionArrows from "./OffersSectionArrows"
 export default function TestimonialsSection() {
   const testimonials = [
     {
-      name: "Priya Sharma",
+      name: "Anna Schneider",
       rating: 5,
-      text: "The best Indian food I've had outside of India! The butter chicken and garlic naan are absolutely divine. The ambiance is perfect for both family dinners and date nights.",
+      text: "Ein absolut tolles Erlebnis! Das Butter Chicken war unglaublich cremig und lecker. Ich komme definitiv wieder.",
     },
     {
-      name: "Michael Johnson",
+      name: "Lukas Weber",
       rating: 4.5,
-      text: "Indian Tadka has become our go-to place for celebrating special occasions. The service is impeccable, and the food is consistently excellent. Their biryani is a must-try!",
+      text: "Sehr freundliches Personal und authentische indische Küche. Besonders gut hat mir das Chicken Tikka geschmeckt.",
     },
     {
-      name: "Aisha Patel",
+      name: "Sophie Neumann",
       rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+      text: "Die Gewürze, der Duft, das Ambiente – alles hat gestimmt. Das Naan war warm und perfekt gebacken.",
     },
     {
-      name: "Aisha Patel",
-      rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+      name: "Jonas Müller",
+      rating: 4,
+      text: "Leckeres Essen und gute Portionen. Die Wartezeit war etwas lang, aber das Warten hat sich gelohnt.",
     },
     {
-      name: "Aisha Patel",
+      name: "Marie Fischer",
       rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+      text: "Ich habe das vegetarische Thali probiert – einfach hervorragend! Eine tolle Vielfalt an Aromen.",
     },
-     {
-      name: "Aisha Patel",
-      rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+    {
+      name: "Niklas Hoffmann",
+      rating: 4.5,
+      text: "Ein schöner Ort für ein Abendessen zu zweit. Die Mango Lassi war herrlich erfrischend.",
     },
-     {
-      name: "Aisha Patel",
+    {
+      name: "Leonie Schuster",
       rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+      text: "Der beste indische Lieferservice, den ich bisher probiert habe. Heißes Essen, super Geschmack, alles top!",
     },
-     {
-      name: "Aisha Patel",
-      rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+    {
+      name: "Felix Braun",
+      rating: 4,
+      text: "Sehr gute Küche, aber etwas scharf für meinen Geschmack. Trotzdem ein tolles Erlebnis!",
     },
-     {
-      name: "Aisha Patel",
+    {
+      name: "Laura Krüger",
       rating: 5,
-      text: "As someone who grew up with authentic Indian cooking, I'm incredibly impressed by Indian Tadka. They've managed to capture the true essence of Indian flavors while adding their unique touch.",
+      text: "Wunderschön eingerichtetes Restaurant mit einem fantastischen Service. Ich fühlte mich wie in Indien!",
     },
   ]
+
 
   const renderRating = (rating: number) => {
     const stars = []
@@ -77,7 +78,7 @@ export default function TestimonialsSection() {
             {testimonials.map((testimonial, index) => (
               <CarouselItem
                 key={index}
-                 className="md:basis-1/2 lg:basis-1/3 h-full"
+                className="md:basis-1/2 lg:basis-1/3 h-full"
               >
                 <Card key={index} className="border-2 border-cream bg-cream/30 shadow-md">
                   <CardContent className="p-6 flex flex-col h-full">
