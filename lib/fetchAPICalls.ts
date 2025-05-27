@@ -6,6 +6,7 @@ interface FetchParams {
 
 export async function fetchFromApi<T>(
   endpoint: string,
+  isCached: boolean,
   params?: FetchParams // Optional query parameters
 ): Promise<T> {
   // Construct query string if params are passed
@@ -13,7 +14,6 @@ export async function fetchFromApi<T>(
   const cookieStore = await cookies();
   const cookiesHeader = cookieStore.get('_device_id');
   const _device_id = cookiesHeader ? cookiesHeader.value : '';
-
   const queryString = params
     ? '?' +
       new URLSearchParams(
@@ -27,7 +27,7 @@ export async function fetchFromApi<T>(
     headers: {
       ssid: _device_id || '',
     },
-    next: { revalidate: 3600 },
+    ...(isCached ? { next: { revalidate: 3600 } } : { next: { revalidate: 0 } }),
     // next: { tags: ['cart'] },
   });
 

@@ -8,7 +8,7 @@ export async function GET() {
   try {
     await connectToDatabase();
     revalidateTag('category'); // ✅ clears the cache for that tag
-    const category: ICategory[] = await Category.find({isDelivery:true});
+  const category: ICategory[] = await Category.find({isDelivery:true}).sort({ order: 1 }).select('-_id');
     return NextResponse.json(
       new ApiResponse(200, { category }, 'Category retrieved successfully.')
     );

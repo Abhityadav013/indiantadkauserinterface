@@ -1,110 +1,50 @@
 'use client'
 import { Box, LinearProgress, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button"
-import toast from 'react-hot-toast';
-import { useCart } from '@/hooks/useCartDetails';
 import { MenuItem } from '@/lib/types/menu_type';
-import { useUpdateCartMutation } from '@/store/api/cartApi';
 import { motion, AnimatePresence } from "framer-motion";
-import Image from 'next/image';
+import { Cart } from '@/lib/types/cart_type';
+import { formatPrice } from '@/utils/valueInEuros';
 
 interface CartItemProps {
-    menu: MenuItem[]
+    isCartUpdated:boolean
+    isCustomizeModal: boolean,
+    items: Cart[],
+    handleAddToCart: (item: MenuItem) => Promise<() => void>,
+    handleRemoveFromCart: (item: MenuItem) => Promise<() => void>,
+    getItemQuantity: (itemId: string) => number,
+    getItemPriceWithMenu: (item: Cart) => {
+        totalPrice: number;
+        menu: MenuItem | undefined;
+    }
+    setCustomizeModal: React.Dispatch<React.SetStateAction<boolean>>,
 }
-const CartItem: React.FC<CartItemProps> = ({ menu }) => {
-    const [showLoader, setShowLoader] = useState(true);
-    const [isCustomizeModal, setCustomizeModal] = useState(false);
-    const { isLoading, items, addToCart, menuItems, updateMenuItems, removeFromCart, getItemPriceWithMenu } = useCart()
-    const [isCartUpdated, setCartUpdated] = useState(false);
-    const [updateCart] = useUpdateCartMutation();
-
-    useEffect(() => {
-        if (!isLoading) {
-            const timer = setTimeout(() => setShowLoader(false), 1000); // delay 1s
-            return () => clearTimeout(timer); // ✅ cleanup
-        } else {
-            setShowLoader(true);
-        }
-    }, [isLoading]);
-    useEffect(() => {
-        if (!menuItems.length) {
-            updateMenuItems(menu)
-        }
-    }, [menuItems, menu, updateMenuItems])
-
-    const handleAddToCart = (item: MenuItem) => {
-        const updatedCart = addToCart(item)
-        updateCart({ cart: updatedCart });
-
-        setCartUpdated(true);
-        const timer = setTimeout(() => {
-            updateCart({ cart: updatedCart });
-            setCartUpdated(false);
-        }, 1000); // Show loading indicator for 1 second
-        toast.success(`${item.name} Added to cart`, {
-            id: item.id,
-            duration: 2000, // Show toast for 2 seconds
-            style: {
-                padding: "16px 24px", // Adjusted padding
-                height: "60px", // Fixed height
-                fontSize: "16px", // Fixed font size
-                backgroundColor: "#28a745", // Green color for success
-                color: "#fff", // White text
-                borderRadius: "10px",
-                marginTop: '50px'
-            },
-            iconTheme: {
-                primary: "#fff", // White icon
-                secondary: "#28a745", // Green icon
-            },
-        });
-        return () => clearTimeout(timer);
-
-    };
-
-    const handleRemoveFromCart = (item: MenuItem) => {
-        const updatedCart = removeFromCart(item);
-        setCartUpdated(true);
-        const timer = setTimeout(() => {
-            updateCart({ cart: updatedCart });
-            setCartUpdated(false);
-        }, 1000); // Show loading indicator for 1 second
-        toast(`${item.name} removed from cart`, {
-            id: `remove-${item.id}`,
-            duration: 2000,
-            style: {
-                padding: "16px 24px",
-                height: "60px",
-                fontSize: "16px",
-                backgroundColor: "#dc3545", // Red color for removal
-                color: "#fff",
-                borderRadius: "10px",
-                marginTop: "50px",
-            },
-            iconTheme: {
-                primary: "#fff",
-                secondary: "#dc3545",
-            },
-        });
-        return () => clearTimeout(timer);
-
-    };
+const CartItem: React.FC<CartItemProps> = ({
+    isCartUpdated,
+    isCustomizeModal,
+    items,
+    handleAddToCart,
+    handleRemoveFromCart,
+    getItemQuantity,
+    getItemPriceWithMenu,
+    setCustomizeModal,
+}) => {
 
     // foodCartLoader
-    if (showLoader) {
-        return (
-            <Image
-                src='https://testing.indiantadka.eu/assets/foodCartLoader.gif'
-                alt="Loading..."
-                width={400}
-                height={400} // Assuming the image is square
-            />
-        );
-    }
+    // if (showLoader) {
+    //     return (
+    //         <Image
+    //             src='https://testing.indiantadka.eu/assets/foodCartLoader.gif'
+    //             alt="Loading..."
+    //             width={400}
+    //             height={400} // Assuming the image is square
+    //         />
+    //     );
+    // }
     return (
         <React.Fragment>
-            <Box sx={{ width: '100%', height: 4, mb: 2 }}>
+            <Box sx={{ width: '100%', height: 4, mb: 5 }}>
                 {isCartUpdated && (
                     <motion.div
                         initial={false}
@@ -126,7 +66,8 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
             </Box>
             {
                 items.map((item) => {
-                    const quantity = item.quantity ?? 0
+                    const quantity = getItemQuantity(item.itemId)
+                    //const quantity = item.quantity ?? 0
                     const { totalPrice: itemTotal, menu: currentMenuItem } = getItemPriceWithMenu(item)
                     // const cartDescription = cartDescriptions.find(di => di.itemId === item.id);
 
@@ -215,7 +156,7 @@ const CartItem: React.FC<CartItemProps> = ({ menu }) => {
                                         marginX: '0.75rem'
                                     }}>
                                         <Typography variant="body2" className="font-semibold text-gray-800 text-sm">
-                                            €{itemTotal.toFixed(2)}  {/* Ensuring the price is formatted correctly */}
+                                            {formatPrice(Number(itemTotal.toFixed(2)))}
                                         </Typography>
                                     </Box>
 
