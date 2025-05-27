@@ -20,7 +20,7 @@ const CartNavigate = () => {
       startIcon={<ShoppingCartIcon />}
       onClick={handleNavigate} // Handle navigation
     >
-      View Cart
+      View Basket
     </Button>
   )
 }

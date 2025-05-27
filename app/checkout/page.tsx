@@ -1,102 +1,50 @@
-import React from 'react';
-import NavBarNavigation from '@/components/NavBarNavigation';
-import CheckoutCart from '@/components/CheckoutCart';
-import { Box } from '@mui/material';
-import { getMenuData } from '../menu/page';
-import PaymentCheckoutBill from '@/components/PaymentCheckoutBill';
-import { OrderType } from '@/lib/types/order_type';
-import PaymentWrapper from '@/components/ClientComponents/PaymentWrapper';
-import { fetchFromApi } from '@/lib/fetchAPICalls';
-import { Cart } from '@/lib/types/cart_type';
+import NavBarNavigation from '@/components/NavBarNavigation'; // Try to make this a server component
+import OrderDetails from '@/components/ClientComponents/OrderDetails';
+import OrderSummary from '@/components/ClientComponents/OrderSummary';
+import { getMenuData } from '@/lib/api/fetchMenuDataApi';
+import { getCartData } from '@/lib/api/fetchCartDataApi';
 import { MenuItem } from '@/lib/types/menu_type';
+import { getUserData } from '@/lib/api/fetchUserDetailsApi';
+import { Box } from '@mui/material';
+import PaymentMethodSelector from '@/components/ClientComponents/PaymentMethodSelector';
 
-type UserAddress = {
-    displayAddress: string;
-    buildingNumber: string;
-    street: string;
-    town: string;
-    pincode: string;
-    addressType: string;
-};
-
-type CustomerDetails = {
-    name: string;
-    phoneNumber: string;
-    address?: UserAddress;
-    isFreeDelivery?: boolean;
-    deliveryFee?: string;
-    notDeliverable?: boolean;
-};
-
-type CustomerOrder = {
-    customerDetails: CustomerDetails;
-    orderType: OrderType;
-};
-
-type OrderCart = {
-    cart: {
-        id: string;
-        deviceId: string;
-        userId?: string;
-        cartItems: Cart[];
-    }
-};
-
-
-// Now, we define an `async` function inside the component to fetch data.
 export default async function CheckoutPage() {
-    try {
-        // Fetch all the necessary data
-        const [cartDataRow, customerDataRow, menuData] = await Promise.all([
-            fetchFromApi<OrderCart>('/cart'),
-            fetchFromApi<CustomerOrder>('/user-details'),
-            getMenuData(),
-        ]);
+  const [menuData, cartdata, userData] = await Promise.all([getMenuData(), getCartData(), getUserData()]);
+  const menuItems: MenuItem[] = menuData.menuItems;
+  return (
+    <main className="min-h-screen bg-gray-50 py-4 px-2 bg-[url('https://testing.indiantadka.eu/assets/bg-checkout-multi.avif')] bg-no-repeat bg-cover bg-center">
+      <NavBarNavigation label="Checkout" isImage={false} />
 
-        
-        const cartdata: Cart[] = cartDataRow.cart.cartItems ?? [];
-        console.log('cartdata::::::',cartdata)
-        const customerOrderInfo: CustomerOrder = customerDataRow;
-        const menuItems: MenuItem[] = menuData.menuItems;
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          mt: 4,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: {
+              xs: 'column', // Stacked on extra-small screens (mobile)
+              sm: 'column', // Optional: stacked on small screens
+              md: 'row',    // Side-by-side on medium and up (tablet/laptop)
+            },
+            gap: 4,
+            maxWidth: '1000px',
+            width: '100%',
+          }}
+        >
+          <Box sx={{ flex: 1 }}>
+            <OrderDetails />
+            <PaymentMethodSelector />
+          </Box>
 
-        // The logic to calculate the cart total
-        const getCartTotal = (cartdata: Cart[], menuItems: MenuItem[]) => {
-            return cartdata.length && cartdata.reduce((total: number, cartItem: Cart): number => {
-                const foodItemMatch = menuItems.find((item: { id: string; price: number }) => item.id === cartItem.itemId);
-                return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
-            }, 0);
-        };
-
-        const cartTotal = getCartTotal(cartdata, menuItems);
-        return (
-            <Box
-                component="section"
-                sx={{
-                    overflow: 'auto',
-                    backgroundColor: '#e9ecee',
-                    padding: 2,
-                    height: '100vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    gap: 2,
-                }}
-            >
-                <NavBarNavigation label="Checkout" isImage={false} />
-                <CheckoutCart cart={cartdata} menu={menuItems} />
-                <PaymentCheckoutBill
-                    cartTotal={cartTotal}
-                    isDeliveryOrder={customerOrderInfo.orderType === OrderType.DELIVERY}
-                    deliveryFee={customerOrderInfo.customerDetails?.deliveryFee ?? ''}
-                    deliveryTip="10"
-                    isFreeDelivery={customerOrderInfo.customerDetails?.isFreeDelivery ?? false}
-                />
-                <PaymentWrapper cartData={cartdata} />
-            </Box>
-        );
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        return <div>Error loading data...{error instanceof Error ? error.message : String(error)}</div>; // Handle the error gracefully
-    }
+          <Box sx={{ flex: 1 }}>
+            <OrderSummary cart={cartdata} menu={menuItems} userData={userData} />
+          </Box>
+        </Box>
+      </Box>
+    </main>
+  );
 }

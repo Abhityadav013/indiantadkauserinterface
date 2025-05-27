@@ -1,9 +1,10 @@
-import { MenuCategoryItem, MenuItem } from '@/lib/types/menu_type';
+import { MenuCategory } from '@/lib/types/menu_category';
+import {  MenuItem } from '@/lib/types/menu_type';
 
-export const menuTransform = (menu: MenuItem[], categories: MenuCategoryItem[]) => {
+export const menuTransform = (menu: MenuItem[], categories: MenuCategory[]) => {
   const transformedMenuItems = menu.reduce(
     (acc, menuItem) => {
-      const categoryName = categories.find((cat) => cat.categoryId === menuItem.category.id);
+      const categoryName = categories.find((cat) => cat.id === menuItem.category.id);
 
       // Check if the category already exists in the accumulator
       if (!acc[menuItem.category.id]) {
@@ -11,7 +12,7 @@ export const menuTransform = (menu: MenuItem[], categories: MenuCategoryItem[]) 
           items: [],
           categoryName: categoryName?.categoryName ?? '',
           order: menuItem.category.order,
-          isExpandable: menuItem.category.order === 1, // Category 1 is expandable by default
+          isExpandable: true//,menuItem.category.order === 1, // Category 1 is expandable by default
         };
       }
 

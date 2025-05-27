@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       'www.paypalobjects.com',
       'flagcdn.com',
       'stripe.com',
+      'www.flaticon.com',
+      'static.takeaway.com'
     ], // Add your image domain here
   },
 };

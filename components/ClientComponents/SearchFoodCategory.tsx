@@ -67,7 +67,6 @@ const SearchFoodCategory: React.FC<SearchFoodCategoryProps> = ({
     };
 
     const handleSearch = () =>{
-        console.log('localSearchTerm::::',localSearchTerm)
         hasRef.current =false
         debouncedSearch(localSearchTerm); // Call the debounced function
     }

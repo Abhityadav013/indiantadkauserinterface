@@ -73,7 +73,7 @@ const ContactUsForm = () => {
             <Button
                 type="submit"
                 variant="contained"
-                className="w-full bg-tomato text-white py-2"
+                className="w-full !bg-orange-600 text-white py-2"
             >
                 Send Message
             </Button>
