@@ -1,3 +1,5 @@
+
+'use client'
 import { Card, CardContent, CardMedia, Typography, Chip, Box, Button } from "@mui/material"
 import { Star } from "lucide-react"
 
@@ -16,6 +18,22 @@ interface ComboGridProps {
 }
 
 export default function ComboGrid({ combos }: ComboGridProps) {
+
+  const handleOrderOnline = () => {
+    const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
+    const message = `Hi, I would like to place an order.
+
+👋 Welcome to Indian Tadka!
+
+You can:
+📋 View our menu: https://indiantadka.eu/digital-menu
+🧑‍🍳 Ask for today’s specials
+🚚 Place an order directly here`;
+
+
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+    window.open(url, '_blank')
+  }
   return (
     <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
       {combos.map((combo) => (
@@ -52,7 +70,7 @@ export default function ComboGrid({ combos }: ComboGridProps) {
               </Box>
             </Box>
 
-            <Button variant="contained" fullWidth className="bg-orange-500 hover:bg-orange-600 text-white">
+            <Button variant="contained" onClick={handleOrderOnline} fullWidth className="!bg-orange-500 hover:bg-orange-600 text-white">
               Order Now
             </Button>
           </CardContent>
