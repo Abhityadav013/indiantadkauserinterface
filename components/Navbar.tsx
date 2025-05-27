@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import {
@@ -25,7 +24,6 @@ export type ErrorResponse = FieldError[];
 
 const NavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   const navLinks = [
     { label: 'Menu', href: '/digital-menu' },
@@ -34,10 +32,6 @@ const NavBar = () => {
     { label: 'Contact Us', href: '/contact-us' },
     { label: 'Reservation', href: '/reservation' }
   ];
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleLinkClick = () => {
     setDrawerOpen(false); // Close the drawer when a link is clicked
@@ -78,23 +72,7 @@ const NavBar = () => {
         top: '20px',
         marginBottom: '5px',
       }}>
-        <Link href="/" className="flex items-center">
-          <Image
-            src="https://testing.indiantadka.eu/assets/basket_icon.png"
-            alt="Cart Icon"
-            width={100}
-            height={100}
-            className="dark:invert w-[20px] sm:w-[28px] md:w-[36px] lg:w-[44px]"
-          />
-          {isClient && (
-            <div
-              className="absolute top-0 right-10 sm:right-7 bg-tomato text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-semibold
-    sm:w-5 sm:h-5 sm:text-[8px] md:w-4 md:h-4 md:text-xs" // Adjusted for mobile and tablet screens
-            >
-              {5}
-            </div>
-          )}
-        </Link>
+
 
         {/* Hamburger icon only on mobile */}
         <div className="md:hidden ml-4">

@@ -1,3 +1,5 @@
+
+'use client'
 import { MapPin, Phone, Mail } from "lucide-react"
 import RestaurantMap from "./ClientComponents/RestaurantMap"
 
