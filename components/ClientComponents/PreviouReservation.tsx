@@ -28,8 +28,10 @@ import { format } from "date-fns"
 import UpdateReservation from "./UpdateReservation"
 import { ReservationType } from "@/lib/types/reservation_type"
 import toast from 'react-hot-toast';
+import { useTranslations } from "next-intl"
 
 export default function PreviousReservation() {
+  const t = useTranslations('reservation')
   const [bookings, setBookings] = useState<ReservationType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -103,7 +105,7 @@ export default function PreviousReservation() {
 
       // Remove the deleted booking from the state
       setBookings(bookings.filter((booking) => booking.id !== selectedBooking.id))
-      toast.success(`Reservation deleted successfully.`, {
+      toast.success(t('toast_message_delete'), {
         duration: 3000, // Show toast for 2 seconds
         style: {
           padding: "16px 24px", // Adjusted padding

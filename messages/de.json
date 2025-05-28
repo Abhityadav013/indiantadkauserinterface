@@ -1,0 +1,126 @@
+{
+  "navbar": {
+    "menu": "Speisekarte",
+    "about": "Über uns",
+    "offer": "Angebot",
+    "contact_us": "Kontaktieren Sie uns",
+    "reservation": "Reservierung"
+  },
+  "heroSection": {
+    "heroSubSection": "Ein Ort für komplette indische Küche",
+    "reserve_table": "Tisch reservieren",
+    "order_online": "Online bestellen",
+    "digital_menu": "Digitales Menü"
+  },
+  "homeAbout": {
+    "about": "Über uns",
+    "about_text_1": "Willkommen im Indian Tadka, wo Tradition auf Innovation trifft. Unser 2024 eröffnetes Restaurant bringt die authentischen Aromen Indiens mit einem modernen Touch auf Ihren Tisch.",
+    "about_text_2": "Unsere Köche verfügen über jahrzehntelange Erfahrung in der indischen Küche und wählen sorgfältig die besten Zutaten und Gewürze aus, um Gerichte zu kreieren, die Sie direkt in die pulsierenden Straßen Indiens versetzen.",
+    "about_text_3": "Wir bei Indian Tadka glauben, dass es beim Essen nicht nur um Geschmack geht – es geht darum, Erinnerungen zu schaffen. Begleiten Sie uns auf eine unvergessliche kulinarische Reise durch die vielfältigen Regionen Indiens."
+  },
+  "openingTime": {
+    "opening_hour": "Öffnungszeiten",
+    "weekly_schedule": "Wochenplan",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag"
+  },
+  "findUs": {
+    "find_us": "Finden Sie uns",
+    "contact_info": "Kontaktinformationen",
+    "address": "Adresse",
+    "phone": "Telefon"
+  },
+  "review_customer": {
+    "text1": "Was unsere Kunden sagen"
+  },
+  "footer_section": {
+    "menu": "Speisekarte",
+    "about": "Über uns",
+    "offer": "Angebot",
+    "contact_us": "Kontaktieren Sie uns",
+    "reservation": "Reservierung",
+    "connect": "Verbinden Sie sich mit uns"
+  },
+  "about_us": {
+    "section_one": {
+      "info": "Authentische indische Küche in Deutschland",
+      "heading": "Wo Tradition auf Innovation trifft",
+      "content": "Willkommen auf unserer kulinarischen Reise, die die lebendigen Aromen Indiens mit dem Herzen Deutschlands verbindet. Wir sind mehr als nur ein Restaurant – wir bieten ein kulturelles Erlebnis, das authentische indische Traditionen mit lokalen deutschen Zutaten und Gastfreundschaft verbindet."
+    },
+    "section_two": {
+      "label": "Unsere Geschichte",
+      "sub_heading": "Entstanden aus der Leidenschaft, Indiens reiches kulinarisches Erbe mit unserer deutschen Community zu teilen",
+      "content_1": "Unsere Reise begann mit einem einfachen Traum: einen Ort zu schaffen, an dem die aromatischen Gewürze Indiens in Deutschland eine neue Heimat finden. Gegründet von einer Familie mit einer Leidenschaft für authentische indische Küche, haben wir jahrelang überlieferte Rezepte perfektioniert und sie gleichzeitig an lokale Geschmäcker und Vorlieben angepasst.",
+      "content_2": "Was uns einzigartig macht, ist unser kompromissloses Engagement für Authentizität. Jedes Gericht erzählt eine Geschichte der vielfältigen Regionen Indiens, von den kräftigen Aromen des Punjab bis zu den feinen Gewürzen Keralas – zubereitet mit den besten deutschen Zutaten aus der Region.",
+      "content_3": "Wir glauben, dass Essen eine universelle Sprache ist, die Menschen zusammenbringt. Ob Sie als Inder im Ausland leben und den Geschmack der Heimat vermissen oder als Deutscher neugierig auf authentische indische Aromen sind – unsere Türen stehen Ihnen mit herzlicher Gastfreundschaft stets offen."
+    },
+    "section_three": {
+      "label": "Unsere Werte",
+      "sub_heading": "Die Prinzipien, die alles bestimmen, was wir tun, von der Beschaffung der Zutaten bis hin zum Servieren unserer Gäste",
+      "card_one": {
+        "heading": "Authentische Aromen",
+        "content": "Jede Gewürzmischung und Kochtechnik bleibt den traditionellen indischen Methoden treu und sorgt für authentischen Geschmack bei jedem Bissen."
+      },
+      "card_two": {
+        "heading": "Lokale Beschaffung",
+        "content": "Wir arbeiten mit lokalen deutschen Bauern und Lieferanten zusammen, um die frischesten Zutaten zu beziehen, unterstützen unsere Gemeinschaft und gewährleisten Qualität."
+      },
+      "card_three": {
+        "heading": "Herzliche Gastfreundschaft",
+        "content": "Indische Gastfreundschaft bedeutet, jeden Gast wie Familie zu behandeln. Wir schaffen eine einladende Atmosphäre, in der sich jeder wie zu Hause fühlt."
+      },
+      "card_four": {
+        "heading": "Kulturelle Brücke",
+        "content": "Wir feiern die schöne Verschmelzung indischer und deutscher Kulturen und schaffen Verbindungen durch gemeinsame Mahlzeiten und Erlebnisse."
+      },
+      "card_five": {
+        "heading": "Exzellenz",
+        "content": "Von der Auswahl der Zutaten bis zur finalen Präsentation halten wir in jedem Aspekt unseres kulinarischen Handwerks die höchsten Standards ein."
+      },
+      "card_six": {
+        "heading": "Nachhaltigkeit",
+        "content": "Wir engagieren uns für umweltverantwortliche Praktiken, von der Abfallreduzierung bis zur Unterstützung nachhaltiger Anbaumethoden."
+      }
+    },
+    "section_four": {
+      "label": "Das vollständige Erlebnis",
+      "content_one": "Betreten Sie unser Restaurant und begeben Sie sich auf eine sinnliche Reise durch Indien. Unser gemütlicher, liebevoll gestalteter Raum verbindet traditionelle indische Ästhetik mit modernem deutschen Komfort und schafft eine Atmosphäre, die sowohl exotisch als auch vertraut ist.",
+      "content_two": "Von dem Moment an, in dem Sie eintreten, werden Sie vom sanften Aroma frisch gemahlener Gewürze, dem warmen Schein traditioneller Messinglampen und den herzlichen Lächeln unseres Teams begrüßt. Unser Menü bietet sowohl beliebte Klassiker als auch innovative Fusionsgerichte, die die Vielseitigkeit der indischen Küche zeigen.",
+      "content_three": "Egal, ob Sie zu einem romantischen Abendessen, einer Familienfeier oder einem Geschäftsessen kommen – wir sorgen dafür, dass jeder Besuch unvergesslich wird. Unser sachkundiges Personal steht Ihnen jederzeit zur Verfügung, um Sie durch unser Menü zu führen, Weinempfehlungen auszusprechen oder auf Ernährungswünsche einzugehen."
+    },
+    "section_about_footer": {
+      "heading": "Erleben Sie Indien im Herzen Deutschlands",
+      "sub_heading": "Begleiten Sie uns auf eine unvergessliche kulinarische Reise, bei der jede Mahlzeit ein Fest authentischer Aromen, herzlicher Gastfreundschaft und kultureller Verbundenheit ist.",
+      "button_one": "Reservierung vornehmen",
+      "button_two": "Unsere Speisekarte ansehen"
+    }
+  },
+  "offers": {
+    "label": "Angebote folgen in Kürze!",
+    "content_one": "Wir haben tolle Angebote für Sie vorbereitet. Freuen Sie sich auf exklusive Rabatte, Menükombinationen und zeitlich begrenzte Sonderangebote!"
+  },
+  "contact_us": {
+    "field_one": "Ihr Name",
+    "field_two": "Ihre Nachricht",
+    "button": "Nachricht senden",
+    "toast_message": "Nachricht erfolgreich gesendet!"
+  },
+  "reservation": {
+    "type_one": "Machen Sie eine Reservierung",
+    "type_two": "Frühere Buchungen anzeigen",
+    "field_one": "Vollständiger Name",
+    "field_two": "Anzahl der Personen",
+    "field_three": "Reservierungsdatum",
+    "field_four": "Reservierungszeit",
+    "button": "Reservierung abschicken",
+    "update_button": "Reservierung aktualisieren",
+    "toast_message_success": "Reservierung erfolgreich übermittelt! Wir freuen uns auf Sie.",
+    "toast_message_delete": "Reservierung erfolgreich gelöscht.",
+    "toast_message_update": "Reservierung erfolgreich aktualisiert."
+  }
+}

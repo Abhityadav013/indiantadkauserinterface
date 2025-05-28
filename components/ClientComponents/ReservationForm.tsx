@@ -18,6 +18,7 @@ import PhoneInput from "./PhoneInput"
 import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import ReservationFormSkeleton from "../Skeletons/ReservationFormSkeleton";
+import { useTranslations } from "next-intl";
 
 interface FormData {
     fullName: string
@@ -42,6 +43,7 @@ interface DisabledDateResponse {
 }
 
 export default function ReservationForm() {
+    const t = useTranslations("reservation")
     const [formData, setFormData] = useState<FormData>({
         fullName: "",
         phoneNumber: "",
@@ -257,7 +259,7 @@ export default function ReservationForm() {
                     <div className="space-y-6">
                         <div className="mb-4">
                             <TextField
-                                label="Full Name"
+                                label={t('field_one')}
                                 name="fullName"
                                 value={formData.fullName}
                                 onChange={handleInputChange}
@@ -279,7 +281,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <TextField
                                 select
-                                label="Number of People"
+                                 label={t('field_two')}
                                 name="numberOfPeople"
                                 value={formData.numberOfPeople}
                                 onChange={handleInputChange}
@@ -302,7 +304,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationDate}>
                                 <DatePicker
-                                    label="Reservation Date"
+                                     label={t('field_three')}
                                     value={formData.reservationDate}
                                     onChange={handleDateChange}
                                     disablePast
@@ -321,7 +323,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationTime}>
                                 <TimePicker
-                                    label="Reservation Time"
+                                      label={t('field_four')}
                                     value={formData.reservationTime}
                                     onChange={handleTimeChange}
                                     slotProps={{
@@ -348,7 +350,7 @@ export default function ReservationForm() {
                                 disabled={submitting}
                                 className="bg-blue-600 hover:bg-blue-700"
                             >
-                                {submitting ? <CircularProgress size={24} /> : "Submit Reservation"}
+                                {submitting ? <CircularProgress size={24} /> : t('button')}
                             </Button>
                         </div>
                     </div>
