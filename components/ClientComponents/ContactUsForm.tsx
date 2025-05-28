@@ -24,7 +24,7 @@ const ContactUsForm = () => {
                 body: JSON.stringify({ name, message }),
             });
             if (response.ok) {
-                toast.success("Message sent successfully! 📩", {
+                toast.success(`${t('toast_message')} 📩`, {
                     duration: 2000, // Show toast for 2 seconds
                     style: {
                         padding: "16px 24px", // Adjusted padding

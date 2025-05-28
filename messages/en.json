@@ -107,7 +107,8 @@
   "contact_us":{
     "field_one":"Your Name",
     "field_two":"Your Message",
-    "button":"Send Message"
+    "button":"Send Message",
+    "toast_message":"Message sent successfully!"
   },
   "reservation":{
     "type_one":"Make a Reservation",
@@ -116,6 +117,10 @@
     "field_two":"Number of People",
     "field_three":"Reservation Date",
     "field_four":"Reservation Time",
-    "button":"Submit Reservation"
+    "button":"Submit Reservation",
+    "update_button":"Update Reservation",
+    "toast_message_success":"Reservation submitted successfully! We look forward to seeing you.",
+    "toast_message_delete":"Reservation deleted successfully.",
+    "toast_message_update":"Reservation updated successfully."
   }
 }

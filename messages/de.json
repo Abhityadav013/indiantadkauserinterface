@@ -100,22 +100,27 @@
       "button_two": "Unsere Speisekarte ansehen"
     }
   },
-  "offers":{
-    "label":"Angebote folgen in Kürze!",
-    "content_one":"Wir haben tolle Angebote für Sie vorbereitet. Freuen Sie sich auf exklusive Rabatte, Menükombinationen und zeitlich begrenzte Sonderangebote!"
+  "offers": {
+    "label": "Angebote folgen in Kürze!",
+    "content_one": "Wir haben tolle Angebote für Sie vorbereitet. Freuen Sie sich auf exklusive Rabatte, Menükombinationen und zeitlich begrenzte Sonderangebote!"
   },
-   "contact_us":{
-    "field_one":"Ihr Name",
-    "field_two":"Ihre Nachricht",
-    "button":"Nachricht senden"
+  "contact_us": {
+    "field_one": "Ihr Name",
+    "field_two": "Ihre Nachricht",
+    "button": "Nachricht senden",
+    "toast_message": "Nachricht erfolgreich gesendet!"
   },
-  "reservation":{
-    "type_one":"Machen Sie eine Reservierung",
-    "type_two":"Frühere Buchungen anzeigen",
-    "field_one":"Vollständiger Name",
-    "field_two":"Anzahl der Personen",
-    "field_three":"Reservierungsdatum",
-    "field_four":"Reservierungszeit",
-    "button":"Reservierung abschicken"
+  "reservation": {
+    "type_one": "Machen Sie eine Reservierung",
+    "type_two": "Frühere Buchungen anzeigen",
+    "field_one": "Vollständiger Name",
+    "field_two": "Anzahl der Personen",
+    "field_three": "Reservierungsdatum",
+    "field_four": "Reservierungszeit",
+    "button": "Reservierung abschicken",
+    "update_button": "Reservierung aktualisieren",
+    "toast_message_success": "Reservierung erfolgreich übermittelt! Wir freuen uns auf Sie.",
+    "toast_message_delete": "Reservierung erfolgreich gelöscht.",
+    "toast_message_update": "Reservierung erfolgreich aktualisiert."
   }
 }
