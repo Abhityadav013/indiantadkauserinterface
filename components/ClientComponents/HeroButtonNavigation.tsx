@@ -12,14 +12,14 @@ const HeroButtonNavigation = () => {
   }
   const handleOrderOnline = () => {
     const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
-    const message = `Hi, I would like to place an order.
+    const message = `Hallo, ich möchte gerne eine Bestellung aufgeben.
 
-👋 Welcome to Indian Tadka!
+👋 Willkommen bei Indian Tadka!
 
-You can:
-📋 View our menu: https://indiantadka.eu/digital-menu
-🧑‍🍳 Ask for today’s specials
-🚚 Place an order directly here`;
+Du kannst:
+📋 Unsere Speisekarte ansehen: https://indiantadka.eu/digital-menu
+🧑‍🍳 Nach den heutigen Spezialitäten fragen
+🚚 Direkt hier eine Bestellung aufgeben`;
 
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
