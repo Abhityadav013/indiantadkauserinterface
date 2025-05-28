@@ -6,7 +6,7 @@ import { Box, Button, Typography } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const NotFound = () => {
+export default function NotFound() {
   const router = useRouter();
 
   return (
@@ -41,5 +41,3 @@ const NotFound = () => {
     </Box>
   );
 };
-
-export default NotFound;

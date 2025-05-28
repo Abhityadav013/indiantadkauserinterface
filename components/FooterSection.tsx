@@ -1,9 +1,10 @@
 import Link from "next/link"
 import { Facebook, Instagram, Twitter } from "lucide-react"
 import { Box, Divider, Typography } from "@mui/material"
+import { getTranslations } from "next-intl/server"
 
-export default function FooterSection() {
-  console.log("FooterSection rendered")
+export default async function FooterSection() {
+  const t = await getTranslations("footer_section")
   return (
     <footer className="bg-[#FF6347] py-4 h-full text-white">
       <div className="container mx-auto px-4">
@@ -16,17 +17,17 @@ export default function FooterSection() {
           <div>
             <h3 className="mb-4 text-xl font-bold">Quick Links</h3>
             <nav className="flex flex-col space-y-2">
-              <Link href="/menu" className="hover:underline">
-                Menu
+              <Link href="/digital-menu" className="hover:underline">
+                {t('menu')}
               </Link>
               <Link href="/reservation" className="hover:underline">
-                Reservations
+                {t('reservation')}
               </Link>
               <Link href="contact-us" className="hover:underline">
-                Contact Us
+                {t('contact_us')}
               </Link>
               <Link href="/about-us" className="hover:underline">
-                About Us
+                {t('about')}
               </Link>
             </nav>
           </div>

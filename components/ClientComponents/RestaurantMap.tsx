@@ -61,7 +61,7 @@ export default function RestaurantMap() {
     <Box
       sx={{
         width: '100%',
-        height: isMobile ? 250 : 400,
+         height: isMobile ? '60vh' : 400,
         borderRadius: 2,
         overflow: 'hidden',
         boxShadow: 2,

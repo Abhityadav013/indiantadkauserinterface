@@ -11,6 +11,7 @@ import {
 import NavBarNavigation from "@/components/NavBarNavigation"
 import ReservationForm from "@/components/ClientComponents/ReservationForm"
 import PreviousReservation from "@/components/ClientComponents/PreviouReservation"
+import { useTranslations } from "next-intl"
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -33,6 +34,7 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 }
 
 export default function ReservationPage() {
+  const t = useTranslations("reservation")
   const [tabValue, setTabValue] = useState(0)
   const [loading, setLoading] = useState(true)
 
@@ -52,7 +54,7 @@ export default function ReservationPage() {
         backgroundColor: '#e9ecee',
         minHeight: '100vh',
         width: '100%',
-        mt:8,
+        mt: 8,
         py: { xs: 2, sm: 4 },
         px: { xs: 1, sm: 2, md: 4 },
         display: 'flex',
@@ -87,8 +89,8 @@ export default function ReservationPage() {
               aria-label="reservation tabs"
               variant="fullWidth"
             >
-              <Tab label="Make a Reservation" id="reservation-tab-0" aria-controls="reservation-tabpanel-0" />
-              <Tab label="View Previous Bookings" id="reservation-tab-1" aria-controls="reservation-tabpanel-1" />
+              <Tab label={t('type_one')} id="reservation-tab-0" aria-controls="reservation-tabpanel-0" />
+              <Tab label={t('type_two')} id="reservation-tab-1" aria-controls="reservation-tabpanel-1" />
             </Tabs>
           </Box>
 

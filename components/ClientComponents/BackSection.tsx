@@ -16,7 +16,7 @@ const BackSection = () => {
       edge="start"
       color="default"
       onClick={onBack}
-      sx={{ position: "fixed", top: 14, left: 20 }}
+      sx={{ left: 20 ,pr:10}}
     >
       <ArrowBackIcon />
     </IconButton>

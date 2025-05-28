@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import React, { useState } from 'react';
 import {
   Button,
@@ -14,6 +13,8 @@ import {
 // import { RootState } from '../redux/reducers';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface FieldError {
   key: string;
@@ -24,13 +25,13 @@ export type ErrorResponse = FieldError[];
 
 const NavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const t = useTranslations("navbar");
   const navLinks = [
-    { label: 'Menu', href: '/digital-menu' },
-    { label: 'About Us', href: '/about-us' },
-    { label: 'Offer', href: '/offers' },
-    { label: 'Contact Us', href: '/contact-us' },
-    { label: 'Reservation', href: '/reservation' }
+    { label: t('menu'), href: '/digital-menu' },
+    { label: t('about'), href: '/about-us' },
+    { label: t('offer'), href: '/offers' },
+    { label: t('contact_us'), href: '/contact-us' },
+    { label: t('reservation'), href: '/reservation' }
   ];
 
   const handleLinkClick = () => {
@@ -68,7 +69,7 @@ const NavBar = () => {
       </div>
 
       {/* Cart Icon + Hamburger for Mobile */}
-      <Box className="relative flex items-center ml-4 mr-[10%] md:ml-2" sx={{
+      <Box className="relative flex items-center ml-4 md:ml-2" sx={{
         top: '20px',
         marginBottom: '5px',
       }}>

@@ -2,7 +2,9 @@ import { Star, StarHalf } from "lucide-react"
 import { Card, CardContent } from '@mui/material'
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import OffersSectionArrows from "./OffersSectionArrows"
+import { useTranslations } from "next-intl"
 export default function TestimonialsSection() {
+    const t = useTranslations("review_customer")
   const testimonials = [
     {
       name: "Anna Schneider",
@@ -71,7 +73,7 @@ export default function TestimonialsSection() {
   return (
     <section className="bg-white py-16">
       <div className="container mx-auto px-4">
-        <h2 className="mb-12 text-center text-3xl font-bold text-tomato-red sm:text-4xl">What Our Customers Say</h2>
+        <h2 className="mb-12 text-center text-3xl font-bold text-tomato-red sm:text-4xl">{t('text1')}</h2>
 
         <Carousel className="mx-auto max-w-5xl">
           <CarouselContent>
