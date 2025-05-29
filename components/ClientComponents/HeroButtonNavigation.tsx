@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -19,6 +19,11 @@ const HeroButtonNavigation = () => {
   const handleDigitalMenu = () => {
     route.push("/digital-menu")
   }
+
+
+  useEffect(() => {
+    route.prefetch("/reservation")
+  }, [route])
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
       <Button size="lg" onClick={handleReserveTable} className="bg-amber-500 text-white hover:bg-amber-600">
