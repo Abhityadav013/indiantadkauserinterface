@@ -8,6 +8,7 @@
   },
   "heroSection": {
     "heroSubSection": "A Place for Complete Indian Cuisine",
+    "order_message": "Hello, I would like to place an order.\n\n👋 Welcome to Indian Tadka!\n\nYou can:\n📋 View our menu: https://indiantadka.eu/en/digital-menu\n🧑‍🍳 Ask about today's specials\n🚚 Place an order right here",
     "reserve_table": "Reserve Table",
     "order_online": "Order Online",
     "digital_menu": "Digital Menu"
