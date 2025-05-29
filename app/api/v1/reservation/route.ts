@@ -2,8 +2,9 @@ import Reservation from '@/lib/mongodb/models/Reservation';
 import ApiResponse from '@/utils/ApiResponse';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-export const resend = new Resend('re_GCbq2vuN_AMAR9RinvcSudri8E8B6uHCG');
+
 export async function POST(request: Request) {
+   const resend = new Resend('re_GCbq2vuN_AMAR9RinvcSudri8E8B6uHCG');
   try {
     const data = await request.json();
     const deviceId = request.headers.get('ssid') || '';
