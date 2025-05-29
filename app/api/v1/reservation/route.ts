@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
 export async function POST(request: Request) {
-   const resend = new Resend('re_GCbq2vuN_AMAR9RinvcSudri8E8B6uHCG');
+   const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const data = await request.json();
     const deviceId = request.headers.get('ssid') || '';
