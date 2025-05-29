@@ -9,19 +9,9 @@ import {
   Skeleton
 } from "@mui/material"
 import NavBarNavigation from "@/components/NavBarNavigation"
-// import ReservationForm from "@/components/ClientComponents/ReservationForm"
-// import PreviousReservation from "@/components/ClientComponents/PreviouReservation"
+import ReservationForm from "@/components/ClientComponents/ReservationForm"
+import PreviousReservation from "@/components/ClientComponents/PreviouReservation"
 import { useTranslations } from "next-intl"
-import dynamic from "next/dynamic"
-
-const ReservationForm = dynamic(() => import('@/components/ClientComponents/ReservationForm'), {
-  loading: () => <Skeleton height={300} />,
-  ssr: false, // if it's purely client side
-})
-const PreviousReservation = dynamic(() => import('@/components/ClientComponents/PreviouReservation'), {
-  loading: () => <Skeleton height={300} />,
-  ssr: false,
-})
 
 interface TabPanelProps {
   children?: React.ReactNode
