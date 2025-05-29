@@ -1,16 +1,21 @@
-import Reservation from "@/lib/mongodb/models/Reservation"
-import ApiResponse from "@/utils/ApiResponse";
-import { NextResponse } from "next/server"
+import Reservation from '@/lib/mongodb/models/Reservation';
+import ApiResponse from '@/utils/ApiResponse';
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
 export async function POST(request: Request) {
+   const resend = new Resend('re_GCbq2vuN_AMAR9RinvcSudri8E8B6uHCG');
   try {
-    const data = await request.json()
+    const data = await request.json();
     const deviceId = request.headers.get('ssid') || '';
     // Validate required fields
-    const requiredFields = ["fullName", "phoneNumber", "numberOfPeople", "reservationDateTime"]
+    const requiredFields = ['fullName', 'phoneNumber', 'numberOfPeople', 'reservationDateTime'];
     for (const field of requiredFields) {
       if (!data[field]) {
-        return NextResponse.json({ success: false, message: `Missing required field: ${field}` }, { status: 400 })
+        return NextResponse.json(
+          { success: false, message: `Missing required field: ${field}` },
+          { status: 400 }
+        );
       }
     }
 
@@ -18,22 +23,34 @@ export async function POST(request: Request) {
     // For this example, we'll just simulate a successful response
 
     // Simulate a slight delay to show loading state
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const reservation = new Reservation({
       fullName: data.fullName,
       phoneNumber: data.phoneNumber,
       numberOfPeople: data.numberOfPeople,
       reservationDateTime: data.reservationDateTime,
-      deviceId: deviceId
-    })
+      deviceId: deviceId,
+    });
 
-    reservation.save()
+    reservation.save();
+
+    await resend.emails.send({
+      from: 'indiantadka.dashboard@gmail.com',
+      to: 'abhityadav013@gmail.com',
+      subject: 'Your Reservation is Confirmed 🎉',
+      html: `<strong>Hi ${reservation.fullName},</strong><p>Your table is booked for.</p>`,
+    });
+
+    
     return NextResponse.json(
-      new ApiResponse(201, { ...reservation }, 'Reservation created successfully'),
+      new ApiResponse(201, { ...reservation }, 'Reservation created successfully')
     );
   } catch (error) {
-    console.error("Error processing reservation:", error)
-    return NextResponse.json({ success: false, message: "Failed to process reservation" }, { status: 500 })
+    console.error('Error processing reservation:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to process reservation' },
+      { status: 500 }
+    );
   }
 }

@@ -8,6 +8,7 @@
   },
   "heroSection": {
     "heroSubSection": "Ein Ort für komplette indische Küche",
+    "order_message": "Hallo, ich möchte gerne eine Bestellung aufgeben.\n\n👋 Willkommen bei Indian Tadka!\n\nDu kannst:\n📋 Unsere Speisekarte ansehen: https://indiantadka.eu/de/digital-menu\n🧑‍🍳 Nach den heutigen Spezialitäten fragen\n🚚 Direkt hier eine Bestellung aufgeben",
     "reserve_table": "Tisch reservieren",
     "order_online": "Online bestellen",
     "digital_menu": "Digitales Menü"

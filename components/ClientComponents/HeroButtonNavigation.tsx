@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -12,32 +12,28 @@ const HeroButtonNavigation = () => {
   }
   const handleOrderOnline = () => {
     const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
-    const message = `Hallo, ich möchte gerne eine Bestellung aufgeben.
-
-👋 Willkommen bei Indian Tadka!
-
-Du kannst:
-📋 Unsere Speisekarte ansehen: https://indiantadka.eu/digital-menu
-🧑‍🍳 Nach den heutigen Spezialitäten fragen
-🚚 Direkt hier eine Bestellung aufgeben`;
-
-
+    const message = t('order_message'); // Get localized message from translations
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
   }
   const handleDigitalMenu = () => {
     route.push("/digital-menu")
   }
+
+
+  useEffect(() => {
+    route.prefetch("/reservation")
+  }, [route])
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
       <Button size="lg" onClick={handleReserveTable} className="bg-amber-500 text-white hover:bg-amber-600">
-       {t('reserve_table')} Reserve Table
+        {t('reserve_table')}
       </Button>
       <Button onClick={handleOrderOnline} size="lg" className="bg-orange-500 text-white hover:bg-[#FF6347]">
-        {t('order_online')} Order Online
+        {t('order_online')}
       </Button>
       <Button variant="outline" onClick={handleDigitalMenu} size="lg" className="border-white text-white hover:bg-white/10">
-        {t('digital_menu')} Digital Menu
+        {t('digital_menu')}
       </Button>
     </div>
   )

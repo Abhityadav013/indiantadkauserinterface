@@ -82,11 +82,11 @@ export default function ReservationForm() {
         fetchDisabledDates()
     }, [])
 
-    useEffect(() => {
-        if (phoneNumber) {
-            setFormData({ ...formData, ['phoneNumber']: phoneNumber })
-        }
-    }, [phoneNumber, formData])
+    // useEffect(() => {
+    //     if (phoneNumber) {
+    //         setFormData({ ...formData, ['phoneNumber']: phoneNumber })
+    //     }
+    // }, [phoneNumber, formData])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -180,6 +180,9 @@ export default function ReservationForm() {
                 combinedDateTime = new Date(formData.reservationDate)
                 combinedDateTime.setHours(formData.reservationTime.getHours(), formData.reservationTime.getMinutes())
             }
+        //        if (phoneNumber) {
+        //     setFormData({ ...formData, ['phoneNumber']: phoneNumber })
+        // }
             const ssid = localStorage.getItem('ssid');
             const _device_id = ssid || '';
             const response = await fetch("/api/v1/reservation", {
