@@ -62,7 +62,7 @@ const GPayButton = () => {
                 gateway: 'stripe',
                 'stripe:version': '2020-08-27',
                 'stripe:publishableKey':
-                  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '',
+                  process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY ?? '',
               },
             },
           },
