@@ -10,28 +10,58 @@ interface NavBarNavigationSectionProps {
 const NavBarNavigation: React.FC<NavBarNavigationSectionProps> = ({ label, isImage }) => {
     return (
         <Box
-            //ToDo:: need this wehn we have login functionality
-            className="fixed  flex flex-col justify-center items-start h-[8%] w-[100%] pl-28 left-[50%] top-0 transform -translate-x-1/2 bg-white text-white p-4 shadow-lg z-50"
+            component="nav"
+            sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: { xs: 56, sm: 64 },
+                backgroundColor: "white",
+                boxShadow: 2,
+                zIndex: 1100,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                px: { xs: 2, sm: 4, md: 8 },
+            }}
         >
             <BackSection />
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" sx={{ margin: 0, fontSize: '1.5rem', fontWeight: 600, color: 'black' }}>
+            {/* Center: Title */}
+            <Box
+                sx={{
+                    position: "absolute",
+                    left: "40%",
+                    transform: "translateX(-50%)",
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontSize: { xs: "1rem", sm: "1.25rem" },
+                        fontWeight: 600,
+                        color: "black",
+                        whiteSpace: "nowrap",
+                        textAlign: "center",
+                    }}
+                >
                     {label}
                 </Typography>
-                {
-                    isImage && (
-                        <Box sx={{ transform: 'translateY(-5px)' }}>
-                            <Image
-                                src="https://testing.indiantadka.eu/assets/food.webp"
-                                alt="Food image for the restaurant menu"
-                                width={50}
-                                height={50}
-                                className="rounded"
-                            />
-                        </Box>
-                    )
-                }
             </Box>
+
+            {/* Right: Optional image */}
+            {isImage ? (
+                <Image
+                    src="https://testing.indiantadka.eu/assets/food.webp"
+                    alt="Decorative food"
+                    width={40}
+                    height={40}
+                    className="rounded"
+                    style={{ objectFit: "cover" }}
+                />
+            ) : (
+                <Box sx={{ width: 40 }} /> // Placeholder for alignment
+            )}
         </Box>
     )
 }

@@ -1,0 +1,127 @@
+{
+  "navbar": {
+    "menu": "Menu",
+    "about": "About Us",
+    "offer": "Offer",
+    "contact_us": "Contact Us",
+    "reservation": "Reservation"
+  },
+  "heroSection": {
+    "heroSubSection": "A Place for Complete Indian Cuisine",
+    "order_message": "Hello, I would like to place an order.\n\n👋 Welcome to Indian Tadka!\n\nYou can:\n📋 View our menu: https://indiantadka.eu/en/digital-menu\n🧑‍🍳 Ask about today's specials\n🚚 Place an order right here",
+    "reserve_table": "Reserve Table",
+    "order_online": "Order Online",
+    "digital_menu": "Digital Menu"
+  },
+  "homeAbout": {
+    "about": "About Us",
+    "about_text_1": "Welcome to Indian Tadka, where tradition meets innovation. Established in 2024, our restaurant brings the authentic flavors of India to your table with a modern twist.",
+    "about_text_2": " Our chefs, with decades of experience in Indian cuisine, carefully select the finest ingredients and spices to create dishes that transport you straight to the vibrant streets of India.",
+    "about_text_3": "At Indian Tadka, we believe food is not just about taste—it's about creating memories. Join us for an unforgettable culinary journey through the diverse regions of India."
+  },
+  "openingTime": {
+    "opening_hour": "Opening Hours",
+    "weekly_schedule": "Weekly Schedule",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "findUs": {
+    "find_us": "Find Us",
+    "contact_info": "Contact Information",
+    "address": "Address",
+    "phone": "Phone"
+  },
+  "review_customer": {
+    "text1": "What Our Customers Say"
+  },
+  "footer_section": {
+    "menu": "Menu",
+    "about": "About Us",
+    "offer": "Offer",
+    "contact_us": "Contact Us",
+    "reservation": "Reservation",
+    "connect": "Connect With Us"
+  },
+  "about_us": {
+    "section_one": {
+      "info": "Authentic Indian Cuisine in Germany",
+      "heading": "Where Tradition Meets Innovation",
+      "content": "Welcome to our culinary journey that bridges the vibrant flavors of India with the heart of Germany. We're more than just a restaurant – we're a cultural experience that celebrates authentic Indian traditions while embracing local German ingredients and hospitality."
+    },
+    "section_two": {
+      "label": "Our Story",
+      "sub_heading": "Born from a passion for sharing India's rich culinary heritage with our German community",
+      "content_1": "Our journey began with a simple dream: to create a space where the aromatic spices of India could find a new home in Germany. Founded by a family passionate about authentic Indian cuisine, we've spent years perfecting recipes passed down through generations while adapting to local tastes and preferences.",
+      "content_2": "What makes us unique is our commitment to authenticity without compromise. Every dish tells a story of India's diverse regions, from the robust flavors of Punjab to the delicate spices of Kerala, all prepared with the finest locally sourced German ingredients.",
+      "content_3": "We believe food is a universal language that brings people together. Whether you're an Indian living abroad missing the taste of home, or a German local curious about authentic Indian flavors, our doors are always open with warm hospitality."
+    },
+    "section_three": {
+      "label": "Our Values",
+      "sub_heading": "The principles that guide everything we do, from sourcing ingredients to serving our guests",
+      "card_one": {
+        "heading": "Authentic Flavors",
+        "content": "Every spice blend and cooking technique stays true to traditional Indian methods, ensuring authentic taste in every bite."
+      },
+      "card_two": {
+        "heading": "Local Sourcing",
+        "content": "We partner with local German farmers and suppliers to source the freshest ingredients, supporting our community while maintaining quality."
+      },
+      "card_three": {
+        "heading": "Warm Hospitality",
+        "content": "Indian hospitality means treating every guest like family. We create a welcoming atmosphere where everyone feels at home."
+      },
+      "card_four": {
+        "heading": "Cultural Bridge",
+        "content": "We celebrate the beautiful fusion of Indian and German cultures, creating connections through shared meals and experiences."
+      },
+      "card_five": {
+        "heading": "Excellence",
+        "content": "From ingredient selection to final presentation, we maintain the highest standards in every aspect of our culinary craft."
+      },
+      "card_six": {
+        "heading": "Sustainability",
+        "content": "We're committed to environmentally responsible practices, from reducing waste to supporting sustainable farming methods."
+      }
+    },
+    "section_four":{
+      "label":"The Complete Experience",
+      "content_one":"Step into our restaurant and embark on a sensory journey through India. Our cozy, thoughtfully designed space combines traditional Indian aesthetics with modern German comfort, creating an atmosphere that's both exotic and familiar.",
+      "content_two":"From the moment you enter, you'll be greeted by the gentle aroma of freshly ground spices, the warm glow of traditional brass lamps, and the genuine smiles of our team. Our menu features both beloved classics and innovative fusion dishes that showcase the versatility of Indian cuisine.",
+      "content_three":"Whether you're joining us for a romantic dinner, a family celebration, or a business lunch, we ensure every visit is memorable. Our knowledgeable staff is always ready to guide you through our menu, recommend wine pairings, or accommodate dietary preferences."
+    },
+    "section_about_footer":{
+      "heading":"Experience India in the Heart of Germany",
+      "sub_heading":"Join us for an unforgettable culinary journey where every meal is a celebration of authentic flavors, warm hospitality, and cultural connection.",
+      "button_one":"Make a Reservation",
+      "button_two":" View Our Menu"
+    }
+  },
+  "offers":{
+    "label":"Offers Coming Soon!",
+    "content_one":"We're preparing some exciting deals just for you. Stay tuned for exclusive discounts, meal combos, and limited-time specials!"
+  },
+  "contact_us":{
+    "field_one":"Your Name",
+    "field_two":"Your Message",
+    "button":"Send Message",
+    "toast_message":"Message sent successfully!"
+  },
+  "reservation":{
+    "type_one":"Make a Reservation",
+    "type_two":"View Previous Bookings",
+    "field_one":"Full Name",
+    "field_two":"Number of People",
+    "field_three":"Reservation Date",
+    "field_four":"Reservation Time",
+    "button":"Submit Reservation",
+    "update_button":"Update Reservation",
+    "toast_message_success":"Reservation submitted successfully! We look forward to seeing you.",
+    "toast_message_delete":"Reservation deleted successfully.",
+    "toast_message_update":"Reservation updated successfully."
+  }
+}

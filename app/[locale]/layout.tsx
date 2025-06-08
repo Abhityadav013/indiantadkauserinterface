@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { Toaster } from "react-hot-toast";
-import ResponsiveWrapper from "@/components/ClientComponents/ResponsiveLayoutWrapper";
 import { StoreProvider } from "@/components/StoreProvider";
 import { SessionProvider } from "@/components/ClientComponents/SessionProvider";
-import Script from "next/script";
 import MobileViewDetector from "@/components/ClientComponents/mobileView/MobileViewDetector";
+import { notFound } from "next/navigation";
+// import { getMessages } from "next-intl/server";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { locales } from "@/config";
+import { setRequestLocale } from "next-intl/server";
+import ClientLayoutWrapper from "@/components/ClientComponents/ClientLayoutWrapper";
+import Script from "next/script";
 // import Script from "next/script";
 
 const geistSans = Geist({
@@ -29,14 +34,29 @@ export const metadata: Metadata = {
   description: "A Place for Complete Indian Cusinie",
 };
 
-export default function RootLayout({
+export function generateStaticParams() {
+  return [{ locale: 'de' }, { locale: 'en' }];
+}
+
+
+export default async function LocaleLayout({
   children,
-}: Readonly<{
+  params
+}: {
   children: React.ReactNode;
-}>) {
+  params: Promise<{ locale: string }>;
+}) {
+
+  const { locale } = await params;
+  if (!hasLocale(locales, locale)) {
+    notFound();
+  }
+
+  // Enable static rendering
+  setRequestLocale(locale);
   return (
     <StoreProvider >
-      <html lang="en" >
+      <html lang={locale}>
         <head>
           {/* <script
             id="usercentrics-cmp"
@@ -51,14 +71,18 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] mx-auto bg-white min-h-screen shadow-md`}
+          className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] mx-auto bg-white min-h-screen shadow-md relative`}
         >
-          <Toaster position="top-right" reverseOrder={false} />
-          <SessionProvider />
-          <MobileViewDetector />
-          <ResponsiveWrapper>
-            {children}
-          </ResponsiveWrapper>
+          <NextIntlClientProvider locale={locale}>
+            <Toaster position="top-right" reverseOrder={false} />
+            <SessionProvider />
+            <MobileViewDetector />
+            <ClientLayoutWrapper>
+              <main>
+                {children}
+              </main>
+            </ClientLayoutWrapper>
+          </NextIntlClientProvider>
         </body>
       </html>
     </StoreProvider>

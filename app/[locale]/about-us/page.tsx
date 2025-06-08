@@ -1,29 +1,28 @@
-/* eslint-disable react/no-unescaped-entities */
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Leaf, Heart, Users, Award, Globe, Utensils } from "lucide-react"
 import Image from "next/image"
 import AboutUsFooterNavigation from "@/components/ClientComponents/AboutUsFooterNavigation"
+import { getTranslations } from "next-intl/server"
 // import AboutUsFooterNavigation from "@/components/ClientComponents/AboutUsFooterNavigation"
 
-export default function AboutUsComponent() {
-    return (
-      <div className="min-h-screen bg-background mt-16">
+export default async function AboutUsComponent() {
+  const t = await getTranslations("about_us")
+  return (
+    <main className="min-h-screen pt-12 md:pt-6 bg-gray-50">
       {/* Hero Section */}
       <section className="relative py-12 md:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-red-50">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-6">
               <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs md:text-sm">
-                Authentic Indian Cuisine in Germany
+                {t("section_one.info")}
               </Badge>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-                Where Tradition Meets Innovation
+                {t("section_one.heading")}
               </h1>
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed px-4 sm:px-0">
-                Welcome to our culinary journey that bridges the vibrant flavors of India with the heart of Germany.
-                We're more than just a restaurant – we're a cultural experience that celebrates authentic Indian
-                traditions while embracing local German ingredients and hospitality.
+                {t("section_one.content")}
               </p>
             </div>
             <div className="relative">
@@ -43,28 +42,22 @@ export default function AboutUsComponent() {
       <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Our Story</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{t("section_two.label")}</h2>
             <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto px-4 sm:px-0">
-              Born from a passion for sharing India's rich culinary heritage with our German community
+              {t("section_two.sub_heading")}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="space-y-6">
               <p className="text-gray-700 leading-relaxed">
-                Our journey began with a simple dream: to create a space where the aromatic spices of India could find a
-                new home in Germany. Founded by a family passionate about authentic Indian cuisine, we've spent years
-                perfecting recipes passed down through generations while adapting to local tastes and preferences.
+                {t("section_two.content_1")}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                What makes us unique is our commitment to authenticity without compromise. Every dish tells a story of
-                India's diverse regions, from the robust flavors of Punjab to the delicate spices of Kerala, all
-                prepared with the finest locally sourced German ingredients.
+                {t("section_two.content_2")}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                We believe food is a universal language that brings people together. Whether you're an Indian living
-                abroad missing the taste of home, or a German local curious about authentic Indian flavors, our doors
-                are always open with warm hospitality.
+                {t("section_two.content_3")}
               </p>
             </div>
             <div className="relative">
@@ -134,9 +127,9 @@ export default function AboutUsComponent() {
       <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Our Values</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{t("section_three.label")}</h2>
             <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto px-4 sm:px-0">
-              The principles that guide everything we do, from sourcing ingredients to serving our guests
+              {t("section_three.sub_heading")}
             </p>
           </div>
 
@@ -146,10 +139,9 @@ export default function AboutUsComponent() {
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Utensils className="w-8 h-8 text-orange-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">Authentic Flavors</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">{t("section_three.card_one.heading")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Every spice blend and cooking technique stays true to traditional Indian methods, ensuring authentic
-                  taste in every bite.
+                  {t("section_three.card_one.content")}
                 </p>
               </CardContent>
             </Card>
@@ -159,10 +151,9 @@ export default function AboutUsComponent() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Leaf className="w-8 h-8 text-green-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">Local Sourcing</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">{t("section_three.card_two.heading")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  We partner with local German farmers and suppliers to source the freshest ingredients, supporting our
-                  community while maintaining quality.
+                  {t("section_three.card_two.content")}
                 </p>
               </CardContent>
             </Card>
@@ -172,10 +163,9 @@ export default function AboutUsComponent() {
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Heart className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">Warm Hospitality</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">{t("section_three.card_three.heading")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Indian hospitality means treating every guest like family. We create a welcoming atmosphere where
-                  everyone feels at home.
+                  {t("section_three.card_three.content")}
                 </p>
               </CardContent>
             </Card>
@@ -185,10 +175,9 @@ export default function AboutUsComponent() {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">Cultural Bridge</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">{t("section_three.card_four.heading")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  We celebrate the beautiful fusion of Indian and German cultures, creating connections through shared
-                  meals and experiences.
+                  {t("section_three.card_four.content")}
                 </p>
               </CardContent>
             </Card>
@@ -198,10 +187,9 @@ export default function AboutUsComponent() {
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="w-8 h-8 text-purple-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">Excellence</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">{t("section_three.card_five.heading")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  From ingredient selection to final presentation, we maintain the highest standards in every aspect of
-                  our culinary craft.
+                  {t("section_three.card_five.content")}
                 </p>
               </CardContent>
             </Card>
@@ -211,10 +199,9 @@ export default function AboutUsComponent() {
                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Globe className="w-8 h-8 text-emerald-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">Sustainability</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">{t("section_three.card_six.heading")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  We're committed to environmentally responsible practices, from reducing waste to supporting
-                  sustainable farming methods.
+                  {t("section_three.card_six.content")}
                 </p>
               </CardContent>
             </Card>
@@ -227,21 +214,15 @@ export default function AboutUsComponent() {
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">The Complete Experience</h2>
-              <p className="text-base md:text-lg text-gray-700 leading-relaxed px-4 sm:px-0">
-                Step into our restaurant and embark on a sensory journey through India. Our cozy, thoughtfully designed
-                space combines traditional Indian aesthetics with modern German comfort, creating an atmosphere that's
-                both exotic and familiar.
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">{t("section_four.label")}</h2>
+              <p className="text-gray-700 leading-relaxed">
+                {t("section_four.content_one")}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                From the moment you enter, you'll be greeted by the gentle aroma of freshly ground spices, the warm glow
-                of traditional brass lamps, and the genuine smiles of our team. Our menu features both beloved classics
-                and innovative fusion dishes that showcase the versatility of Indian cuisine.
+                {t("section_four.content_two")}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Whether you're joining us for a romantic dinner, a family celebration, or a business lunch, we ensure
-                every visit is memorable. Our knowledgeable staff is always ready to guide you through our menu,
-                recommend wine pairings, or accommodate dietary preferences.
+                {t("section_four.content_three")}
               </p>
             </div>
             <div className="relative">
@@ -282,6 +263,6 @@ export default function AboutUsComponent() {
         </div>
       </section> */}
       <AboutUsFooterNavigation />
-    </div>
-    )
+    </main>
+  )
 }

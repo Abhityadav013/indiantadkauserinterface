@@ -24,6 +24,7 @@ import { CountryCode, getCountryCallingCode } from "libphonenumber-js"
 import PhoneInput from "./PhoneInput"
 import { ReservationType } from "@/lib/types/reservation_type"
 import toast from 'react-hot-toast';
+import { useTranslations } from "next-intl"
 
 
 interface UpdateBookingModalProps {
@@ -42,6 +43,7 @@ interface FormErrors {
 }
 
 export default function UpdateReservation({ open, booking, onClose, onSuccess }: UpdateBookingModalProps) {
+    const t = useTranslations("reservation")
     const reservationDate = new Date(booking.reservationDateTime)
     const [formData, setFormData] = useState({
         fullName: booking.fullName,
@@ -163,7 +165,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
                     reservationDateTime: combinedDateTime.toISOString(),
                 }),
             })
-          
+
             if (!response.ok) {
                 const errorData = await response.json()
                 throw new Error(errorData.message || "Failed to update booking")
@@ -171,7 +173,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
 
             const data = await response.json()
             onSuccess(data.data)
-            toast.success(`Reservation updated successfully.`, {
+            toast.success(t('toast_message_update'), {
                 duration: 3000, // Show toast for 2 seconds
                 style: {
                     padding: "16px 24px", // Adjusted padding
@@ -203,7 +205,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
                     <div className="mt-4 space-y-6">
                         <div className="mb-4">
                             <TextField
-                                label="Full Name"
+                                label={t('field_one')}
                                 name="fullName"
                                 value={formData.fullName}
                                 onChange={handleInputChange}
@@ -225,7 +227,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
                         <div className="mb-4">
                             <TextField
                                 select
-                                label="Number of People"
+                                label={t('field_two')}
                                 name="numberOfPeople"
                                 value={formData.numberOfPeople}
                                 onChange={handleInputChange}
@@ -245,7 +247,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationDate}>
                                 <DatePicker
-                                    label="Reservation Date"
+                                     label={t('field_three')}
                                     value={formData.reservationDate}
                                     onChange={handleDateChange}
                                     disablePast
@@ -265,7 +267,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationTime}>
                                 <TimePicker
-                                    label="Reservation Time"
+                                       label={t('field_four')}
                                     value={formData.reservationTime}
                                     onChange={handleTimeChange}
                                     slotProps={{
@@ -288,7 +290,7 @@ export default function UpdateReservation({ open, booking, onClose, onSuccess }:
                 <DialogActions className="p-4">
                     <Button onClick={onClose}>Cancel</Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={submitting}>
-                        {submitting ? <CircularProgress size={24} /> : "Update Reservation"}
+                        {submitting ? <CircularProgress size={24} /> : t('update_button')}
                     </Button>
                 </DialogActions>
             </Dialog>

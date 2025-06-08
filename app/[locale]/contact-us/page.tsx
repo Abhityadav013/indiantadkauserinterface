@@ -22,7 +22,7 @@ const ContactUs = () => {
 
     return (
         <div className="min-h-screen py-10 px-2 sm:px-6 md:px-12 lg:px-24 bg-white">
-            <NavBarNavigation label="Contact Us" isImage={false} />
+            <NavBarNavigation label="Contact Us" />
             <Box
                 component="section"
                 className="max-w-[1440px] mx-auto mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center"

@@ -1,6 +1,4 @@
 'use client';
-import Image from 'next/image';
-import Link from 'next/link';
 import React, { useState } from 'react';
 import {
   Button,
@@ -15,6 +13,8 @@ import {
 // import { RootState } from '../redux/reducers';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface FieldError {
   key: string;
@@ -25,19 +25,14 @@ export type ErrorResponse = FieldError[];
 
 const NavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
+  const t = useTranslations("navbar");
   const navLinks = [
-    { label: 'Menu', href: '/digital-menu' },
-    { label: 'About Us', href: '/about-us' },
-    { label: 'Offer', href: '/offers' },
-    { label: 'Contact Us', href: '/contact-us' },
-    { label: 'Reservation', href: '/reservation' }
+    { label: t('menu'), href: '/digital-menu' },
+    { label: t('about'), href: '/about-us' },
+    { label: t('offer'), href: '/offers' },
+    { label: t('contact_us'), href: '/contact-us' },
+    { label: t('reservation'), href: '/reservation' }
   ];
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleLinkClick = () => {
     setDrawerOpen(false); // Close the drawer when a link is clicked
@@ -74,27 +69,11 @@ const NavBar = () => {
       </div>
 
       {/* Cart Icon + Hamburger for Mobile */}
-      <Box className="relative flex items-center ml-4 mr-[10%] md:ml-2" sx={{
+      <Box className="relative flex items-center ml-4 md:ml-2" sx={{
         top: '20px',
         marginBottom: '5px',
       }}>
-        <Link href="/checkout" className="flex items-center">
-          <Image
-            src="https://testing.indiantadka.eu/assets/basket_icon.png"
-            alt="Cart Icon"
-            width={100}
-            height={100}
-            className="dark:invert w-[20px] sm:w-[28px] md:w-[36px] lg:w-[44px]"
-          />
-          {isClient && (
-            <div
-              className="absolute top-0 right-10 sm:right-7 bg-tomato text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-semibold
-    sm:w-5 sm:h-5 sm:text-[8px] md:w-4 md:h-4 md:text-xs" // Adjusted for mobile and tablet screens
-            >
-              {5}
-            </div>
-          )}
-        </Link>
+
 
         {/* Hamburger icon only on mobile */}
         <div className="md:hidden ml-4">
