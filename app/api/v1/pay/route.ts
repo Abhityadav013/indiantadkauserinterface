@@ -8,18 +8,18 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
   try {
-    const { token, clientSecret  } = await req.json();
+    const { token, clientSecret } = await req.json();
 
     // Confirm payment using payment method (Google Pay token)
-    const paymentIntent = await stripe.paymentIntents.confirm(clientSecret, {
-      payment_method: token.id, // token from Google Pay
+    const paymentIntentId = clientSecret.split('_secret')[0]; // Extract actual PaymentIntent ID
+    console.log('paymentIntentId:::;;;', paymentIntentId);
+    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
+      payment_method: token.id,
     });
-   console.log('paymentIntent:::;;;',paymentIntent)
+    console.log('paymentIntent:::;;;', paymentIntent);
     if (paymentIntent.status === 'succeeded') {
-        return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true });
     }
-
- 
 
     // return NextResponse.json({ success: true, paymentIntent });
   } catch (error: any) {
