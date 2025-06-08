@@ -26,18 +26,6 @@ import PaymentMethodSelectorSkeleton from "../Skeletons/PaymentMethodSelectorSke
 
 const paymentMethods = [
   {
-    id: "apple",
-    name: "Apple Pay",
-    icon: (
-      <Image
-        src="https://static.takeaway.com/images/platform-payments/payment-options/ApplePay.png"
-        alt="ApplePay"
-        width={24}
-        height={24}
-      />
-    ),
-  },
-  {
     id: "google",
     name: "Google Pay",
     icon: (

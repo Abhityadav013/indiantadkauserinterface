@@ -5,7 +5,7 @@ import { MenuItem } from "@/lib/types/menu_type";
 import CheckoutCart from "../CheckoutCart";
 import { CustomerOrder } from "@/lib/types/customer_order_type";
 import { Cart } from "@/lib/types/cart_type";
-import GooglePayButton from "./paymentOptionsComponents/GooglePayButton";
+import GPayButton from "./paymentOptionsComponents/GooglePayButton";
 
 interface OrderSummaryProps {
   cart: Cart[],
@@ -25,7 +25,7 @@ export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps
       </Box>
       <CheckoutCart cart={cart} menu={menu} userData={userData} />
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <GooglePayButton />
+        <GPayButton />
       </Box>
     </Paper>
   );
