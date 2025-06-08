@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: 'eur',
-      automatic_payment_methods: { enabled: true },
+      automatic_payment_methods: { enabled: true,allow_redirects: 'never', },
     });
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
