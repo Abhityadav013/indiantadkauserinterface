@@ -11,10 +11,11 @@ const HeroButtonNavigation = () => {
     route.push("/reservation")
   }
   const handleOrderOnline = () => {
-    const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
-    const message = t('order_message'); // Get localized message from translations
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-    window.open(url, '_blank')
+    // const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
+    // const message = t('order_message'); // Get localized message from translations
+    // const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+    // window.open(url, '_blank')
+    route.push("/menu-list")
   }
   const handleDigitalMenu = () => {
     route.push("/digital-menu")
