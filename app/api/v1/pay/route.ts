@@ -12,7 +12,6 @@ export async function POST(req: Request) {
 
     // Confirm payment using payment method (Google Pay token)
     const paymentIntentId = clientSecret.split('_secret')[0]; // Extract actual PaymentIntent ID
-    console.log('paymentIntentId:::;;;', paymentIntentId);
     const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
       payment_method_data: {
         type: 'card',
@@ -22,7 +21,6 @@ export async function POST(req: Request) {
       },
     } as any);
 
-    console.log('paymentIntent:::;;;', paymentIntent);
     if (paymentIntent.status === 'succeeded') {
       return NextResponse.json({ success: true });
     }

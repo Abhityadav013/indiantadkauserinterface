@@ -3,11 +3,16 @@
 
 import React, { useEffect, useState } from 'react';
 import GooglePayButton from '@google-pay/button-react';
+import { convertToSubcurrency } from '@/utils/convertToSubCurrency';
+import { Button } from '@mui/material';
 
-const GPayButton = () => {
+interface GPayButtonProps {
+  amount: number
+}
+const GPayButton = ({ amount }: GPayButtonProps) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  const orderPrice = convertToSubcurrency(amount)
   // Step 1: Create PaymentIntent on mount
   useEffect(() => {
     const createPaymentIntent = async () => {
@@ -16,7 +21,7 @@ const GPayButton = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: 1500, // in cents: €15.00
+            amount: orderPrice, // in cents: €15.00
             currency: 'eur',
           }),
         });
@@ -25,7 +30,6 @@ const GPayButton = () => {
 
         if (res.ok && data.clientSecret) {
           setClientSecret(data.clientSecret);
-          console.log('✅ Got clientSecret:', data.clientSecret);
         } else {
           throw new Error(data?.error || 'Failed to retrieve client secret.');
         }
@@ -36,10 +40,27 @@ const GPayButton = () => {
     };
 
     createPaymentIntent();
-  }, []);
+  }, [orderPrice]);
 
   if (error) return <div className="text-red-600">{error}</div>;
-  if (!clientSecret) return <div>Loading payment...</div>;
+  if (!clientSecret) return (<Button
+    variant="contained"
+    sx={{
+      width: '100%',
+      backgroundColor: '#f36805',
+      color: 'white',
+      padding: '6px 12px',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      borderRadius: '50px',
+      textTransform: 'none',
+      '&:hover': {
+        backgroundColor: '#f36805',
+      },
+    }}
+  >
+    Continue and Place Order
+  </Button>);
 
   return (
     <GooglePayButton
@@ -61,7 +82,7 @@ const GPayButton = () => {
               parameters: {
                 gateway: 'stripe',
                 'stripe:version': '2020-08-27',
-                'stripe:publishableKey':'pk_test_51R2Ypp2eUjwr9TPLqLOiqfN5kLkVPBJhnYugvQKmlCcVdjD81n58O5QhnX2ZRHdYNTb4d1C8RrltbUoJeuCeBYvc00QiopzFPL',
+                'stripe:publishableKey': 'pk_test_51R2Ypp2eUjwr9TPLqLOiqfN5kLkVPBJhnYugvQKmlCcVdjD81n58O5QhnX2ZRHdYNTb4d1C8RrltbUoJeuCeBYvc00QiopzFPL',
               },
             },
           },

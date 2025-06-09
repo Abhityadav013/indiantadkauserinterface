@@ -4,16 +4,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import Image from 'next/image';
 import { Box } from '@mui/material';
+import { convertToSubcurrency } from '@/utils/convertToSubCurrency';
 interface PaypalComponentProps {
     amount: number,
-    onLoad: () => void
 }
 
-const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount, onLoad }) => {
+const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
     const [orderId, setOrderId] = useState<string | null>(null);
     const [showLoader, setShowLoader] = useState(true);
     const isOrderCreatedRef = useRef(false);
-    const amountRef = useRef(amount);
+      const orderPrice = convertToSubcurrency(amount)
+    const amountRef = useRef(orderPrice);
 
     useEffect(() => {
         // Track the latest values of amount and order
@@ -36,7 +37,6 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount, onLoad }) => 
 
                 if (response.ok) {
                     setOrderId(data.id);
-                    onLoad()
                     // isOrderCreatedRef.current = true; // Only set order created flag after successful response
                 } else {
                     throw new Error(data.message || 'Failed to create order');
@@ -47,7 +47,7 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount, onLoad }) => 
         };
 
         createOrder();
-    }, [onLoad]); // Empty dependency array ensures it runs once on mount
+    }, []); // Empty dependency array ensures it runs once on mount
 
     useEffect(() => {
         const timer = setTimeout(() => {
