@@ -13,6 +13,7 @@ import { setRequestLocale } from "next-intl/server";
 import LanguageSwitcher from "@/components/ClientComponents/LanguageSwitcher";
 import { Box } from "@mui/material";
 import NavBarWrapper from "@/components/NavbarWrapper";
+import RouteLoader from "@/components/ClientComponents/RouteLoader";
 // import Script from "next/script";
 
 const geistSans = Geist({
@@ -74,7 +75,8 @@ export default async function LocaleLayout({
               style={{
                 paddingTop: '50px', // 100px navbar height + 30px margin
               }}
-            >{children}</main>
+            >
+              <RouteLoader />{children}</main>
 
           </NextIntlClientProvider>
         </body>
