@@ -15,6 +15,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { useDispatch } from 'react-redux';
+import { startNavigation } from '@/store/slices/navigationSlice';
 
 interface FieldError {
   key: string;
@@ -25,6 +27,7 @@ export type ErrorResponse = FieldError[];
 
 const NavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+    const dispatch = useDispatch(); // ✅ Redux dispatch hook
   const t = useTranslations("navbar");
   const navLinks = [
     { label: t('menu'), href: '/digital-menu' },
@@ -34,9 +37,13 @@ const NavBar = () => {
     { label: t('reservation'), href: '/reservation' }
   ];
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (href: string) => {
+    dispatch(startNavigation(href))
     setDrawerOpen(false); // Close the drawer when a link is clicked
   };
+  const handleDesktopLinkClick = (href:string) =>{
+    dispatch(startNavigation(href))
+  }
 
   return (
     <>
@@ -47,6 +54,7 @@ const NavBar = () => {
             key={href}
             component={Link}
             href={href}
+            onClick={() =>handleDesktopLinkClick(href)} // Close the drawer on link click
             disableRipple
             sx={{
               color: "#FF6347",
@@ -107,7 +115,7 @@ const NavBar = () => {
               key={href}
               component={Link}
               href={href}
-              onClick={handleLinkClick} // Close the drawer on link click
+              onClick={() =>handleLinkClick(href)} // Close the drawer on link click
             >
               <ListItemText
                 primary={label}
