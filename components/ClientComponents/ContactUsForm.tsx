@@ -1,18 +1,18 @@
 'use client'
 import React, { useState } from 'react'
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, CircularProgress } from "@mui/material";
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 const ContactUsForm = () => {
     const t = useTranslations("contact_us")
     const [message, setMessage] = useState("");
     const [name, setName] = useState("");
+    const [submitting, setSubmitting] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
-
-
             const ssid = localStorage.getItem('ssid');
             const _device_id = ssid || '';
             const response = await fetch("/api/v1/contact-us", {
@@ -46,6 +46,8 @@ const ContactUsForm = () => {
         } catch (err) {
             console.error(err);
             alert("Something went wrong. Please try again.");
+        } finally {
+            setSubmitting(false)
         }
     };
 
@@ -75,8 +77,9 @@ const ContactUsForm = () => {
                 type="submit"
                 variant="contained"
                 className="w-full !bg-orange-600 text-white py-2"
+                disabled={submitting}
             >
-                {t('button')}
+                {submitting ? <CircularProgress size={24} /> : t('button')}
             </Button>
         </form>
     )
