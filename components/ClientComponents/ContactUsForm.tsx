@@ -12,14 +12,14 @@ const ContactUsForm = () => {
         e.preventDefault();
         try {
 
-            const tid = localStorage.getItem('tid'); // Retrieve tid from session storage
+
             const ssid = localStorage.getItem('ssid');
-            const response = await fetch("/api/contact-us", {
+            const _device_id = ssid || '';
+            const response = await fetch("/api/v1/contact-us", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Session-Id': ssid || '', // Add session ID to request headers
-                    Tid: tid || '', // Add tid to request headers
+                    "Content-Type": "application/json",
+                    ssid: _device_id,
                 },
                 body: JSON.stringify({ name, message }),
             });
@@ -76,7 +76,7 @@ const ContactUsForm = () => {
                 variant="contained"
                 className="w-full !bg-orange-600 text-white py-2"
             >
-               {t('button')}
+                {t('button')}
             </Button>
         </form>
     )
