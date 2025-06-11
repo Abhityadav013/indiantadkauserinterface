@@ -25,7 +25,6 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
     const [amountInCents, setAmountInCents] = useState<number>(0);
     const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'stripe' | 'cash' | null>(null);
     const [cartTotal, setCartTotal] = useState<number>(0);
-    const [isStripeLoaded, setIsStripeLoaded] = React.useState(false);
     const [isPaypalLoaded] = React.useState(false);
     const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedMethod = event.target.value as 'paypal' | 'stripe' | 'cash';
@@ -58,13 +57,10 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
 
 
     useEffect(() => {
-        if (isStripeLoaded) {
-            stripeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
         if (isPaypalLoaded) {
             paypalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }, [isStripeLoaded, isPaypalLoaded]);
+    }, [ isPaypalLoaded]);
 
     const handleOrderPlaced = async () => {
         try {
@@ -192,7 +188,7 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cartData }) => {
                             overflow: 'auto',  // Make sure content is scrollable
                         }}
                     >
-                        <StripeComponent amount={amountInCents} onLoad={() => setIsStripeLoaded(true)} />
+                        <StripeComponent amount={amountInCents}/>
                     </Box>
                 )
             }
