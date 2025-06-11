@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import {
-
-    CardElement,
     useStripe,
     useElements,
     PaymentElement
@@ -18,26 +16,33 @@ const StripeCheckout = ({ amount, clientSecret }: StripeCheckoutProps) => {
     const stripe = useStripe();
     const elements = useElements();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!stripe || !elements) return;
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!stripe || !elements) {
+            return;
+        }
+        const { error: submitError } = await elements.submit();
+        if (submitError) {
+            // setErrorMessage(submitError.message);
+            setIsSubmitting(false);
+            return;
+        }
 
-        setIsSubmitting(true);
-
-        const result = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: elements.getElement(CardElement)!,
+        const response = await stripe.confirmPayment({
+            elements,
+            clientSecret,
+            confirmParams: {
+                return_url: `https://test.indiantadka.eu/de/payment-success?payment_intent=${clientSecret}`,
             },
         });
-
-        setIsSubmitting(false);
-
-        if (result.error) {
-            alert(result.error.message);
-        } else if (result.paymentIntent?.status === 'succeeded') {
-            alert("Payment successful! 🎉");
+        if (response.error) {
+            setErrorMessage(response.error.message);
+        } else {
+            // Payment successful logic here (e.g., redirect to success page)
         }
+
     };
 
     return (
@@ -45,6 +50,9 @@ const StripeCheckout = ({ amount, clientSecret }: StripeCheckoutProps) => {
             <div className="border p-4 rounded-md bg-white">
                 <PaymentElement />
             </div>
+            {errorMessage && (
+                <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+            )}
             <Button
                 type="submit"
                 variant="contained"
