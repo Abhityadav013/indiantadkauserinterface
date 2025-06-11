@@ -9,7 +9,11 @@ interface GetCartResponse {
 export async function getCartData() {
   try {
     const cartRaw = await fetchFromApi<GetCartResponse>(`/cart`, false);
-    return [...cartRaw?.cartItems];
+    if (Object.keys(cartRaw).length) {
+       return [...cartRaw?.cartItems];
+    } else {
+     return []
+    }
   } catch (error) {
     console.error('Error fetching menu data:', error);
     return [];

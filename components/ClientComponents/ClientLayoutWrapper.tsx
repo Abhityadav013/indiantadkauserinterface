@@ -1,4 +1,3 @@
-// components/ClientComponents/ClientLayoutWrapper.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -6,15 +5,16 @@ import NavBarWrapper from "@/components/NavbarWrapper";
 import LanguageSwitcher from "@/components/ClientComponents/LanguageSwitcher";
 import { Box } from "@mui/material";
 
-const HIDE_NAVBAR_SUFFIXES  = ["/menu-list", "/checkout"]; // List routes where you want the navbar and switcher
+// Define route prefixes where you want to HIDE the navbar
+const HIDE_NAVBAR_PREFIXES = ["/menu-list", "/checkout", "/payment"];
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
-  // Get the path **after** the locale
-    const pathname = usePathname(); // example: /de/checkout or /en/menu
-  const segments = pathname.split("/").filter(Boolean); // ["de", "checkout"]
-  const pathSuffix = segments.slice(1).join("/") || ""; // "checkout" or ""
+  const pathname = usePathname(); // e.g. /de/payment/pi_123
+  const segments = pathname.split("/").filter(Boolean); // ["de", "payment", "pi_123"]
+  const pathSuffix = "/" + segments.slice(1).join("/"); // "payment/pi_123"
 
-  const shouldShowNav = !HIDE_NAVBAR_SUFFIXES.includes(`/${pathSuffix}`);
+  // Check if the current path starts with any of the prefixes
+  const shouldShowNav = !HIDE_NAVBAR_PREFIXES.some(prefix => pathSuffix.startsWith(prefix));
 
   return (
     <>

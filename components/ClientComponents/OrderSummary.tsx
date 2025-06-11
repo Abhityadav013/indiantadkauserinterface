@@ -24,6 +24,10 @@ export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps
     return cartTotal
 
   };
+
+  if(cart.length == 0){
+    return null;
+  }
   return (
     <Paper className="bg-white rounded-lg lg:mt-10 shadow p-4 max-w-md mx-auto">
       <Box className="flex items-center">

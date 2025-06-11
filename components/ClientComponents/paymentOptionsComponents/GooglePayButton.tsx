@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import GooglePayButton from '@google-pay/button-react';
-import { convertToSubcurrency } from '@/utils/convertToSubCurrency';
 import { Button } from '@mui/material';
 
 interface GPayButtonProps {
@@ -12,16 +11,25 @@ interface GPayButtonProps {
 const GPayButton = ({ amount }: GPayButtonProps) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const orderPrice = convertToSubcurrency(amount)
+  const hasFetched = useRef(false); // <- to track first-time API call
   // Step 1: Create PaymentIntent on mount
   useEffect(() => {
+    const existingClientSecret = sessionStorage.getItem('checkout_client_secret');
+    if (hasFetched.current) return;
+    if (existingClientSecret) {
+      setClientSecret(existingClientSecret);
+      hasFetched.current = true
+      return; // Skip API call
+    }
+    hasFetched.current = true
+
     const createPaymentIntent = async () => {
       try {
         const res = await fetch('/api/v1/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: orderPrice, // in cents: €15.00
+            amount: amount, // in cents: €15.00
             currency: 'eur',
           }),
         });
@@ -30,6 +38,7 @@ const GPayButton = ({ amount }: GPayButtonProps) => {
 
         if (res.ok && data.clientSecret) {
           setClientSecret(data.clientSecret);
+          sessionStorage.setItem('checkout_client_secret', data.clientSecret);
         } else {
           throw new Error(data?.error || 'Failed to retrieve client secret.');
         }
@@ -40,7 +49,8 @@ const GPayButton = ({ amount }: GPayButtonProps) => {
     };
 
     createPaymentIntent();
-  }, [orderPrice]);
+  }, [amount]);
+
 
   if (error) return <div className="text-red-600">{error}</div>;
   if (!clientSecret) return (<Button
