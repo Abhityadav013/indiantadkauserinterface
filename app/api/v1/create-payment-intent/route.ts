@@ -4,12 +4,18 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY as string);
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount } = await request.json();
+     const { amount } = await request.json();
+
+    if (!amount || typeof amount !== 'number') {
+      return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount,
+      amount: amount, // Convert to cents
       currency: 'eur',
-      automatic_payment_methods: { enabled: true,allow_redirects: 'never', },
+      payment_method_types: ['card'], // Support PayPal / card
     });
+
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error('Internal Error:', error);

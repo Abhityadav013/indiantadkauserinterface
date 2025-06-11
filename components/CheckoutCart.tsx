@@ -47,7 +47,7 @@ const CheckoutCart: React.FC<CheckoutCartProps> = ({ cart, menu, userData }) => 
             </div>
 
             {/* Scrollable Items List */}
-            <Box className="max-h-[20vh] px-4 mb-2 overflow-y-auto">
+            <Box className="max-h-[30vh] px-4 mb-2 overflow-y-auto">
                 {
                     cart.map((item) => {
                         const quantity = item.quantity ?? 0
