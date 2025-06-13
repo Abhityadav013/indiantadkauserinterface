@@ -5,14 +5,16 @@ import { formatPrice } from "@/utils/valueInEuros";
 import TruncatedDescription from "./ClientComponents/TruncatedDescription";
 import AddToCartButton from "./ClientComponents/AddToCart";
 import BasketSidebar from "./ClientComponents/BasketSidebar";
-import BasketToggle from "./ClientComponents/BasketToggle";
+// import BasketToggle from "./ClientComponents/BasketToggle";
 import FooterCopyRights from "./FooterCopyRight";
 import { MenuCategory } from "@/lib/types/menu_category";
 import { MenuItem } from "@/lib/types/menu_type";
 import { Cart } from "@/lib/types/cart_type";
-import SearchBar from "./ClientComponents/SearchBar";
+// import SearchBar from "./ClientComponents/SearchBar";
 import CategoryTabs from "./ClientComponents/CategoryFilter";
 import ViewCartFooter from "./ViewCartFooter";
+import SearchBar from "./ClientComponents/SearchBar";
+import { OrderType } from "@/lib/types/order_type";
 
 interface MenuContentProps {
     groupedMenu: {
@@ -23,22 +25,23 @@ interface MenuContentProps {
     menuItems: MenuItem[],
     cartItems: Cart[],
     categories: MenuCategory[];
+    orderType:OrderType;
 }
-export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories }: MenuContentProps) {
+export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories,orderType}: MenuContentProps) {
     return (
         <>
             <Box sx={{ display: 'flex', width: '100%', backgroundColor: 'white', flexDirection: { xs: 'column', md: 'row' } }}>
                 {/* Left Content */}
                 <Box sx={{ flex: 1, pl: { xs: 1, md: 2 }, pr: { xs: 1, md: 2 }, maxWidth: { md: 'calc(100% - 460px)' } }}>
                     <NavBarNavigation label="Our Menu" isImage={false} />
-                    <div className="sticky top-12 z-10 w-[100%] bg-white">
+                    <div className="sticky top-17 xs:top-14 z-10 w-[100%] bg-white">
                         <Box
                             display={{ xs: 'flex', sm: 'flex', md: 'none' }}
                             justifyContent="center"
                             p={3}
-                            sx={{ mt: { xs:7,sm:7,lg: 14 } }}
+                            sx={{ mt: { xs: 7, sm: 7, lg: 14 } }}
                         >
-                            <BasketToggle />
+                            {/* <BasketToggle /> */}
                         </Box>
                         <SearchBar />
                         <CategoryTabs categories={categories} />
@@ -54,7 +57,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                     <h2 className="text-2xl font-bold p-2 text-gray-800 mb-4">{category.categoryName}</h2>
 
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                        {items.map((item) => (
+                                        {items.map((item, index) => (
                                             <Box
                                                 key={item.id}
                                                 sx={{
@@ -69,7 +72,6 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                     maxWidth: '100%',
                                                 }}
                                             >
-                                                {/* Left Image */}
                                                 <Box
                                                     sx={{
                                                         width: 100,
@@ -84,7 +86,8 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                         src={item.imageURL || '/placeholder.svg'}
                                                         alt={item.name}
                                                         fill
-                                                        className="object-cover"
+                                                        sizes="(max-width: 768px) 100px, 200px"
+                                                        priority={index === 0}
                                                     />
                                                 </Box>
 
@@ -120,7 +123,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                     />
 
                                                     {/* Add button aligned to bottom right */}
-                                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt:4 }}>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
                                                         <AddToCartButton item={item} />
                                                     </Box>
                                                 </Box>
@@ -133,7 +136,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                         </Box>
                     )}
                 </Box>
-                <BasketSidebar menu={menuItems} cartItems={cartItems} />
+                <BasketSidebar menu={menuItems} cartItems={cartItems} orderType={orderType} />
                 <ViewCartFooter itmesCount={cartItems.length ?? 0} />
             </Box>
             <FooterCopyRights />

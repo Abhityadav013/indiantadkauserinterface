@@ -10,6 +10,7 @@ interface CartData {
     itemName: string;
     quantity: number;
   }[];
+  basketId?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
     const cartResponse: CartData = {
       id: cart.id,
       cartItems: cart.cartItems,
+      basketId: cart?.basketId ,
     };
 
     return NextResponse.json(new ApiResponse(201, cartResponse, 'Cart updated successfully'));
@@ -76,13 +78,18 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const cartFilter = { deviceId: deviceIdFromHeaders };
     const cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
-   if(!cart) {
-    return NextResponse.json( new ApiResponse(200, {}, 'Cart is empty.'));
-   }
+    if (!cart) {
+      return NextResponse.json(new ApiResponse(200, {}, 'Cart is empty.'));
+    }
+
     const cartResponse: CartData = {
       id: cart?.id,
       cartItems: cart?.cartItems,
+      basketId: cart.basketId,
     };
+
+    // Return shortened base64-encoded UUID
+
     return NextResponse.json(
       new ApiResponse(
         200,

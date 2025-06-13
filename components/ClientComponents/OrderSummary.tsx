@@ -1,4 +1,3 @@
-// app/checkout/OrderSummary.tsx
 import { Paper, Typography, Box } from "@mui/material";
 import { LocalDining } from "@mui/icons-material";
 import { MenuItem } from "@/lib/types/menu_type";
@@ -8,7 +7,7 @@ import { Cart } from "@/lib/types/cart_type";
 import PaymentMethod from "./paymentOptionsComponents/PaymentMethod";
 
 interface OrderSummaryProps {
-  cart: Cart[],
+  cart: { cartItems: Cart[], basketId: string },
   menu: MenuItem[]
   userData: CustomerOrder
 }
@@ -17,7 +16,7 @@ interface OrderSummaryProps {
 export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps) {
 
   const getCartTotal = () => {
-    const cartTotal = cart.reduce((total, cartItem) => {
+    const cartTotal = cart.cartItems.reduce((total, cartItem) => {
       const foodItemMatch = menu.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
@@ -25,7 +24,7 @@ export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps
 
   };
 
-  if(cart.length == 0){
+  if (cart.cartItems.length == 0) {
     return null;
   }
   return (
@@ -36,7 +35,7 @@ export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps
           Order summary
         </Typography>
       </Box>
-      <CheckoutCart cart={cart} menu={menu} userData={userData} />
+      <CheckoutCart cart={cart.cartItems} menu={menu} userData={userData} />
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <PaymentMethod cartTotal={getCartTotal()} />
       </Box>

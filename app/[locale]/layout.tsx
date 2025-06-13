@@ -6,13 +6,13 @@ import { StoreProvider } from "@/components/StoreProvider";
 import { SessionProvider } from "@/components/ClientComponents/SessionProvider";
 import MobileViewDetector from "@/components/ClientComponents/mobileView/MobileViewDetector";
 import { notFound } from "next/navigation";
-// import { getMessages } from "next-intl/server";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { locales } from "@/config";
 import { setRequestLocale } from "next-intl/server";
-import ClientLayoutWrapper from "@/components/ClientComponents/ClientLayoutWrapper";
 import Script from "next/script";
-// import Script from "next/script";
+import RouteLoader from "@/components/ClientComponents/RouteLoader";
+import ClientLayoutWrapper from "@/components/ClientComponents/ClientLayoutWrapper";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,13 +58,6 @@ export default async function LocaleLayout({
     <StoreProvider >
       <html lang={locale}>
         <head>
-          {/* <script
-            id="usercentrics-cmp"
-            src="https://web.cmp.usercentrics.eu/ui/loader.js"
-            data-settings-id="367RVaF9HFZbR9"
-            async
-          ></script> */}
-
           <Script
             src="https://pay.google.com/gp/p/js/pay.js"
             strategy="beforeInteractive"
@@ -79,8 +72,7 @@ export default async function LocaleLayout({
             <MobileViewDetector />
             <ClientLayoutWrapper>
               <main>
-                {children}
-              </main>
+                <RouteLoader />{children}</main>
             </ClientLayoutWrapper>
           </NextIntlClientProvider>
         </body>

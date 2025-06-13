@@ -34,7 +34,7 @@ const StripeCheckout = ({ amount, clientSecret }: StripeCheckoutProps) => {
             elements,
             clientSecret,
             confirmParams: {
-                return_url: `https://test.indiantadka.eu/de/`,
+                return_url: `http://localhost:3000/de/`,
             },
         });
         if (response.error) {

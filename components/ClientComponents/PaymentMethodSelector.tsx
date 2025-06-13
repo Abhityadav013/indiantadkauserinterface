@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
-import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
 import CloseIcon from "@mui/icons-material/Close";
@@ -35,8 +34,13 @@ import { PaymentMethod } from "@/lib/types/payment_method_type";
 import { RootState } from "@/store";
 
 import PaymentMethodSelectorSkeleton from "../Skeletons/PaymentMethodSelectorSkeleton";
-
+import EuroSymbolOutlinedIcon from '@mui/icons-material/EuroSymbolOutlined';
 export const paymentMethods = [
+  {
+    id: "cash",
+    name: "Cash on Delivery",
+    icon: <EuroSymbolOutlinedIcon className="text-orange-500" />,
+  },
   {
     id: "google",
     name: "Google Pay",
@@ -53,11 +57,6 @@ export const paymentMethods = [
     id: "credit",
     name: "Credit or Debit card",
     icon: <CreditCardOutlinedIcon />,
-  },
-  {
-    id: "cash",
-    name: "Cash on Delivery",
-    icon: <AttachMoneyOutlinedIcon />,
   },
   {
     id: "paypal",
@@ -97,11 +96,12 @@ export default function PaymentMethodSelector() {
     setLoading(false);
   }, [payment_type, dispatch]);
 
-  const handleSelect = (method: typeof paymentMethods[0]) => {
-    setSelectedMethod(method);
-    sessionStorage.setItem("selectedPaymentMethod", method.id);
-    dispatch(setPaymentMethod(method.id as PaymentMethod));
-    setTimeout(() => setOpen(false), 200);
+  const handleSelect = () => {
+    if (selectedMethod) {
+      sessionStorage.setItem("selectedPaymentMethod", selectedMethod.id);
+      dispatch(setPaymentMethod(selectedMethod.id as PaymentMethod));
+      setTimeout(() => setOpen(false), 200);
+    }
   };
 
   const openCouponDialog = () => setCouponDialogOpen(true);
@@ -138,7 +138,7 @@ export default function PaymentMethodSelector() {
             onClick={openCouponDialog}
           >
             <Typography>Add Coupon</Typography>
-             <AddCircleOutlineOutlinedIcon />
+            <AddCircleOutlineOutlinedIcon />
           </div>
         </div>
       )}
@@ -168,9 +168,20 @@ export default function PaymentMethodSelector() {
           <List>
             {paymentMethods.map((method) => (
               <ListItem key={method.id} disablePadding>
-                <ListItemButton onClick={() => handleSelect(method)}>
-                  <ListItemIcon>{method.icon}</ListItemIcon>
-                  <ListItemText primary={method.name} />
+                <ListItemButton
+                  onClick={() => setSelectedMethod(method)}
+                  sx={{
+                    py: 2, // increased vertical padding
+                    px: 3,
+                    fontSize: '1.1rem', // slightly larger text
+                  }}
+                  selected={selectedMethod?.id === method.id}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>{method.icon}</ListItemIcon>
+                  <ListItemText
+                    primaryTypographyProps={{ fontSize: "1.1rem", fontWeight: 500 }}
+                    primary={method.name}
+                  />
                   {selectedMethod?.id === method.id && (
                     <CheckCircleIcon sx={{ color: "green" }} />
                   )}
@@ -178,6 +189,27 @@ export default function PaymentMethodSelector() {
               </ListItem>
             ))}
           </List>
+          <Divider sx={{ my: 2 }} />
+
+          <div className="flex justify-end">
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{
+                borderRadius: 3,
+                backgroundColor: '#f36805',
+                color: 'white',
+                py: 1.5,
+                fontWeight: "bold",
+                textTransform: "none",
+                fontSize: "1.2rem",
+              }}
+              onClick={handleSelect}
+            >
+              Done
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

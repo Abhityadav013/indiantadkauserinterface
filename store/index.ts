@@ -7,22 +7,26 @@ import mobileReducer from './slices/mobileSlice';
 import addressReducer from './slices/addressSlice'; // Assuming you have an addressSlice
 import basketReducer from './slices/basketSlice'; // Assuming you have a basketSlice
 import paymentReducer from './slices/paymentSlice';
+import navigationReducer from './slices/navigationSlice';
 export const store = configureStore({
   reducer: {
     [cartApi.reducerPath]: cartApi.reducer,
-    [customerDetailsApi.reducerPath]: customerDetailsApi.reducer, 
-    [orderApi.reducerPath]:orderApi.reducer,
-     order: orderReducer,
-     mobile:mobileReducer,
-     address:addressReducer, // Assuming you have an addressReducer
-     basket: basketReducer, // Assuming you have a basketReducer
-     payment: paymentReducer
+    [customerDetailsApi.reducerPath]: customerDetailsApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
+    order: orderReducer,
+    mobile: mobileReducer,
+    address: addressReducer, // Assuming you have an addressReducer
+    basket: basketReducer, // Assuming you have a basketReducer
+    payment: paymentReducer,
+    navigation: navigationReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(cartApi.middleware,customerDetailsApi.middleware,orderApi.middleware),
+    getDefaultMiddleware().concat(
+      cartApi.middleware,
+      customerDetailsApi.middleware,
+      orderApi.middleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-

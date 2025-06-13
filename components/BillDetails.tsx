@@ -5,12 +5,14 @@ import BillDetailWrapper from './ClientComponents/BillDetailWrapper';
 import { CustomerDetails } from '@/lib/types/customer_order_type';
 
 interface BillDetailProps {
+    basketId: string;
     getCartTotal: () => number,
     customerDetails: CustomerDetails,
     handleAdddressDetailOpen: () => void
 }
 
 const BillDetails = ({
+    basketId,
     getCartTotal,
     customerDetails,
     handleAdddressDetailOpen
@@ -46,6 +48,7 @@ const BillDetails = ({
             </Box>
 
             <BillDetailWrapper
+                basketId={basketId}
                 customerDetails={customerDetails ?? {} as CustomerDetails}
                 getCartTotal={getCartTotal}
                 handleAddressModalOpen={handleAdddressDetailOpen}

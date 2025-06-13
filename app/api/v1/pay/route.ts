@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
   try {
-    const { token, clientSecret } = await req.json();
+    const { token, clientSecret, returnURL } = await req.json();
 
     // Confirm payment using payment method (Google Pay token)
     const paymentIntentId = clientSecret.split('_secret')[0]; // Extract actual PaymentIntent ID
@@ -19,10 +19,15 @@ export async function POST(req: Request) {
           token: token.id,
         },
       },
+      return_url: returnURL, // ✅ Set your post-payment redirect URL
     } as any);
 
+    // If SCA or redirect is required, Stripe will handle it
+    if (paymentIntent.status === 'requires_action' && paymentIntent.next_action?.redirect_to_url) {
+      return NextResponse.json({ redirectUrl: paymentIntent.next_action.redirect_to_url.url,success: true });
+    }
     if (paymentIntent.status === 'succeeded') {
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ redirectUrl: returnURL,success: true });
     }
 
     // return NextResponse.json({ success: true, paymentIntent });

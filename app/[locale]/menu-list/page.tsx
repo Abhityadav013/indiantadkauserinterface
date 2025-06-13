@@ -2,6 +2,7 @@
 import { getMenuData } from '@/lib/api/fetchMenuDataApi';
 import { getCartData } from '@/lib/api/fetchCartDataApi';
 import MenuContent from '@/components/MenuContent';
+import { getUserData } from '@/lib/api/fetchUserDetailsApi';
 
 type SearchParams = {
     category?: string;
@@ -14,6 +15,8 @@ export default async function MenuPage({ searchParams }: { searchParams?: Promis
     const q = resolvedParams?.q;
 
     const { menuItems, menuCategoriesDetails } = await getMenuData();
+
+    const [userData] = await Promise.all([getUserData()]);
     const cartItems = await getCartData();
 
     let groupedMenu;
@@ -51,8 +54,9 @@ export default async function MenuPage({ searchParams }: { searchParams?: Promis
             groupedMenu={groupedMenu}
             filtered={filtered}
             menuItems={menuItems}
-            cartItems={cartItems}
+            cartItems={cartItems.cartItems}
             categories={menuCategoriesDetails}
+            orderType={userData.orderType}
         />
     );
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import GPayButton from "./GooglePayButton";
+// import GPayButton from "./GooglePayButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import type { PaymentMethod } from "@/lib/types/payment_method_type";
@@ -8,6 +8,7 @@ import { Button } from "@mui/material";
 import PaypalComponent from "../PaypalComponent";
 import { convertToSubcurrency } from "@/utils/convertToSubCurrency";
 import StripeComponent from "../StripeComponent";
+import GooglePayButton from "./GooglePayButton";
 interface PaymentMethodProps {
     cartTotal: number
 }
@@ -34,7 +35,7 @@ export default function PaymentMethod({ cartTotal }: PaymentMethodProps) {
         <>
             {/* Your existing selector */}
             {/* Render payment method UI based on selected method */}
-            {selectedMethod === "google" && <GPayButton amount={orderPrice} />}
+            {selectedMethod === "google" && <GooglePayButton amount={orderPrice} />}
             {selectedMethod === "paypal" && <PaypalComponent amount={orderPrice} />}
             {selectedMethod === "credit" && <StripeComponent amount={orderPrice}/>}
             {/* {selectedMethod?.id === "credit" && <StripeCardForm />} */}
@@ -55,7 +56,7 @@ export default function PaymentMethod({ cartTotal }: PaymentMethodProps) {
                         },
                     }}
                 >
-                    Continue and Place Order
+                    Place Order
                 </Button>
             )}
         </>

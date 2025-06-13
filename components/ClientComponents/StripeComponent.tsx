@@ -52,7 +52,7 @@ const StripeComponent: React.FC<StripeComponentProps> = ({ amount }) => {
         },
       }}
     >
-      Continue and Place Order
+      Pay & Place Order
     </Button>
   );
 };

@@ -5,7 +5,7 @@ import { Cart } from '@/lib/types/cart_type';
 
 export function useCart() {
   // Query cart from backend
-  const { data: cart = [], isLoading } = useGetCartQuery(undefined, {
+  const { data: cart = {cartItems:[],basketId:''}, isLoading } = useGetCartQuery(undefined, {
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
   });
@@ -21,7 +21,7 @@ export function useCart() {
     if (isLoading || isUpdating) return;
 
     // Copy current cart or empty array
-    const updatedCart = [...cart];
+    const updatedCart = cart?.cartItems ? [...cart.cartItems] : [];
     const itemIndex = updatedCart.findIndex((cartItem) => cartItem.itemId === item.id);
 
     if (itemIndex > -1) {
@@ -45,7 +45,7 @@ export function useCart() {
   const removeFromCart = async (item: MenuItem) => {
     if (isLoading || isUpdating) return;
 
-    const updatedCart = cart
+    const updatedCart = cart.cartItems
       .map((cartItem) =>
         cartItem.itemId === item.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
       )
@@ -59,11 +59,11 @@ export function useCart() {
   };
 
   const getItemQuantity = (itemId: string) => {
-    return cart.find((item) => item.itemId === itemId)?.quantity || 0;
+    return cart.cartItems.find((item) => item.itemId === itemId)?.quantity || 0;
   };
 
   const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    return cart.cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   const getItemPriceWithMenu = (item: Cart) => {
@@ -77,7 +77,7 @@ export function useCart() {
   };
 
   const getCartTotal = () => {
-    const cartTotal =  cart.reduce((total, cartItem) => {
+    const cartTotal =  cart.cartItems.reduce((total, cartItem) => {
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
@@ -89,7 +89,8 @@ export function useCart() {
   return {
     isLoading,
     isUpdating,
-    items: cart,
+    items: cart.cartItems,
+    basketId:cart.basketId,
     menuItems,
     addToCart,
     removeFromCart,

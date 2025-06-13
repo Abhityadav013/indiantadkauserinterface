@@ -1,3 +1,4 @@
+import { GetCartData } from '@/lib/api/fetchCartDataApi';
 import { base_url } from '@/lib/apiEndpoints';
 import { Cart, CartDescription } from '@/lib/types/cart_type';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
@@ -7,6 +8,7 @@ interface GetCartResponse {
   data: {
     id: string;
     cartItems: Cart[];
+    basketId: string;
   };
 }
 
@@ -14,6 +16,7 @@ interface UpdateCartResponse {
   data: {
     id: string;
     cartItems: Cart[];
+    basketId: string;
   };
 }
 
@@ -43,20 +46,20 @@ export const cartApi = createApi({
   tagTypes: ['Cart', 'CartDescription'],
   endpoints: (builder) => ({
     // GET /cart
-    getCart: builder.query<Cart[], void>({
+    getCart: builder.query<GetCartData, void>({
       query: () => '/cart',
-      transformResponse: (res: GetCartResponse) => res.data?.cartItems || [],
+      transformResponse: (res: GetCartResponse) =>res.data || {} as GetCartData,
       providesTags: ['Cart'],
     }),
 
     // POST /cart
-    updateCart: builder.mutation<Cart[], { cart: Cart[]; isCartEmpty?: boolean }>({
+    updateCart: builder.mutation<GetCartData, { cart: Cart[]; isCartEmpty?: boolean }>({
       query: ({ cart, isCartEmpty }) => ({
         url: '/cart',
         method: 'POST',
         body: { cart, isCartEmpty },
       }),
-      transformResponse: (res: UpdateCartResponse) => res.data?.cartItems || [],
+      transformResponse: (res: UpdateCartResponse) => res.data || {} as GetCartData,
       invalidatesTags: ['Cart'],
     }),
 

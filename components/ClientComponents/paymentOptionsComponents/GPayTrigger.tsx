@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GPayButtonProps {
@@ -7,12 +6,6 @@ interface GPayButtonProps {
 }
 
 export default function GooglePayButton({ amount }: GPayButtonProps) {
-    const pathname = usePathname(); // /de/checkout
-    const searchParams = useSearchParams(); // URLSearchParams
-
-    const query = searchParams.toString(); // e.g. basket=MGYwNmY...
-
-    const fullUrl = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}${pathname}${query ? '?' + query : ''}&orderId=aqlng693aksjtqpdmwltxg`;
     const [error, setError] = useState<string | null>(null);
     const btnRef = useRef<HTMLDivElement>(null);
     const paymentsClientRef = useRef<google.payments.api.PaymentsClient | null>(null);
@@ -74,13 +67,11 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
             const payRes = await fetch("/api/v1/pay", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, clientSecret, returnURL: fullUrl }),
+                body: JSON.stringify({ token, clientSecret }),
             });
 
             const payData = await payRes.json();
-            if (payData.redirectUrl) {
-                window.location.href = payData.redirectUrl;
-            } else if (payRes.ok && payData.success) {
+            if (payRes.ok && payData.success) {
                 alert("✅ Payment successful!");
             } else {
                 console.error("❌ Stripe payment failed", payData.error);
@@ -91,7 +82,7 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
             alert("Something went wrong.");
             setError("Payment failed to initialize.");
         }
-    }, [amount, fullUrl]);
+    }, [amount]);
 
     useEffect(() => {
         const script = document.createElement("script");
