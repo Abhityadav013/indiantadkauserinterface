@@ -1,35 +1,60 @@
-'use client'
-import React from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import {
-  Elements,
-} from '@stripe/react-stripe-js';
-import StripeCheckout from './StripeCheckout';
+'use client';
+import React from 'react';
+import { Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
-  throw new Error('NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined')
+  throw new Error('NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined');
 }
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY)
 
 interface StripeComponentProps {
-  amount: number,
-  onLoad: () => void
-}
-const StripeComponent: React.FC<StripeComponentProps> = ({ amount, onLoad }) => {
-  return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        mode: 'payment',
-        amount: amount,
-        currency: 'eur',
-        locale: 'en',
-      }}
-    >
-      <StripeCheckout amount={amount} onClientSecretLoad={onLoad} />
-    </Elements>
-  )
+  amount: number;
 }
 
-export default StripeComponent
+const StripeComponent: React.FC<StripeComponentProps> = ({ amount }) => {
+  const router = useRouter();
+
+  const fetchPaymentIntent = async () => {
+    const res = await fetch('/api/v1/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.clientSecret) {
+      const paymentIntentId = data.clientSecret.split('_secret_')[0]; // ✅ extract directly
+      sessionStorage.setItem('checkout_client_secret', data.clientSecret);
+      router.push(`/payment/${paymentIntentId}`); // ✅ now works correctly
+    }
+  };
+
+  const handleCardPayment = () => {
+    fetchPaymentIntent();
+  };
+
+  return (
+    <Button
+      variant="contained"
+      onClick={handleCardPayment}
+      sx={{
+        width: '100%',
+        backgroundColor: '#f36805',
+        color: 'white',
+        padding: '6px 12px',
+        fontSize: '20px',
+        fontWeight: 'bold',
+        borderRadius: '50px',
+        textTransform: 'none',
+        '&:hover': {
+          backgroundColor: '#f36805',
+        },
+      }}
+    >
+      Pay & Place Order
+    </Button>
+  );
+};
+
+export default StripeComponent;

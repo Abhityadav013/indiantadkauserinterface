@@ -1,3 +1,4 @@
+import { generateBasketId } from '@/utils/generateBasketId';
 import mongoose, { Schema, Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,6 +16,7 @@ export interface ICart extends Document {
   deviceId: string;
   userId?: string;
   cartItems: CartItem[];
+  basketId?:string
 }
 
 const CartItemSchema = new Schema<CartItem>(
@@ -42,6 +44,10 @@ const UserCartSchema = new Schema<ICart>(
       type: String,
       required: false,
     },
+    basketId: {
+      type: String,
+      required: false,
+    },
     cartItems: [CartItemSchema],
   },
   {
@@ -50,6 +56,26 @@ const UserCartSchema = new Schema<ICart>(
     timestamps: true, // Optional: if you want createdAt and updatedAt
   }
 );
+
+UserCartSchema.pre('validate', async function (next) {
+  if (this.isNew) {
+    // Ensure custom ID is generated
+    if (!this.id) {
+      this.id = uuidv4();
+    }
+
+    try {
+      // Now that ID is present, generate the basket ID
+      this.basketId = await generateBasketId(this.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error('Error generating basketId:', err);
+      return next(err);
+    }
+  }
+
+  next();
+});
 
 // Optional: Clean cart item _id when serializing
 UserCartSchema.set('toJSON', {
@@ -60,7 +86,7 @@ UserCartSchema.set('toJSON', {
       });
     }
     return ret;
-  }
+  },
 });
 
 const Cart = mongoose.models.Cart || mongoose.model<ICart>('Cart', UserCartSchema);

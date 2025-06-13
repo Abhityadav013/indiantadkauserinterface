@@ -12,7 +12,7 @@ interface AddressFormProps {
     formError: ErrorResponse,
     setFormError: React.Dispatch<React.SetStateAction<ErrorResponse>>,
     handleAdddressDetailClose: () => void,
-    handleUpdateCustomerDetails: (value:CustomerOrder) => void
+    handleUpdateCustomerDetails: (value:CustomerOrder) => void,
 
 }
 const AddressForm: React.FC<AddressFormProps> = ({
@@ -53,6 +53,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             },
             orderType: values.orderType,
         };
+        console.log('customerDetails',customerDetails)
         await handleUpdateCustomerDetails(customerDetails)
     };
 

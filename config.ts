@@ -1,0 +1,1 @@
+export const locales = ['de', 'en'] as const; // Define your locales here

@@ -3,6 +3,16 @@ import Cart, { ICart } from '@/lib/mongodb/models/Cart';
 import ApiResponse from '@/utils/ApiResponse';
 import { NextRequest, NextResponse } from 'next/server';
 
+interface CartData {
+  id: string;
+  cartItems: {
+    itemId: string;
+    itemName: string;
+    quantity: number;
+  }[];
+  basketId?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
@@ -49,7 +59,13 @@ export async function POST(request: NextRequest) {
     // Save the updated cart
     await cart.save();
 
-    return NextResponse.json(new ApiResponse(201, cart, 'Cart updated successfully'));
+    const cartResponse: CartData = {
+      id: cart.id,
+      cartItems: cart.cartItems,
+      basketId: cart?.basketId ,
+    };
+
+    return NextResponse.json(new ApiResponse(201, cartResponse, 'Cart updated successfully'));
   } catch (error) {
     console.error('Contact API error:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
@@ -57,16 +73,29 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  try { 
+  try {
     const deviceIdFromHeaders = req.headers.get('ssid') || ''; // Try headers if deviceId in cookies is not available
-   
     await connectToDatabase();
-   
-    const cartFilter = { deviceId:deviceIdFromHeaders };
-
+    const cartFilter = { deviceId: deviceIdFromHeaders };
     const cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
+    if (!cart) {
+      return NextResponse.json(new ApiResponse(200, {}, 'Cart is empty.'));
+    }
+
+    const cartResponse: CartData = {
+      id: cart?.id,
+      cartItems: cart?.cartItems,
+      basketId: cart.basketId,
+    };
+
+    // Return shortened base64-encoded UUID
+
     return NextResponse.json(
-      new ApiResponse(200, { cart }, cart ? 'Cart retrieved successfully.' : 'Cart is empty.')
+      new ApiResponse(
+        200,
+        { ...cartResponse },
+        cartResponse ? 'Cart retrieved successfully.' : 'Cart is empty.'
+      )
     );
   } catch (error) {
     console.error('Contact API error:', error);

@@ -1,132 +1,187 @@
 'use client';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { OrderType } from '@/lib/types/order_type';
-import Image from 'next/image';
-import { MenuItem } from '@/lib/types/menu_type';
-import { useCart } from '@/hooks/useCartDetails';
-
+import { CustomerDetails } from '@/lib/types/customer_order_type';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import InfoIcon from '@mui/icons-material/Info';
+import DeliveryFeeDialog from '../DeliveryFeeDialog';
+import ServiceFeeDilaog from '../ServiceFeeDilaog';
+import { formatPrice } from '@/utils/valueInEuros';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BillDetailWrapperProps {
-    menu: MenuItem[]
+    basketId:string,
+    customerDetails: CustomerDetails;
+    getCartTotal: () => number;
+    handleAddressModalOpen: () => void;
 }
-const BillDetailWrapper: React.FC<BillDetailWrapperProps> = ({ menu }) => {
+
+const BillDetailWrapper = ({
+    basketId,
+    customerDetails,
+    getCartTotal,
+}: BillDetailWrapperProps) => {
     const [loading, setLoading] = useState(true);
     const [deliveryFee, setDeliveryFee] = useState(0);
-    const [deliveryTip, setDeliveryTip] = useState(0);
-    const [isDeliveryOrder, setOrderType] = useState<boolean>()
-    const [isFreeDelivery, setFreeDelivery] = useState(false);
     const [cartAmountTotal, setCartAmountTotal] = useState<number>();
-    const { menuItems, updateMenuItems, getCartTotal } = useCart();
-
-    useEffect(() => {
-        if (!menuItems.length) {
-            updateMenuItems(menu)
-        }
-    }, [menuItems, menu, updateMenuItems])
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false);
+    const order_type = useSelector((state: RootState) => state.order.orderType);
+    const router = useRouter();
 
     useEffect(() => {
         const deliveryFee = sessionStorage.getItem('deliveryFee');
-        const freeDelivery = sessionStorage.getItem('freeDelivery');
-        const orderType = sessionStorage.getItem('orderType');
-        setDeliveryFee(deliveryFee ? Number(deliveryFee) : 0)
-        setFreeDelivery(freeDelivery === 'true')
-        setOrderType(orderType === OrderType.DELIVERY)
-
-    }, [])
-
-    // Load customer delivery details
-
-    // Load tip from session storage
-    useEffect(() => {
-        const tip = sessionStorage.getItem('tipAmount');
-        setDeliveryTip(tip ? Number(tip) : 0);
+        setDeliveryFee(deliveryFee ? Number(deliveryFee) : 0);
     }, []);
 
-    // Update cart total in session storage, and set loading timeout
     useEffect(() => {
-        const cartTotal = getCartTotal()
+        const cartTotal = getCartTotal();
         if (cartTotal) {
-            const total = ((cartTotal ?? 0) + deliveryFee + deliveryTip).toFixed(2);
+            const total = ((cartTotal ?? 0) + deliveryFee).toFixed(2);
             sessionStorage.setItem('cartTotalAmount', total);
-            setCartAmountTotal(Number(total))
+            setCartAmountTotal(Number(total));
             setLoading(false);
         }
-    }, [getCartTotal, deliveryFee, deliveryTip]);
+    }, [getCartTotal, deliveryFee]);
 
-
-    const addTipToDelivery = () => {
-        sessionStorage.setItem('tipAmount', '3');
-        setDeliveryTip(3);
+    const renderPriceOrLoader = (value: string | number) => {
+        if (loading) return <span>Loading...</span>;
+        if (value === 0) return <span>Free</span>;
+        return <span>{formatPrice(Number(value))}</span>;
     };
 
-    const renderPriceOrLoader = (value: string | number) =>
-        loading ? (
-            <Image
-                src="https://testing.indiantadka.eu/loadingCircle.gif"
-                alt="Loading"
-                width={20}
-                height={20}
-                className="rounded"
-            />
-        ) : (
-            <span>€{value}</span>
-        );
+    const renderServiceFee = (value: string | number) => {
+        if (loading) return <span>Loading...</span>;
+        const serviceFee = (Number(value) * 2.5) / 100;
+        return <span>{formatPrice(serviceFee < 0.99 ? Number(serviceFee.toFixed(2)) : 0.99)}</span>;
+    };
 
+    const calculateTotal = () => {
+        if (order_type === OrderType.DELIVERY) {
+            const serviceFee = cartAmountTotal ? (cartAmountTotal * 2.5) / 100 : 0;
+            const cappedServiceFee = serviceFee < 0.99 ? serviceFee : 0.99;
+            return formatPrice((cartAmountTotal ?? 0) + deliveryFee + cappedServiceFee);
+        }
+        return formatPrice(cartAmountTotal ?? 0);
+    };
+
+    const handleDialogOpen = () => setDialogOpen(true);
+    const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
     return (
-        <Box className="mt-2 text-gray-700 space-y-3">
-            <Typography variant="body2" className="flex justify-between">
-                Order Type
-                <span className="text-orange-500 font-bold">
-                    {isDeliveryOrder ? OrderType.DELIVERY : OrderType.PICKUP}
-                </span>
-            </Typography>
+        <>
 
-            <Typography variant="body2" className="flex justify-between">
-                Item Total
-                {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
-            </Typography>
-
-            {isDeliveryOrder && (
-                <div className="space-y-2">
-                    <Typography variant="body2" className="flex justify-between">
-                        Delivery Fee
-                        <span className={!deliveryFee ? 'text-emerald-600 text-xs cursor-pointer' : ''}>
-                            {/* {!isCustomerDetailsPresent ? 'Add Delivery Address' : renderPriceOrLoader(deliveryFee)} */}
-                        </span>
-                    </Typography>
-
-                    <Typography variant="caption" className="text-gray-500">
-                        This fee fairly goes to our delivery partners for delivering your food
-                    </Typography>
-
-                    <Typography
-                        variant="body2"
-                        className={`flex justify-between ${deliveryTip ? '' : 'text-orange-500 cursor-pointer'}`}
+            <Box sx={{ position: 'relative', paddingBottom: '5px', height: '25vh' }} className="mt-2 text-gray-700">
+                <AnimatePresence initial={false} mode="wait">
+                    <motion.div
+                        key={order_type}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden', position: 'relative' }}
                     >
-                        Delivery Tip{' '}
-                        {deliveryTip ? (
-                            <span>€{deliveryTip}</span>
-                        ) : isFreeDelivery ? (
-                            <span>Free</span>
-                        ) : (
-                            <span onClick={addTipToDelivery}>Add tip</span>
-                        )}
-                    </Typography>
-                </div>
-            )}
+                        <Box>
+                            <Typography variant="body2" className="flex justify-between py-[2px]">
+                                Item Total
+                                {renderPriceOrLoader(cartAmountTotal?.toFixed(2) || '0.00')}
+                            </Typography>
 
-            <Divider className="my-2" />
+                            {order_type === OrderType.DELIVERY && (
+                                <>
 
-            <Typography
-                variant="body1"
-                sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}
-            >
-                To Pay
-                {renderPriceOrLoader(((cartAmountTotal ?? 0) + deliveryFee + deliveryTip).toFixed(2))}
-            </Typography>
-        </Box>
+                                    <Typography
+                                        variant="body1"
+                                        className={`flex justify-between font-semibold`}
+                                    >
+                                        <span>
+                                            Delivery Fee
+                                            <IconButton onClick={handleDialogOpen} sx={{ paddingLeft: '5px' }}>
+                                                <InfoIcon sx={{ fontSize: 12 }} />
+                                            </IconButton>
+                                        </span>
+                                        {renderPriceOrLoader(deliveryFee)}
+                                    </Typography>
 
+                                    <Typography
+                                        variant="body1"
+                                        className={`flex justify-between font-semibold`}
+                                    >
+                                        <span>
+                                            Service fee 2.5% (max 0.99 €)
+                                            <IconButton onClick={handleServiceFeeDialogOpen} sx={{ paddingLeft: '5px' }}>
+                                                <InfoIcon sx={{ fontSize: 12 }} />
+                                            </IconButton>
+                                        </span>
+                                        {renderServiceFee(cartAmountTotal?.toFixed(2) || '0.00')}
+                                    </Typography>
+                                </>
+                            )}
+
+                            {
+                                Object.keys(customerDetails).length > 0 && <Divider sx={{ backgroundColor: '#E0E0E0', my: 1 }} />
+                            }
+
+
+                            <Typography
+                                variant="body1"
+                                className={`flex justify-between font-bold`}
+                            >
+                                Total
+                                <span>
+                                    {`€ ${calculateTotal()}`}
+                                </span>
+                            </Typography>
+                        </Box>
+
+                        {/* Mask with message */}
+                    </motion.div>
+                </AnimatePresence>
+
+                     <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'absolute',
+                            bottom: '5px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: '80%',
+                            mt: 2
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            hidden={!customerDetails || Object.keys(customerDetails).length === 0}
+                            onClick={() => router.push(`/checkout?basket=${basketId}`)}
+                            sx={{
+                                width: '100%',
+                                backgroundColor: '#f36805',
+                                color: 'white',
+                                padding: '6px 12px',
+                                fontSize: '20px',
+                                fontWeight: 'bold',
+                                borderRadius: '50px',
+                                textTransform: 'none',
+                                opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
+                                '&:hover': {
+                                    backgroundColor: '#f36805',
+                                },
+                            }}
+                        >
+                            Checkout ({calculateTotal()})
+                        </Button>
+                    </Box>
+
+            </Box>
+
+            {/* Dialogs */}
+            <DeliveryFeeDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
+            <ServiceFeeDilaog open={serviceFeeDialogOpen} onClose={() => setServiceFeeDialogOpen(false)} />
+        </>
     );
 };
 

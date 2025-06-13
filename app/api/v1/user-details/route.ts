@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
     const tId = request.headers.get('tid') || '';
     // const ssId = request.headers.get('session-id') || '';
     const ssId = request.headers.get('ssid') || '';
-
     const { customerDetails, orderType } = payload;
     const errors = [];
     // Validate required fields
@@ -137,31 +136,19 @@ export async function POST(request: NextRequest) {
         notDeliverable = true;
       }
     }
-
     if (userInformation && Object.keys(userInformation).length > 0) {
-      // Update existing user info
-      userInformation.name = customerDetails.name;
-      userInformation.phoneNumber = customerDetails.phoneNumber;
-      userInformation.address = customerDetails.address;
-      userInformation.deliveryFee = deliveryFee;
-      userInformation.isFreeDelivery = isFreeDelivery;
-      userInformation.notDeliverable = notDeliverable;
-      userInformation.orderMethod = orderType === OrderType.DELIVERY ? 'DELIVERY' : 'PICKUP';
-
       if (orderType === OrderType.PICKUP) {
-        console.log('its exits here');
-        userInformation.address = undefined;
-        userInformation.deliveryFee = undefined;
-        userInformation.isFreeDelivery = undefined;
-        userInformation.notDeliverable = undefined;
-
-        // mark fields as modified (important!)
-        userInformation.markModified('address');
-        userInformation.markModified('deliveryFee');
-        userInformation.markModified('isFreeDelivery');
-        userInformation.markModified('notDeliverable');
-        await userInformation.save();
+        userInformation.name = customerDetails.name;
+        userInformation.phoneNumber = customerDetails.phoneNumber;
+        userInformation.orderMethod = orderType === OrderType.DELIVERY ? 'DELIVERY' : 'PICKUP';
+      } else {
+        userInformation.address = customerDetails.address;
+        userInformation.deliveryFee = deliveryFee;
+        userInformation.isFreeDelivery = isFreeDelivery;
+        userInformation.notDeliverable = notDeliverable;
+        userInformation.orderMethod = orderType === OrderType.DELIVERY ? 'DELIVERY' : 'PICKUP';
       }
+      // Update existing user info
     } else {
       userInformation = new UserInfo({
         name: customerDetails.name,
@@ -221,10 +208,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(new ApiResponse(404, {}, 'User info not found.'));
     }
 
+    const formatPhoneNumber = (phone: string): string => {
+      // Remove any non-digit characters like '+' or spaces
+      const cleaned = phone.replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{2})(\d+)$/); // e.g., '49' and the rest
+      if (!match) return phone;
+      return match[2];
+    };
     const userDetails: CustomerOrder = {
       customerDetails: {
         name: userInfo.name,
-        phoneNumber: userInfo.phoneNumber,
+        phoneNumber: formatPhoneNumber(userInfo.phoneNumber),
         address: userInfo.address || {},
         isFreeDelivery: userInfo.isFreeDelivery,
         deliveryFee: userInfo.deliveryFee,

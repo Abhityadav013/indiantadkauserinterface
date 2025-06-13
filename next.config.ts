@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next';
-
+import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
@@ -10,8 +10,12 @@ const nextConfig: NextConfig = {
       'www.paypalobjects.com',
       'flagcdn.com',
       'stripe.com',
+      'www.flaticon.com',
+      'static.takeaway.com',
+      'https://pay.google.com'
     ], // Add your image domain here
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(nextConfig);

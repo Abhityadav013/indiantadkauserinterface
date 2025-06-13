@@ -5,5 +5,6 @@ export interface MenuCategory {
     updatedAt: string;
     createdAt: string;
     isDelivery: boolean;
+    order:number
   }
   

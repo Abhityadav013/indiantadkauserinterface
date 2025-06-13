@@ -1,29 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useGetCartQuery, useUpdateCartMutation } from '@/store/api/cartApi';
+import { useState } from 'react';
 import { MenuItem } from '@/lib/types/menu_type';
-import { useGetCartQuery } from '@/store/api/cartApi';
 import { Cart } from '@/lib/types/cart_type';
 
 export function useCart() {
-  const [items, setItems] = useState<Cart[]>([]);
+  // Query cart from backend
+  const { data: cart = {cartItems:[],basketId:''}, isLoading } = useGetCartQuery(undefined, {
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
+
+  // Mutation to update cart
+  const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation();
+
+  // Local state for menu items (if needed)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { data: cart, isLoading } = useGetCartQuery();
-  useEffect(() => {
-    if (!items.length && cart?.length) {
-      setItems(cart?.length ? cart : []);
-    }
 
-    if (isLoading) {
-      setLoading(false);
-    }
-  }, [cart, items, isLoading, setItems]);
+  // Add item to cart
+  const addToCart = async (item: MenuItem) => {
+    if (isLoading || isUpdating) return;
 
-  const addToCart = (item: MenuItem): Cart[] => {
-    if (isLoading) {
-      return [] as Cart[];
-    }
-
-    const updatedCart = [...(cart || [])];
+    // Copy current cart or empty array
+    const updatedCart = cart?.cartItems ? [...cart.cartItems] : [];
     const itemIndex = updatedCart.findIndex((cartItem) => cartItem.itemId === item.id);
 
     if (itemIndex > -1) {
@@ -38,83 +36,69 @@ export function useCart() {
         quantity: 1,
       });
     }
-    setItems(updatedCart);
-    return updatedCart;
+
+    // Send update to backend
+    await updateCart({ cart: updatedCart });
   };
 
-  const removeFromCart = (item: MenuItem): Cart[] => {
-    if (isLoading) {
-      return [] as Cart[];
-    }
-    const cartItems = [...(cart || [])];
-    const updatedCart = cartItems
+  // Remove item from cart
+  const removeFromCart = async (item: MenuItem) => {
+    if (isLoading || isUpdating) return;
+
+    const updatedCart = cart.cartItems
       .map((cartItem) =>
         cartItem.itemId === item.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
       )
       .filter((cartItem) => cartItem.quantity > 0);
-    setItems(updatedCart);
-    return updatedCart;
+
+    await updateCart({ cart: updatedCart });
   };
 
   const updateMenuItems = (menuItems: MenuItem[]) => {
-    
     setMenuItems(menuItems);
   };
 
-  //   const removeFromCart = (itemId: string) => {
-  //     setItems((currentItems) => {
-  //       const existingItem = currentItems.find((i) => i.itemId === itemId);
-
-  //       if (existingItem && existingItem.quantity > 1) {
-  //         return currentItems.map((i) => (i.itemId === itemId ? { ...i, quantity: i.quantity - 1 } : i));
-  //       } else {
-  //         return currentItems.filter((i) => i.itemId !== itemId);
-  //       }
-  //     });
-  //   };
-
   const getItemQuantity = (itemId: string) => {
-    return items.find((item) => item.itemId === itemId)?.quantity || 0;
+    return cart.cartItems.find((item) => item.itemId === itemId)?.quantity || 0;
   };
 
   const getTotalItems = () => {
-    // Use reduce to accumulate the count of items with quantity > 0
-    return items.reduce((total, item) => (item.quantity > 0 ? total + 1 : total), 0);
+    return cart.cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  //   const getTotalPrice = () => {
-  //     return items.reduce((total, item) => total + item.price * item.quantity, 0);
-  //   };
   const getItemPriceWithMenu = (item: Cart) => {
     const menu = menuItems.find((mi) => mi.id === item.itemId);
     const itemPrice = menu?.price ?? 0;
     return { totalPrice: itemPrice * item.quantity, menu };
   };
 
-  const clearCart = () => {
-    setItems([]);
+  const clearCart = async () => {
+    await updateCart({ cart: [], isCartEmpty: true });
   };
 
   const getCartTotal = () => {
-    return items.reduce((total, cartItem) => {
+    const cartTotal =  cart.cartItems.reduce((total, cartItem) => {
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
+    sessionStorage.setItem('cartTotal', JSON.stringify(cartTotal));
+    return cartTotal
+
   };
 
   return {
     isLoading,
-    items,
+    isUpdating,
+    items: cart.cartItems,
+    basketId:cart.basketId,
     menuItems,
-    loading,
     addToCart,
     removeFromCart,
     getItemQuantity,
     getTotalItems,
     getItemPriceWithMenu,
-    // getTotalPrice,
     clearCart,
     updateMenuItems,
-    getCartTotal
+    getCartTotal,
   };
 }

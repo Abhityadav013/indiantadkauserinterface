@@ -10,7 +10,6 @@ import {
     FormControl,
     FormHelperText,
     CircularProgress,
-    Box,
 } from "@mui/material"
 import toast from 'react-hot-toast';
 import { isValid, isMonday, format, parse, isWithinInterval } from "date-fns"
@@ -18,7 +17,8 @@ import { CountryCode, getCountryCallingCode } from 'libphonenumber-js';
 import PhoneInput from "./PhoneInput"
 import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import Loader from "../CartLoader";
+import ReservationFormSkeleton from "../Skeletons/ReservationFormSkeleton";
+import { useTranslations } from "next-intl";
 
 interface FormData {
     fullName: string
@@ -43,6 +43,7 @@ interface DisabledDateResponse {
 }
 
 export default function ReservationForm() {
+    const t = useTranslations("reservation")
     const [formData, setFormData] = useState<FormData>({
         fullName: "",
         phoneNumber: "",
@@ -81,11 +82,11 @@ export default function ReservationForm() {
         fetchDisabledDates()
     }, [])
 
-    useEffect(() => {
-        if (phoneNumber) {
-            setFormData({ ...formData, ['phoneNumber']: phoneNumber })
-        }
-    }, [phoneNumber, formData])
+    // useEffect(() => {
+    //     if (phoneNumber) {
+    //         setFormData({ ...formData, ['phoneNumber']: phoneNumber })
+    //     }
+    // }, [phoneNumber, formData])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -179,6 +180,9 @@ export default function ReservationForm() {
                 combinedDateTime = new Date(formData.reservationDate)
                 combinedDateTime.setHours(formData.reservationTime.getHours(), formData.reservationTime.getMinutes())
             }
+        //        if (phoneNumber) {
+        //     setFormData({ ...formData, ['phoneNumber']: phoneNumber })
+        // }
             const ssid = localStorage.getItem('ssid');
             const _device_id = ssid || '';
             const response = await fetch("/api/v1/reservation", {
@@ -244,27 +248,7 @@ export default function ReservationForm() {
 
     if (loading) {
         return (
-            <Box
-                sx={{
-                    position: 'fixed',       // Overlay over the entire screen
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 9999,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    background: 'white',
-                }}
-            >
-                <Loader
-                    loadingImage={
-                        'https://testing.indiantadka.eu/assets/reservationTable.gif'
-                    }
-                    isLoading={loading}
-                />
-            </Box>
+          <ReservationFormSkeleton />
         )
     }
 
@@ -278,7 +262,7 @@ export default function ReservationForm() {
                     <div className="space-y-6">
                         <div className="mb-4">
                             <TextField
-                                label="Full Name"
+                                label={t('field_one')}
                                 name="fullName"
                                 value={formData.fullName}
                                 onChange={handleInputChange}
@@ -300,7 +284,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <TextField
                                 select
-                                label="Number of People"
+                                 label={t('field_two')}
                                 name="numberOfPeople"
                                 value={formData.numberOfPeople}
                                 onChange={handleInputChange}
@@ -323,7 +307,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationDate}>
                                 <DatePicker
-                                    label="Reservation Date"
+                                     label={t('field_three')}
                                     value={formData.reservationDate}
                                     onChange={handleDateChange}
                                     disablePast
@@ -342,7 +326,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationTime}>
                                 <TimePicker
-                                    label="Reservation Time"
+                                      label={t('field_four')}
                                     value={formData.reservationTime}
                                     onChange={handleTimeChange}
                                     slotProps={{
@@ -369,7 +353,7 @@ export default function ReservationForm() {
                                 disabled={submitting}
                                 className="bg-blue-600 hover:bg-blue-700"
                             >
-                                {submitting ? <CircularProgress size={24} /> : "Submit Reservation"}
+                                {submitting ? <CircularProgress size={24} /> : t('button')}
                             </Button>
                         </div>
                     </div>

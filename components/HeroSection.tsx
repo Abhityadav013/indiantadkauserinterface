@@ -1,6 +1,8 @@
+import { getTranslations } from "next-intl/server";
 import HeroButtonNavigation from "./ClientComponents/HeroButtonNavigation"
 
-export default function HeroSection() {
+export default async function HeroSection() {
+  const t = await getTranslations('heroSection');
   return (
     <section className="relative h-[80vh] min-h-[500px] w-full">
       <div
@@ -12,8 +14,8 @@ export default function HeroSection() {
       />
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center text-white">
         <h1 className="mb-2 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">Indian Tadka</h1>
-        <p className="mb-8 text-xl font-medium sm:text-2xl md:text-3xl">A Place for Complete Indian Cuisine</p>
-       <HeroButtonNavigation />
+        <p className="mb-8 text-xl font-medium sm:text-2xl md:text-3xl">{t('heroSubSection')}</p>
+        <HeroButtonNavigation />
       </div>
     </section>
   )
