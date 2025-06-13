@@ -6,7 +6,7 @@ import LanguageSwitcher from "@/components/ClientComponents/LanguageSwitcher";
 import { Box } from "@mui/material";
 
 // Define route prefixes where you want to HIDE the navbar
-const HIDE_NAVBAR_PREFIXES = ["/menu-list", "/checkout", "/payment"];
+const HIDE_NAVBAR_PREFIXES = ["/menu-list", "/checkout", "/payment","/order"];
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname(); // e.g. /de/payment/pi_123

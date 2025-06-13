@@ -1,5 +1,6 @@
 import { ApiError } from '@/utils/ApiResponse';
 import { ErrorResponse } from './types/error_type';
+import { cookies } from 'next/headers';
 
 interface PostOptions<T> {
   body: T;
@@ -9,9 +10,10 @@ export async function postToApi<TResponse, TBody>(
   endpoint: string,
   options: PostOptions<TBody>
 ): Promise<TResponse> {
-  const ssid = localStorage.getItem('ssid');
-  const _device_id = ssid || '';
-  const response = await fetch(`/api/v1${endpoint}`, {
+  const cookieStore = await cookies(); // ✅ Always use this in App Router
+  const deviceId = cookieStore.get('_device_id')?.value;
+  const _device_id = deviceId || '';
+  const response = await fetch(`${process.env.API_BASE_URL}/${endpoint}`, {
     method: 'POST',
     credentials: 'include',
     headers: {
