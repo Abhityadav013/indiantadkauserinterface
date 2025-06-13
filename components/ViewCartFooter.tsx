@@ -17,6 +17,11 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
     const [isBasketOpen, setBasektOpen] = React.useState<boolean>(false);
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
     const dispatch = useDispatch();
+    const [hasMounted, setHasMounted] = React.useState(false);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
 
     useEffect(() => {
         const cartTotal = sessionStorage.getItem('cartTotalAmount');
@@ -27,11 +32,13 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
 
     }, []);
 
+    if (!hasMounted || !isMobile || itmesCount <= 0) return null;
+
     if (itmesCount <= 0) return null;
-    if(!isMobile) return null; // Hide on mobile view
+    if (!isMobile) return null; // Hide on mobile view
 
     const handleBasketToggle = () => {
-        setBasektOpen(!isBasketOpen);   
+        setBasektOpen(!isBasketOpen);
         dispatch(handleBasketState(!isBasketOpen));
     };
     return (
@@ -83,7 +90,7 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
             <Typography
                 variant="h6"
                 sx={{ fontWeight: 700, fontSize: '1.2rem', fontFamily: "var(--font-outfit)", }}
-                
+
             >
                 View Basket
             </Typography>

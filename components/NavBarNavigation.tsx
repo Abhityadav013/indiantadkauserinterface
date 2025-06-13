@@ -5,9 +5,10 @@ import BackSection from './ClientComponents/BackSection'
 
 interface NavBarNavigationSectionProps {
     label: string
+    redirect_url?: string
     isImage?: boolean
 }
-const NavBarNavigation: React.FC<NavBarNavigationSectionProps> = ({ label, isImage }) => {
+const NavBarNavigation: React.FC<NavBarNavigationSectionProps> = ({ label, redirect_url, isImage }) => {
     return (
         <Box
             component="nav"
@@ -26,7 +27,7 @@ const NavBarNavigation: React.FC<NavBarNavigationSectionProps> = ({ label, isIma
                 px: { xs: 2, sm: 4, md: 8 },
             }}
         >
-            <BackSection />
+            <BackSection redirect_url={redirect_url} />
             {/* Center: Title */}
             <Box
                 sx={{

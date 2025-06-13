@@ -13,8 +13,8 @@ export async function GET(
     const { params } = context;
     const { id: orderId } = params; // No need to await here either
     await connectToDatabase();
-    const deviceId = request.headers.get('ssid') || '';
-    const orderInfo = await Order.findOne({ deviceId: deviceId, displayId: orderId })
+    //const deviceId = request.headers.get('ssid') || '';
+    const orderInfo = await Order.findOne({ displayId: orderId })
         .select('-_id -deviceId -tid')
         .lean<IOrder>();
 

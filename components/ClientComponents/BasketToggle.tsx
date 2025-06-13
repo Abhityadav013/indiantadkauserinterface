@@ -5,14 +5,20 @@ import { OrderType } from '@/lib/types/order_type';
 import { useDispatch } from 'react-redux';
 import { setOrderType } from '@/store/slices/orderSlice';
 import { Box, Button, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-interface BasketToggleProps{
-  orderType:OrderType
+interface BasketToggleProps {
+  orderType: OrderType
 }
-export default function BasketToggle({orderType}:BasketToggleProps) {
+export default function BasketToggle({ orderType }: BasketToggleProps) {
   const dispatch = useDispatch();
-  const [order_type,setorder_typeOrderType] =useState(orderType ?? OrderType.DELIVERY)
+  const [order_type, setorder_typeOrderType] = useState(orderType ?? OrderType.DELIVERY)
+  useEffect(() => {
+    const order_Type = sessionStorage.getItem('orderType')
+    if (order_Type != orderType) {
+      setorder_typeOrderType(order_Type as OrderType)
+    }
+  }, [order_type, orderType])
   const handleBasketType = (value: OrderType) => {
     setorder_typeOrderType(value)
     dispatch(setOrderType(value));

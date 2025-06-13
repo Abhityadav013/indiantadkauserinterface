@@ -59,11 +59,11 @@ export function useCart() {
   };
 
   const getItemQuantity = (itemId: string) => {
-    return cart.cartItems.find((item) => item.itemId === itemId)?.quantity || 0;
+    return cart?.cartItems?.find((item) => item.itemId === itemId)?.quantity || 0;
   };
 
   const getTotalItems = () => {
-    return cart.cartItems.reduce((total, item) => total + item.quantity, 0);
+    return cart?.cartItems?.reduce((total, item) => total + item.quantity, 0);
   };
 
   const getItemPriceWithMenu = (item: Cart) => {
@@ -77,7 +77,8 @@ export function useCart() {
   };
 
   const getCartTotal = () => {
-    const cartTotal =  cart.cartItems.reduce((total, cartItem) => {
+    console.log('hello')
+    const cartTotal =  cart?.cartItems?.reduce((total, cartItem) => {
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);

@@ -1,29 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// app/api/confirm-payment/route.ts
+
 import Cart from '@/lib/mongodb/models/Cart';
 import UserInfo from '@/lib/mongodb/models/UserInfo';
 import { postToApi } from '@/lib/postAPICall';
 import { CreateOrderRequest, OrderSuccessSummary } from '@/lib/types/order_summary';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { token, clientSecret, basketId } = await req.json();
+    const { paymentIntentId, basketId } = await req.json();
 
-    // Confirm payment using payment method (Google Pay token)
-    const paymentIntentId = clientSecret.split('_secret')[0]; // Extract actual PaymentIntent ID
-    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
-      payment_method_data: {
-        type: 'card',
-        card: {
-          token: token.id,
-        },
-      },
-    } as any);
+    if (!paymentIntentId) {
+      return NextResponse.json({ error: 'Missing paymentIntentId' }, { status: 400 });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     const basketDetail = await Cart.findOne({ basketId: basketId });
     if (!basketDetail) {
@@ -33,13 +28,6 @@ export async function POST(req: Request) {
     if (!userDetails) {
       return NextResponse.json({ error: 'User Deails not found' }, { status: 404 });
     }
-
-    // if (paymentIntent.status === 'requires_action' && paymentIntent.next_action?.redirect_to_url) {
-    //   return NextResponse.json({
-    //     redirectUrl: paymentIntent.next_action.redirect_to_url.url,
-    //     success: true,
-    //   });
-    // }
     if (paymentIntent.status === 'succeeded') {
       // ✅ Payment was successful – now call internal API to save order
       const orderRes = await postToApi<OrderSuccessSummary, CreateOrderRequest>(
@@ -61,7 +49,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           message: 'Payment confirmed and order created.',
-          success: true,
+          paymentIntent,
           orderId: orderRes.displayId,
         },
         { status: 200 }
@@ -69,9 +57,8 @@ export async function POST(req: Request) {
     } else {
       return NextResponse.json({ error: 'Payment not successful yet.' }, { status: 400 });
     }
-    // return NextResponse.json({ success: true, paymentIntent });
-  } catch (error: any) {
-    console.error('Stripe payment error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

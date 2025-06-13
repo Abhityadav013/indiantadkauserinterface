@@ -15,6 +15,7 @@ import CategoryTabs from "./ClientComponents/CategoryFilter";
 import ViewCartFooter from "./ViewCartFooter";
 import SearchBar from "./ClientComponents/SearchBar";
 import { OrderType } from "@/lib/types/order_type";
+import BasketToggle from "./ClientComponents/BasketToggle";
 
 interface MenuContentProps {
     groupedMenu: {
@@ -33,7 +34,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
             <Box sx={{ display: 'flex', width: '100%', backgroundColor: 'white', flexDirection: { xs: 'column', md: 'row' } }}>
                 {/* Left Content */}
                 <Box sx={{ flex: 1, pl: { xs: 1, md: 2 }, pr: { xs: 1, md: 2 }, maxWidth: { md: 'calc(100% - 460px)' } }}>
-                    <NavBarNavigation label="Our Menu" isImage={false} />
+                    <NavBarNavigation label="Our Menu" redirect_url="/" isImage={false} />
                     <div className="sticky top-17 xs:top-14 z-10 w-[100%] bg-white">
                         <Box
                             display={{ xs: 'flex', sm: 'flex', md: 'none' }}
@@ -41,7 +42,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                             p={3}
                             sx={{ mt: { xs: 7, sm: 7, lg: 14 } }}
                         >
-                            {/* <BasketToggle /> */}
+                            <BasketToggle orderType={orderType}/>
                         </Box>
                         <SearchBar />
                         <CategoryTabs categories={categories} />
@@ -116,10 +117,10 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
 
                                                     {/* Description */}
                                                     <TruncatedDescription
-                                                        name={item.name}
-                                                        price={item.price}
+                                                       // name={item.name}
+                                                       // price={item.price}
                                                         description={item.description}
-                                                        imageUrl={item.imageURL}
+                                                        //imageUrl={item.imageURL}
                                                     />
 
                                                     {/* Add button aligned to bottom right */}

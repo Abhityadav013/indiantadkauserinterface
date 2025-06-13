@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GPayButtonProps {
@@ -7,15 +7,21 @@ interface GPayButtonProps {
 }
 
 export default function GooglePayButton({ amount }: GPayButtonProps) {
-    const pathname = usePathname(); // /de/checkout
+    const router = useRouter()
     const searchParams = useSearchParams(); // URLSearchParams
+    const basketParam = searchParams.get('basket') || '';
+    const orderIdParam = searchParams.get('orderId') || '';
 
-    const query = searchParams.toString(); // e.g. basket=MGYwNmY...
-
-    const fullUrl = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}${pathname}${query ? '?' + query : ''}&orderId=aqlng693aksjtqpdmwltxg`;
     const [error, setError] = useState<string | null>(null);
     const btnRef = useRef<HTMLDivElement>(null);
     const paymentsClientRef = useRef<google.payments.api.PaymentsClient | null>(null);
+
+    useEffect(() => {
+        if (orderIdParam) {
+            // Prevent access to checkout if payment already done
+            router.replace('/de/menu-list'); // or any "Thank You" or menu page
+        }
+    }, [router, orderIdParam]);
 
     const handleGooglePayClick = useCallback(async () => {
         try {
@@ -74,14 +80,18 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
             const payRes = await fetch("/api/v1/pay", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, clientSecret, returnURL: fullUrl }),
+                body: JSON.stringify({ token, clientSecret, basketId: basketParam }),
             });
 
             const payData = await payRes.json();
-            if (payData.redirectUrl) {
-                window.location.href = payData.redirectUrl;
-            } else if (payRes.ok && payData.success) {
-                alert("✅ Payment successful!");
+            if (payData.orderId) {
+                localStorage.setItem(`paid_basket_${basketParam}`, 'true');
+                sessionStorage.removeItem('cartTotal')
+                sessionStorage.removeItem('cartTotalAmount');
+                const newParams = new URLSearchParams(searchParams.toString());
+                newParams.set('orderId', payData.orderId);
+                router.replace(`?${newParams.toString()}`);
+                return;
             } else {
                 console.error("❌ Stripe payment failed", payData.error);
                 alert("Payment failed.");
@@ -91,7 +101,7 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
             alert("Something went wrong.");
             setError("Payment failed to initialize.");
         }
-    }, [amount, fullUrl]);
+    }, [amount, basketParam, router, searchParams]);
 
     useEffect(() => {
         const script = document.createElement("script");

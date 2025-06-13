@@ -8,6 +8,7 @@ import NavBarNavigation from '@/components/NavBarNavigation'
 import { Box, Typography } from '@mui/material'
 import Image from 'next/image'
 import StripeCheckoutSkeleton from '@/components/Skeletons/StripePageSkeleton'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
     throw new Error('NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined')
@@ -19,6 +20,16 @@ const StripeComponent = () => {
     const [clientSecret, setClientSecret] = useState("")
     const [amount, setAmount] = useState<number>(0)
     const hasFetched = useRef(false)
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const basket = searchParams.get('basket');
+    useEffect(() => {
+        const isPaid = localStorage.getItem(`paid_basket_${basket}`);
+        if (isPaid === 'true') {
+            // Redirect if already paid
+            router.replace('/menu-list'); // or '/' or some thank-you page
+        }
+    }, [basket, router]);
 
     useEffect(() => {
         if (hasFetched.current) return
