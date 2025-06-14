@@ -15,6 +15,7 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^8.3.1",
+    "@paypal/paypal-server-sdk": "^1.1.0",
     "@paypal/react-paypal-js": "^8.8.3",
     "@radix-ui/react-slot": "^1.2.0",
     "@reduxjs/toolkit": "^2.7.0",

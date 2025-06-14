@@ -19,8 +19,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const payload = await request.json();
     const deviceId = request.headers.get('ssid') || '';
-    let accessToken = request.headers.get('access_token') || '';
-
+    let accessToken = request.cookies.get('access_token')?.value || '';
     const { cart: cartItems, isCartEmpty } = payload;
 
     const cartFilter = { deviceId };

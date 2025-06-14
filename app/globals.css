@@ -169,3 +169,11 @@
 .dot-flash:nth-child(3) {
   animation-delay: 0.4s;
 }
+.card_container {
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    padding: 20px;
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+}

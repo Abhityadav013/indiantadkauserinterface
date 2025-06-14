@@ -8,8 +8,10 @@ import type { StringValue } from 'ms';
 // Ensure these are cast correctly
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as Secret;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET as Secret;
-const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY  as StringValue?? ('15M' as StringValue); // default fallback
-const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY as StringValue ?? ('7D' as StringValue); // default fallback
+const ACCESS_TOKEN_EXPIRY =
+  (process.env.ACCESS_TOKEN_EXPIRY as StringValue) ?? ('15M' as StringValue); // default fallback
+const REFRESH_TOKEN_EXPIRY =
+  (process.env.REFRESH_TOKEN_EXPIRY as StringValue) ?? ('7D' as StringValue); // default fallback
 
 const generateAccessAndRefreshTokens = async (
   basketId: string
@@ -22,12 +24,12 @@ const generateAccessAndRefreshTokens = async (
     }
 
     const accessTokenPayload: Basket_Access_Token = {
-      id: basketData._id.toString(),
+      id: basketData.id.toString(),
       basketId: basketData.basketId,
     };
 
     const refreshTokenPayload: Basket_Referesh_Token = {
-      id: basketData._id.toString(),
+      id: basketData.id.toString(),
     };
 
     const access_token = generateAccessToken(accessTokenPayload);
@@ -58,6 +60,31 @@ const generateRefreshToken = (payload: Basket_Referesh_Token): string => {
   };
 
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, options);
+};
+
+export const validateAndRegenrateAccessToken = async (refreshToken: string) => {
+  const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+  let basketId: string | undefined;
+  if (typeof decoded === 'object' && decoded !== null && 'id' in decoded) {
+    basketId = (decoded as { id: string }).id;
+  }
+  if (!basketId) {
+    throw new ApiError(403, 'Invalid refresh token payload');
+  }
+  const basketData = await Cart.findOne({ id: basketId });
+
+  if (!basketData) {
+    throw new ApiError(500, 'Basket Not found');
+  }
+
+  const isMatch = await bcrypt.compare(refreshToken, basketData.refreshToken);
+  if (!isMatch) {
+    throw new ApiError(403, 'Invalid refresh token');
+  }
+
+  // Rename the destructured variable here
+  const { access_token } = await generateAccessAndRefreshTokens(basketData.basketId);
+  return access_token;
 };
 
 export default generateAccessAndRefreshTokens;
