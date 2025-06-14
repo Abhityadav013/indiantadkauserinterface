@@ -10,7 +10,7 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     context: any
 ) {
-    const { params } = context;
+    const { params } = await context;
     const { id: orderId } = params; // No need to await here either
     await connectToDatabase();
     //const deviceId = request.headers.get('ssid') || '';
