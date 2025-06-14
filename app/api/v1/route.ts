@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       maxAge: 2 * 24 * 60 * 60, // seconds
       path: '/',
     });
-    response.cookies.set('_device_id', session.id, {
+    response.cookies.set('_device_id', session.deviceId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
