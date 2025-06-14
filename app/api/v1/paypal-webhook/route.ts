@@ -150,8 +150,6 @@ export async function POST(request: NextRequest) {
 
     // Parse the webhook event
     const event = payload;
-
-    console.log('event::::::::',event)
     // Handle the event based on its type
     switch (event.event_type) {
       case 'PAYMENT.CAPTURE.COMPLETED':

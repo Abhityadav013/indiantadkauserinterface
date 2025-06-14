@@ -1,17 +1,17 @@
-import mongoose, { Schema } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import Counter from "./Counter";
+import mongoose, { Schema } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import Counter from './Counter';
 
-export const UserSessionSchemaName = "Session"; // Collection name
+export const UserSessionSchemaName = 'Session'; // Collection name
 
 interface ISession extends Document {
-    id: string;
-    displayId:string
-    guestId: string;
-    latitude: string;
-    longitude: string;
-  }
-  
+  id: string;
+  displayId: string;
+  deviceId: string;
+  guestId: string;
+  latitude: string;
+  longitude: string;
+}
 
 const UserSessionSchema = new Schema<ISession>(
   {
@@ -21,9 +21,13 @@ const UserSessionSchema = new Schema<ISession>(
       default: uuidv4, // Generate a UUID as the default value for the id field
     },
     displayId: {
-        type: String,
-        unique: true, // Ensures the displayId is unique
-      },
+      type: String,
+      unique: true, // Ensures the displayId is unique
+    },
+    deviceId: {
+      type: String,
+      required: true,
+    },
     guestId: {
       type: String,
       required: true,
@@ -44,7 +48,7 @@ UserSessionSchema.pre('save', async function (next) {
       const counter = await Counter.findOneAndUpdate(
         { _id: 'session' }, // Find by the 'order' type
         { $inc: { seq: 1 } }, // Increment the sequence
-        { new: true, upsert: true }, // Create if not found
+        { new: true, upsert: true } // Create if not found
       );
 
       // Generate the displayId (e.g., "O00000001")
@@ -59,7 +63,6 @@ UserSessionSchema.pre('save', async function (next) {
 });
 
 // Create and export the Order model
-const UserSession =  mongoose?.models?.Session ||  mongoose.model('Session', UserSessionSchema);
-
+const UserSession = mongoose?.models?.Session || mongoose.model('Session', UserSessionSchema);
 
 export default UserSession;

@@ -19,7 +19,7 @@ export const SessionProvider = () => {
         const response = await fetch('/api/v1', {
           method: 'POST',
           credentials: 'include',
-          body: JSON.stringify({ ssid: storedSsid }),
+          body: JSON.stringify({ ssid: storedSsid,tid:storedTid }),
         });
 
         if (response.ok) {
