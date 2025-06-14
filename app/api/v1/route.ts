@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       new ApiResponse(
         200,
         {
-          deviceId: session.id,
+          deviceId: session.deviceId,
           tid: session.guestId,
           statusMessage: isexistingUser ? 'User Session Retrive' : 'Session created.',
         },
