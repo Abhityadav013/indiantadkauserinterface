@@ -3,13 +3,9 @@
 import { useEffect, useState } from 'react';
 import { TextField, InputAdornment } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function SearchBar() {
-    const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
-
     const router = useRouter();
     const searchParams = useSearchParams();
     const qParam = searchParams.get('q') || '';
@@ -21,11 +17,12 @@ export default function SearchBar() {
             const params = new URLSearchParams(window.location.search);
             if (searchTerm) {
                 params.set('q', searchTerm);
+                params.delete('category'); // optional: remove category when searching
             } else {
                 params.delete('q');
             }
             router.replace(`/menu-list?${params.toString()}`, { scroll: false });
-        }, 400);
+        }, 20);
 
         return () => clearTimeout(handler);
     }, [searchTerm, router]);
@@ -46,18 +43,20 @@ export default function SearchBar() {
                     ),
                 }}
                 sx={{
-                    mt: {xs:0, sm:0, lg:10 },
+                    mt: { xs: 0, sm: 0, lg: 10 },
                     display: 'flex',
-                    // px: 4,
                     justifyContent: 'center',
-                    width: isMobile ? '100%' : '70%',
+                    width: {xs:'100%',sm:'100%',md:'70%',lg:'70%'},
                     backgroundColor: '#fff',
-                    borderRadius: '9999px', // Full pill shape
+                    borderRadius: '9999px',
                     '& .MuiOutlinedInput-root': {
-                        borderRadius: '9999px', // Apply to inner input
-                    },
-                    '& fieldset': {
                         borderRadius: '9999px',
+                        '& fieldset': {
+                            borderColor: '#FF6347',
+                        },
+                        '&.Mui-focused fieldset': {
+                            borderColor: '#FF6347',   // override blue border on focus
+                        },
                     },
                 }}
             />

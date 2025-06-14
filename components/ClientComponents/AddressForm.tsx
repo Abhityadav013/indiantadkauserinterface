@@ -58,8 +58,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
     };
 
     return (
-        <div>
-            <AddNewAddress
+       <AddNewAddress
                 formValues={customerOrder ?? {} as CustomerOrder}
                 onSubmit={onSubmit}
                 isOpen={isAddressModelOpen} // Replace with actual model state
@@ -68,7 +67,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 error={formError}
                 setFormError={setFormError}
             />
-        </div>
     );
 };
 

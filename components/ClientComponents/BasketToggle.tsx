@@ -2,40 +2,86 @@
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { OrderType } from '@/lib/types/order_type';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setOrderType } from '@/store/slices/orderSlice';
-import { RootState } from '@/store';
+import { Box, Button, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
-export default function BasketToggle() {
+interface BasketToggleProps {
+  orderType: OrderType
+}
+export default function BasketToggle({ orderType }: BasketToggleProps) {
   const dispatch = useDispatch();
-  const selected = useSelector((state: RootState) => state.order.orderType);
-
+  const [order_type, setorder_typeOrderType] = useState(orderType ?? OrderType.DELIVERY)
+  useEffect(() => {
+    const order_Type = sessionStorage.getItem('orderType')
+    if (order_Type != orderType) {
+      setorder_typeOrderType(order_Type as OrderType)
+    }
+  }, [order_type, orderType])
   const handleBasketType = (value: OrderType) => {
+    setorder_typeOrderType(value)
     dispatch(setOrderType(value));
     sessionStorage.setItem('orderType', value);
   };
 
   return (
-    <div className="flex items-center justify-center gap-2 bg-gray-100 p-1 rounded-full w-fit shadow-sm">
-      <button
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
+        bgcolor: 'grey.100',
+        p: 0.5,
+        borderRadius: '999px',
+        width: 'fit-content',
+        boxShadow: 1,
+      }}
+    >
+      <Button
         onClick={() => handleBasketType(OrderType.DELIVERY)}
-        className={`flex items-center gap-1 px-4 py-1 rounded-full transition-all
-          ${selected === OrderType.DELIVERY ? 'bg-white shadow font-semibold text-orange-500' : 'text-gray-500'}
-        `}
+        variant="text"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          px: 2,
+          py: 0.5,
+          borderRadius: '999px',
+          bgcolor: order_type === OrderType.DELIVERY ? 'white' : 'transparent',
+          color: order_type === OrderType.DELIVERY ? '#f97316' : 'grey.600',
+          fontWeight: order_type === OrderType.DELIVERY ? 600 : 400,
+          boxShadow: order_type === OrderType.DELIVERY ? 1 : 'none',
+          textTransform: 'none',
+          minWidth: 'auto',
+        }}
       >
         <DeliveryDiningIcon fontSize="small" />
-        <span className="text-sm">Delivery</span>
-      </button>
+        <Typography variant="body2">Delivery</Typography>
+      </Button>
 
-      <button
+      <Button
         onClick={() => handleBasketType(OrderType.PICKUP)}
-        className={`flex items-center gap-1 px-4 py-1 rounded-full transition-all
-          ${selected === OrderType.PICKUP ? 'bg-white shadow font-semibold text-orange-500' : 'text-gray-500'}
-        `}
+        variant="text"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          px: 2,
+          py: 0.5,
+          borderRadius: '999px',
+          bgcolor: order_type === OrderType.PICKUP ? 'white' : 'transparent',
+          color: order_type === OrderType.PICKUP ? '#f97316' : 'grey.600',
+          fontWeight: order_type === OrderType.PICKUP ? 600 : 400,
+          boxShadow: order_type === OrderType.PICKUP ? 1 : 'none',
+          textTransform: 'none',
+          minWidth: 'auto',
+        }}
       >
         <StorefrontIcon fontSize="small" />
-        <span className="text-sm">Collection</span>
-      </button>
-    </div>
+        <Typography variant="body2">Collection</Typography>
+      </Button>
+    </Box>
   );
 }

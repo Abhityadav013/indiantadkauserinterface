@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-const PAYPAL_SECRET = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_SECRET;
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!;
+const PAYPAL_SECRET = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_SECRET!;
 
 export async function POST(request: NextRequest) {
   try {  
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify(requestBody),
       }
     );
+    console.log('response::::::',response)
 
     // Parse the response from PayPal
     const data = await response.json();

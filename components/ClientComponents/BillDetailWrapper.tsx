@@ -13,12 +13,14 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BillDetailWrapperProps {
+    basketId:string,
     customerDetails: CustomerDetails;
     getCartTotal: () => number;
     handleAddressModalOpen: () => void;
 }
 
 const BillDetailWrapper = ({
+    basketId,
     customerDetails,
     getCartTotal,
 }: BillDetailWrapperProps) => {
@@ -154,7 +156,7 @@ const BillDetailWrapper = ({
                         <Button
                             variant="contained"
                             hidden={!customerDetails || Object.keys(customerDetails).length === 0}
-                            onClick={() => router.push('/checkout')}
+                            onClick={() => router.push(`/checkout?basket=${basketId}`)}
                             sx={{
                                 width: '100%',
                                 backgroundColor: '#f36805',

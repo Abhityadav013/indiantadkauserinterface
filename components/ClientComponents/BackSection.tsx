@@ -4,21 +4,23 @@ import { IconButton } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from "next/navigation";
 
-const BackSection = () => {
+const BackSection = ({ redirect_url }: { redirect_url?: string }) => {
   const router = useRouter();
 
-  const onBack = () => {
-    router.push('/');
-  };
-
+  const handleRouting = () => {
+    if (redirect_url) {
+      router.push(redirect_url)
+    } else {
+      router.back()
+    }
+  }
   return (
     <IconButton
-      edge="start"
-      color="default"
-      onClick={onBack}
-      sx={{ left: 20 ,pr:10}}
+      aria-label="Go back"
+      onClick={handleRouting}
+      sx={{ color: "black" }}
     >
-      <ArrowBackIcon />
+      <ArrowBackIcon fontSize="small" />
     </IconButton>
   );
 };
