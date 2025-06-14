@@ -26,23 +26,24 @@ interface MenuContentProps {
     menuItems: MenuItem[],
     cartItems: Cart[],
     categories: MenuCategory[];
-    orderType:OrderType;
+    orderType: OrderType;
 }
-export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories,orderType}: MenuContentProps) {
+export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories, orderType }: MenuContentProps) {
     return (
         <>
-            <Box sx={{ display: 'flex', width: '100%', backgroundColor: 'white', flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box component="main" sx={{ display: 'flex', width: '100%', backgroundColor: 'white', flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}>
                 {/* Left Content */}
-                <Box sx={{ flex: 1, pl: { xs: 1, md: 2 }, pr: { xs: 1, md: 2 }, maxWidth: { md: 'calc(100% - 460px)' } }}>
+                <Box component="section" sx={{ flex: 1, pl: { xs: 1, sm: 1, md: 2 }, pr: { xs: 1, sm: 1, md: 2 }, maxWidth: { md: 'calc(100% - 460px)' } }}>
                     <NavBarNavigation label="Our Menu" redirect_url="/" isImage={false} />
                     <div className="sticky top-17 xs:top-14 z-10 w-[100%] bg-white">
                         <Box
+                            component="div"
                             display={{ xs: 'flex', sm: 'flex', md: 'none' }}
                             justifyContent="center"
                             p={3}
                             sx={{ mt: { xs: 7, sm: 7, lg: 14 } }}
                         >
-                            <BasketToggle orderType={orderType}/>
+                            <BasketToggle orderType={orderType} />
                         </Box>
                         <SearchBar />
                         <CategoryTabs categories={categories} />
@@ -51,13 +52,13 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                     {filtered.length === 0 ? (
                         <p className="mt-4">No items found for your search.</p>
                     ) : (
-                        <Box sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 } }}>
+                        <Box component="section" sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 } }}>
                             {groupedMenu.map(({ category, items }) => (
                                 <Box key={category.id} id={`category-${category.id}`} className="mb-6">
                                     <Divider sx={{ mb: 1, borderBottomWidth: '1.5px' }} />
                                     <h2 className="text-2xl font-bold p-2 text-gray-800 mb-4">{category.categoryName}</h2>
 
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                         {items.map((item, index) => (
                                             <Box
                                                 key={item.id}
@@ -74,6 +75,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                 }}
                                             >
                                                 <Box
+                                                    component="div"
                                                     sx={{
                                                         width: 100,
                                                         height: 100,
@@ -94,6 +96,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
 
                                                 {/* Right Content */}
                                                 <Box
+                                                    component="div"
                                                     sx={{
                                                         flexGrow: 1,
                                                         display: 'flex',
@@ -103,7 +106,9 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                     }}
                                                 >
                                                     {/* Name and Price */}
-                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <Box
+                                                        component="header"
+                                                        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                         <h3
                                                             className="text-sm font-semibold text-gray-900 truncate"
                                                             style={{ maxWidth: '70%' }}
@@ -117,10 +122,10 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
 
                                                     {/* Description */}
                                                     <TruncatedDescription
-                                                       // name={item.name}
-                                                       // price={item.price}
+                                                        // name={item.name}
+                                                        // price={item.price}
                                                         description={item.description}
-                                                        //imageUrl={item.imageURL}
+                                                    //imageUrl={item.imageURL}
                                                     />
 
                                                     {/* Add button aligned to bottom right */}
@@ -138,7 +143,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                     )}
                 </Box>
                 <BasketSidebar menu={menuItems} cartItems={cartItems} orderType={orderType} />
-                <ViewCartFooter itmesCount={cartItems.length ?? 0} />
+                <ViewCartFooter itmesCount={cartItems.length ?? 0} menuItems={menuItems} />
             </Box>
             <FooterCopyRights />
         </>

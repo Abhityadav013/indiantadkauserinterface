@@ -3,13 +3,9 @@
 import { useEffect, useState } from 'react';
 import { TextField, InputAdornment } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function SearchBar() {
-    const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
-
     const router = useRouter();
     const searchParams = useSearchParams();
     const qParam = searchParams.get('q') || '';
@@ -50,7 +46,7 @@ export default function SearchBar() {
                     mt: { xs: 0, sm: 0, lg: 10 },
                     display: 'flex',
                     justifyContent: 'center',
-                    width: isMobile ? '100%' : '70%',
+                    width: {xs:'100%',sm:'100%',md:'70%',lg:'70%'},
                     backgroundColor: '#fff',
                     borderRadius: '9999px',
                     '& .MuiOutlinedInput-root': {
