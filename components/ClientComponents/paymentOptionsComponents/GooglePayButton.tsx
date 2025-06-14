@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GPayButtonProps {
@@ -7,6 +7,7 @@ interface GPayButtonProps {
 }
 
 export default function GooglePayButton({ amount }: GPayButtonProps) {
+    const router = useRouter()
     const searchParams = useSearchParams(); // URLSearchParams
     const basketParam = searchParams.get('basket') || '';
     const [loading, setLoading] = useState(false); // 👈 New loading state
@@ -77,8 +78,7 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
 
             const payData = await payRes.json();
             if (payData.orderId) {
-                localStorage.setItem(`paid_basket_${basketParam}`, 'true');
-                window.location.href = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`;
+                router.push(`/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`)
                 return;
             } else {
                 console.error("❌ Stripe payment failed", payData.error);
@@ -92,7 +92,7 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
         finally {
             setLoading(false); // 👈 Stop loader
         }
-    }, [amount, basketParam]);
+    }, [amount, basketParam,router]);
 
     useEffect(() => {
         const script = document.createElement("script");

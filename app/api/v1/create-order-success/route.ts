@@ -4,7 +4,9 @@ import Order, { IOrder, OrderStatus } from '@/lib/mongodb/models/Order';
 import { OrderSuccessSummary } from '@/lib/types/order_summary';
 import { OrderType } from '@/lib/types/order_type';
 import ApiResponse from '@/utils/ApiResponse';
+import { generateOrderConfirmationEmail } from '@/utils/generateOrderConfirmationEmail';
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
   await connectToDatabase(); // Ensure DB connection
@@ -81,16 +83,53 @@ export async function POST(request: NextRequest) {
             id: item?.itemId,
             name: item?.itemName,
             quantity: item?.quantity,
-            price:item?.price
+            price: item?.price,
           };
         }),
         orderAmount: newOrder.orderAmount,
         createdAt: new Date().toISOString(),
       };
-      return NextResponse.json(
+
+      // --- SEND EMAIL AFTER SUCCESSFUL RESERVATION ---
+
+      // Create nodemailer transporter
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.hostinger.com', // or your SMTP host from Hostinger docs
+        port: 465, // or 587, depends on your config
+        secure: true, // true for port 465, false for 587
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: `"Your Restaurant" <${process.env.SENDER_EMAIL}>`,
+        to: process.env.RECIEVER_EMAIL,
+        subject: '🔥 New Order Received - Urgent Attention Required',
+        html: generateOrderConfirmationEmail(orderResponse), // your dynamic email content
+        headers: {
+          'X-Priority': '1', // For Outlook
+          'X-MSMail-Priority': 'High',
+          Importance: 'high', // For Gmail and others
+        },
+      };
+
+      // Send mail asynchronously
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending reservation email:', error);
+        } else {
+          console.log('Reservation email sent:', info.response);
+        }
+      });
+
+      const response = NextResponse.json(
         new ApiResponse(201, { ...orderResponse }, 'Order created successfully.')
       );
-
+      response.cookies.set('access_token', '', { maxAge: 0, path: '/' });
+      response.cookies.set('refresh_token', '', { maxAge: 0, path: '/' });
+      return response;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log('error while createing order', err);

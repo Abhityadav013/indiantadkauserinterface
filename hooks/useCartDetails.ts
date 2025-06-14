@@ -1,14 +1,21 @@
 import { useGetCartQuery, useUpdateCartMutation } from '@/store/api/cartApi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MenuItem } from '@/lib/types/menu_type';
 import { Cart } from '@/lib/types/cart_type';
 
 export function useCart() {
+  const [cartData, setCartData] = useState<Cart[]>([]);
   // Query cart from backend
-  const { data: cart = {cartItems:[],basketId:''}, isLoading } = useGetCartQuery(undefined, {
+  const { data: cart = { cartItems: [], basketId: '' }, isLoading } = useGetCartQuery(undefined, {
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
   });
+
+  useEffect(() => {
+    if (!isLoading) {
+      setCartData(cart.cartItems);
+    }
+  }, [cart, isLoading]);
 
   // Mutation to update cart
   const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation();
@@ -76,22 +83,24 @@ export function useCart() {
     await updateCart({ cart: [], isCartEmpty: true });
   };
 
+  const emptyCart = () =>{
+    setCartData([])
+  }
+
   const getCartTotal = () => {
-    console.log('hello')
-    const cartTotal =  cart?.cartItems?.reduce((total, cartItem) => {
+    const cartTotal = cart?.cartItems?.reduce((total, cartItem) => {
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
     sessionStorage.setItem('cartTotal', JSON.stringify(cartTotal));
-    return cartTotal
-
+    return cartTotal;
   };
 
   return {
     isLoading,
     isUpdating,
-    items: cart.cartItems,
-    basketId:cart.basketId,
+    items: cartData,
+    basketId: cart.basketId,
     menuItems,
     addToCart,
     removeFromCart,
@@ -101,5 +110,6 @@ export function useCart() {
     clearCart,
     updateMenuItems,
     getCartTotal,
+    emptyCart
   };
 }

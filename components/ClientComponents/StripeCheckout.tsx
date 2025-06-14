@@ -8,7 +8,7 @@ import {
 } from '@stripe/react-stripe-js';
 import { Button } from '@mui/material';
 import { formatPrice } from '@/utils/valueInEuros';
-import {  useSearchParams } from 'next/navigation';
+import {  useRouter, useSearchParams } from 'next/navigation';
 
 interface StripeCheckoutProps {
     amount: number;
@@ -16,6 +16,7 @@ interface StripeCheckoutProps {
 }
 
 const StripeCheckout = ({ amount, clientSecret }: StripeCheckoutProps) => {
+    const router = useRouter()
     const stripe = useStripe();
     const elements = useElements();
     const searchParams = useSearchParams();
@@ -64,8 +65,8 @@ const StripeCheckout = ({ amount, clientSecret }: StripeCheckoutProps) => {
 
             if (res.ok) {
                 const data = await res.json()
-                localStorage.setItem(`paid_basket_${basketParam}`, 'true');
-                window.location.href = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${data.orderId}`;
+                 router.push(`/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${data.orderId}`)
+               
             } else {
                 const data = await res.json();
                 setErrorMessage(data.error || 'Payment verification failed.');

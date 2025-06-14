@@ -9,12 +9,13 @@ import PaypalComponent from "../PaypalComponent";
 import { convertToSubcurrency } from "@/utils/convertToSubCurrency";
 import StripeComponent from "../StripeComponent";
 import GooglePayButton from "./GooglePayButton";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 interface PaymentMethodProps {
     cartTotal: number
 }
 
 export default function PaymentMethod({ cartTotal }: PaymentMethodProps) {
+    const router = useRouter()
     const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -43,9 +44,10 @@ export default function PaymentMethod({ cartTotal }: PaymentMethodProps) {
 
         const payData = await payRes.json();
         if (payData.orderId) {
-            localStorage.setItem(`paid_basket_${basketParam}`, 'true');
             setSubmitting(false)
-            window.location.href = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`;
+            router.push(`/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`)
+            return;
+            //window.location.href = `/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`;
         }
     }
 

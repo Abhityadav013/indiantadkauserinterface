@@ -54,10 +54,6 @@ export async function POST(req: Request) {
         }
       );
 
-      if (orderRes.orderId) {
-        await Cart.deleteOne({ basketId: basketId });
-      }
-
       return NextResponse.json(
         {
           message: 'Payment confirmed and order created.',
