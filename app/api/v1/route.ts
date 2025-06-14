@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       await session.save(); // Save session to the database
     } else {
       // If deviceId exists, maybe fetch the session from the DB or use existing session
-      const existingSession = await UserSession.findOne({ id: deviceId });
+      const existingSession = await UserSession.findOne({ deviceId: deviceId });
       if (existingSession) {
         session = existingSession;
         isexistingUser = true;
