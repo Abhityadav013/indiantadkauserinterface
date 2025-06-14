@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
     const payload = await request.json();
-    const { ssid } = payload;
+    const { ssid, tid } = payload;
     const cookieStore = await cookies(); // ✅ Always use this in App Router
     const deviceId = ssid ?? cookieStore.get('_device_id')?.value;
     let access_Token = request.cookies.get('access_token')?.value || '';
@@ -23,7 +23,9 @@ export async function POST(request: NextRequest) {
     if (!deviceId || deviceId === 'undefined') {
       // If no deviceId in cookies, create a new guest session
       const guestId = uuidv4();
+      const sessionId = uuidv4();
       session.guestId = guestId; // Set the guest ID
+      session.deviceId = sessionId;
       await session.save(); // Save session to the database
     } else {
       // If deviceId exists, maybe fetch the session from the DB or use existing session
@@ -33,8 +35,9 @@ export async function POST(request: NextRequest) {
         isexistingUser = true;
       } else {
         // Device ID is invalid or outdated, create a new guest session
-        const guestId = uuidv4();
-        session = new UserSession({ guestId }); // New session object
+        const guestId = tid;
+        const deviceId = ssid;
+        session = new UserSession({ deviceId, guestId }); // New session object
         await session.save(); // Save to DB
       }
     }
@@ -42,8 +45,6 @@ export async function POST(request: NextRequest) {
     if (refresh_token && !access_Token) {
       access_Token = await validateAndRegenrateAccessToken(refresh_token);
     }
-
-    
 
     const response = NextResponse.json(
       new ApiResponse(
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
       )
     );
 
-       // Set the cookies
+    // Set the cookies
     if (access_Token || refresh_token) {
       const cookieOptions = {
         httpOnly: true,
