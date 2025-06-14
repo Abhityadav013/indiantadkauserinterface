@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GPayButtonProps {
@@ -7,24 +7,16 @@ interface GPayButtonProps {
 }
 
 export default function GooglePayButton({ amount }: GPayButtonProps) {
-    const router = useRouter()
     const searchParams = useSearchParams(); // URLSearchParams
     const basketParam = searchParams.get('basket') || '';
-    const orderIdParam = searchParams.get('orderId') || '';
-
+    const [loading, setLoading] = useState(false); // 👈 New loading state
     const [error, setError] = useState<string | null>(null);
     const btnRef = useRef<HTMLDivElement>(null);
     const paymentsClientRef = useRef<google.payments.api.PaymentsClient | null>(null);
 
-    useEffect(() => {
-        if (orderIdParam) {
-            // Prevent access to checkout if payment already done
-            router.replace('/de/menu-list'); // or any "Thank You" or menu page
-        }
-    }, [router, orderIdParam]);
-
     const handleGooglePayClick = useCallback(async () => {
         try {
+            setLoading(true)
             // STEP 1: Create PaymentIntent
             const intentRes = await fetch("/api/v1/create-payment-intent", {
                 method: "POST",
@@ -88,9 +80,7 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
                 localStorage.setItem(`paid_basket_${basketParam}`, 'true');
                 sessionStorage.removeItem('cartTotal')
                 sessionStorage.removeItem('cartTotalAmount');
-                const newParams = new URLSearchParams(searchParams.toString());
-                newParams.set('orderId', payData.orderId);
-                router.replace(`?${newParams.toString()}`);
+                window.location.href = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`;
                 return;
             } else {
                 console.error("❌ Stripe payment failed", payData.error);
@@ -101,7 +91,10 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
             alert("Something went wrong.");
             setError("Payment failed to initialize.");
         }
-    }, [amount, basketParam, router, searchParams]);
+        finally {
+            setLoading(false); // 👈 Stop loader
+        }
+    }, [amount, basketParam]);
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -136,7 +129,20 @@ export default function GooglePayButton({ amount }: GPayButtonProps) {
         };
     }, [handleGooglePayClick]);
 
-    if (error) return <div className="text-red-600">{error}</div>;
+   return (
+  <div className="relative inline-block" style={{ width: 'fit-content' }}>
+    {/* Google Pay Button is rendered here */}
+    <div ref={btnRef} />
 
-    return <div ref={btnRef}></div>;
+    {/* Loader inside the Google Pay Button */}
+    {loading && (
+      <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-md pointer-events-none">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent border-white" />
+      </div>
+    )}
+
+    {error && <div className="text-sm text-red-600 mt-2" ref={btnRef}>{error}</div>}
+  </div>
+);
+
 }

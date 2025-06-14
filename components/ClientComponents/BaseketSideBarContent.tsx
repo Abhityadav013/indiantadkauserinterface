@@ -29,6 +29,7 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
     useEffect(() => {
         setHydrated(true);
     }, []);
+    
 
     useEffect(() => {
         // We define the timer variable here, so it's in scope for cleanup
