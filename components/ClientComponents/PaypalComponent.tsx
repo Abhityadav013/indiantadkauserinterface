@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { useRouter, useSearchParams } from 'next/navigation';
 interface PaypalComponentProps {
@@ -9,15 +9,18 @@ interface PaypalComponentProps {
 
 const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
     const searchParams = useSearchParams(); // URLSearchParams
+    const [orderId, setOrderId] = useState('')
     const basketParam = searchParams.get('basket') || '';
     const router = useRouter()
+    const isOrderCreatedRef = useRef(false);
     async function onApprove(data: { orderID: string }): Promise<void> {
         try {
-            const response = await fetch(`/api/v1/paypal/capture-order/${data.orderID}?basketId=${basketParam}`, {
+            const response = await fetch(`/api/v1/paypal/capture-order`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
+                body: JSON.stringify({ orderID: data.orderID, basketId: basketParam }),
             });
             const payData = await response.json();
 
@@ -29,6 +32,8 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
     }
 
     const onclick = async (): Promise<string> => {
+        if (isOrderCreatedRef.current) return orderId; // prevent repeat fetch
+        isOrderCreatedRef.current = true;
         const requestBody = {
             intent: 'CAPTURE',
             purchase_units: [
@@ -54,7 +59,11 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
         });
 
         const data = await res.json();
-        if (res.ok) return data.id;
+        if (res.ok) {
+            setOrderId(data.id)
+            return data.id;
+        }
+
         console.error('PayPal order creation failed', data);
         return '';
     };
@@ -79,7 +88,7 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
                         label: "paypal",
                         height: 55,
                     }}
-                    onInit={onclick}
+                    // onInit={onclick}
                     createOrder={onclick}
                     onApprove={async (data) => await onApprove(data)}
                 />

@@ -7,13 +7,9 @@ import UserInfo from '@/lib/mongodb/models/UserInfo';
 import { CreateOrderRequest, OrderSuccessSummary } from '@/lib/types/order_summary';
 import { postToApi } from '@/lib/postAPICall';
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { orderID: string; basketId: string } }
-) {
-  const { orderID } = params;
-  const basketId = req.nextUrl.searchParams.get('basketId');
-
+export async function POST(request: NextRequest) {
+  // Get amount and order from the request body
+  const { orderID, basketId } = await request.json();
   try {
     const response = await ordersController.captureOrder({
       id: orderID,
