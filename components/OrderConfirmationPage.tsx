@@ -32,7 +32,6 @@ export default async function OrderConfirmationPage({ orderId }: OrderConfirmati
     if (!orderId) return notFound();
 
     const order: OrderSuccessSummary = await getOrderDetails(orderId);
-
     if (!order) return notFound();
 
     const orderDate = new Date(order.createdAt ?? new Date()).toLocaleString("en-US", {
@@ -57,7 +56,7 @@ export default async function OrderConfirmationPage({ orderId }: OrderConfirmati
                 gap: 2,
             }}
         >
-            <NavBarNavigation label="Order Detail" redirect_url={'/menu-list'} isImage={false} />
+            <NavBarNavigation label="Order Detail" redirect_url={'/'} isImage={false} />
             <Card sx={{ maxWidth: 600, width: "100%", m: 2, mt: 10 }}>
                 <CardContent>
                     <Typography variant="h4" align="center" gutterBottom>

@@ -20,7 +20,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams?: Pr
   const orderId = resolvedParams?.orderId;
   const [menuData, cartdata, userData] = await Promise.all([getMenuData(), getCartData(), getUserData()]);
   const menuItems: MenuItem[] = menuData.menuItems;
-
+  
   if (orderId) {
     return <OrderConfirmationPage orderId={orderId} />
   }

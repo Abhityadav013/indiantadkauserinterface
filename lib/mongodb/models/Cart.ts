@@ -16,7 +16,8 @@ export interface ICart extends Document {
   deviceId: string;
   userId?: string;
   cartItems: CartItem[];
-  basketId?:string
+  basketId?: string;
+  refreshToken?: string;
 }
 
 const CartItemSchema = new Schema<CartItem>(
@@ -48,6 +49,10 @@ const UserCartSchema = new Schema<ICart>(
       type: String,
       required: false,
     },
+    refreshToken: {
+      type: String,
+      required: false,
+    },
     cartItems: [CartItemSchema],
   },
   {
@@ -67,7 +72,7 @@ UserCartSchema.pre('validate', async function (next) {
     try {
       // Now that ID is present, generate the basket ID
       this.basketId = await generateBasketId(this.id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Error generating basketId:', err);
       return next(err);
