@@ -10,6 +10,7 @@ interface PaypalComponentProps {
 const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
     const searchParams = useSearchParams(); // URLSearchParams
     const [orderId, setOrderId] = useState('')
+    const [loading, setLoading] = useState(false); // 👈 New loading state
     const basketParam = searchParams.get('basket') || '';
     const router = useRouter()
     const isOrderCreatedRef = useRef(false);
@@ -28,12 +29,15 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
         } catch (error) {
             console.log(error)
             //return `Sorry, your transaction could not be processed...${error}`;
+        } finally {
+            setLoading(false); // 👈 Stop loader
         }
     }
 
     const onclick = async (): Promise<string> => {
         if (isOrderCreatedRef.current) return orderId; // prevent repeat fetch
         isOrderCreatedRef.current = true;
+        setLoading(true)
         const requestBody = {
             intent: 'CAPTURE',
             purchase_units: [
@@ -79,19 +83,27 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
 
                 }}
             >
-                <PayPalButtons
-                    fundingSource="paypal"
-                    style={{
-                        shape: "pill",
-                        layout: "vertical",
-                        color: "gold",
-                        label: "paypal",
-                        height: 55,
-                    }}
-                    // onInit={onclick}
-                    createOrder={onclick}
-                    onApprove={async (data) => await onApprove(data)}
-                />
+              <div className="relative">
+          <PayPalButtons
+            fundingSource="paypal"
+            style={{
+              shape: 'pill',
+              layout: 'vertical',
+              color: 'gold',
+              label: 'paypal',
+              height: 55,
+            }}
+            createOrder={onclick}
+            onApprove={onApprove}
+          />
+
+          {/* Spinner Overlay */}
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-md pointer-events-none">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent border-white" />
+            </div>
+          )}
+        </div>
 
             </PayPalScriptProvider>
         </div>
