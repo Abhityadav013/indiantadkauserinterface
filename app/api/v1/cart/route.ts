@@ -1,6 +1,7 @@
 import { connectToDatabase } from '@/lib/mongodb/connect';
 import Cart, { ICart } from '@/lib/mongodb/models/Cart';
 import ApiResponse from '@/utils/ApiResponse';
+import generateAccessAndRefreshTokens from '@/utils/generateTokens';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface CartData {
@@ -10,6 +11,7 @@ interface CartData {
     itemName: string;
     quantity: number;
   }[];
+  basketId?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -17,7 +19,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const payload = await request.json();
     const deviceId = request.headers.get('ssid') || '';
-
+    let accessToken = request.cookies.get('access_token')?.value || '';
     const { cart: cartItems, isCartEmpty } = payload;
 
     const cartFilter = { deviceId };
@@ -57,13 +59,44 @@ export async function POST(request: NextRequest) {
 
     // Save the updated cart
     await cart.save();
+    let refreshToken = '';
+    if (!accessToken && cart.basketId) {
+      const { access_token, refresh_token } = await generateAccessAndRefreshTokens(cart.basketId);
+      accessToken = access_token;
+      refreshToken = refresh_token;
+    }
 
     const cartResponse: CartData = {
       id: cart.id,
       cartItems: cart.cartItems,
+      basketId: cart?.basketId,
     };
 
-    return NextResponse.json(new ApiResponse(201, cartResponse, 'Cart updated successfully'));
+    const response = NextResponse.json(
+      new ApiResponse(201, cartResponse, 'Cart updated successfully')
+    );
+
+    // Set the cookies
+    if (accessToken && refreshToken) {
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax' as const,
+        path: '/',
+      };
+
+      response.cookies.set('access_token', accessToken, {
+        ...cookieOptions,
+        maxAge: 60 * 15, // 15 minutes
+      });
+
+      response.cookies.set('refresh_token', refreshToken, {
+        ...cookieOptions,
+        maxAge: 60 * 60 * 24 * 10, // 10 days
+      });
+    }
+
+    return response;
   } catch (error) {
     console.error('Contact API error:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
@@ -76,13 +109,18 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const cartFilter = { deviceId: deviceIdFromHeaders };
     const cart: ICart = await Cart.findOne(cartFilter).select('-cartItems.addons');
-   if(!cart) {
-    return NextResponse.json( new ApiResponse(200, {}, 'Cart is empty.'));
-   }
+    if (!cart) {
+      return NextResponse.json(new ApiResponse(200, {}, 'Cart is empty.'));
+    }
+
     const cartResponse: CartData = {
       id: cart?.id,
       cartItems: cart?.cartItems,
+      basketId: cart.basketId,
     };
+
+    // Return shortened base64-encoded UUID
+
     return NextResponse.json(
       new ApiResponse(
         200,

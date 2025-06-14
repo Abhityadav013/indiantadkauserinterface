@@ -14,6 +14,8 @@ import WorkIcon from "@mui/icons-material/Work";
 import { ErrorResponse } from '@/lib/types/error_type';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 const RestaurantMap = dynamic(() => import('@/components/ClientComponents/RestaurantMap'), {
     ssr: false,
@@ -27,6 +29,7 @@ interface AddressInfoProps {
     handleDialogAction: <T extends Exclude<DialogType, null>>(data: OrderDetailsSummary<T>) => void
 }
 const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handleClose, handleDialogAction }: AddressInfoProps) => {
+     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
     const [buildingNumber, setBuildingNumber] = React.useState("");
     const [street, setStreet] = React.useState<string>("");
     const [town, setTown] = React.useState<string>("");
@@ -103,7 +106,7 @@ const AddressInfo = ({ isPickup, openDialog, customerAddress, handleOpen, handle
                 open={openDialog === 'address'}
                 onClose={handleClose}
                 maxWidth="lg"
-                fullScreen={true}
+                fullScreen={isMobile}
             >
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography component="div" variant="h6" fontWeight="bold" display="flex" alignItems="center" gap={1}>

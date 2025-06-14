@@ -3,7 +3,10 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { startNavigation } from '@/store/slices/navigationSlice';
+import { useDispatch } from 'react-redux'
 const HeroButtonNavigation = () => {
+  const dispatch = useDispatch(); // ✅ Redux dispatch hook
   const t = useTranslations('heroSection')
   const route = useRouter()
   const handleReserveTable = () => {
@@ -11,10 +14,13 @@ const HeroButtonNavigation = () => {
     route.push("/reservation")
   }
   const handleOrderOnline = () => {
-    const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
-    const message = t('order_message'); // Get localized message from translations
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-    window.open(url, '_blank')
+    // const phoneNumber = '+4915212628877' // Replace with your actual WhatsApp Business number
+    // const message = t('order_message'); // Get localized message from translations
+    // const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+    // window.open(url, '_blank')
+    dispatch(startNavigation('/menu-list'))
+    route.push("/menu-list")
+
   }
   const handleDigitalMenu = () => {
     route.push("/digital-menu")

@@ -6,15 +6,13 @@ import { StoreProvider } from "@/components/StoreProvider";
 import { SessionProvider } from "@/components/ClientComponents/SessionProvider";
 import MobileViewDetector from "@/components/ClientComponents/mobileView/MobileViewDetector";
 import { notFound } from "next/navigation";
-// import { getMessages } from "next-intl/server";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { locales } from "@/config";
 import { setRequestLocale } from "next-intl/server";
-import LanguageSwitcher from "@/components/ClientComponents/LanguageSwitcher";
-import { Box } from "@mui/material";
-import NavBarWrapper from "@/components/NavbarWrapper";
+import Script from "next/script";
 import RouteLoader from "@/components/ClientComponents/RouteLoader";
-// import Script from "next/script";
+import ClientLayoutWrapper from "@/components/ClientComponents/ClientLayoutWrapper";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,25 +57,23 @@ export default async function LocaleLayout({
   return (
     <StoreProvider >
       <html lang={locale}>
+        <head>
+          <Script
+            src="https://pay.google.com/gp/p/js/pay.js"
+            strategy="beforeInteractive"
+          />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] mx-auto bg-white min-h-screen shadow-md relative`}
         >
           <NextIntlClientProvider locale={locale}>
-            <Box className="fixed flex justify-end z-[1201] items-center right-0 top-2">
-              <LanguageSwitcher />
-            </Box>
-
             <Toaster position="top-right" reverseOrder={false} />
             <SessionProvider />
-            <NavBarWrapper />
             <MobileViewDetector />
-            <main
-              style={{
-                paddingTop: '50px', // 100px navbar height + 30px margin
-              }}
-            >
-              <RouteLoader />{children}</main>
-
+            <ClientLayoutWrapper>
+              <main>
+                <RouteLoader />{children}</main>
+            </ClientLayoutWrapper>
           </NextIntlClientProvider>
         </body>
       </html>

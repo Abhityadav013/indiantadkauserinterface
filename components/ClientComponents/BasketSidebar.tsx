@@ -11,13 +11,15 @@ import BasketDrawer from './mobileView/BasketDrawer';
 import AddressForm from './AddressForm';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
 import { useUpdateAddressDetails } from '@/hooks/useUpdateAddressDetails';
+import { OrderType } from '@/lib/types/order_type';
 
 interface BasketSidebarProps {
     menu: MenuItem[];
-    cartItems: Cart[]
+    cartItems: Cart[];
+    orderType:OrderType;
 }
 
-const BasketSidebar = ({ menu, cartItems }: BasketSidebarProps) => {
+const BasketSidebar = ({ menu, cartItems,orderType }: BasketSidebarProps) => {
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
     const { addressModel: isAddressModelOpen, customerDetails, customerOrder, } = useSelector((state: RootState) => state.address);
     const { loading, formError, setFormError, handleUpdateCustomerDetails, handleAdddressDetailClose, handleAdddressDetailOpen } = useUpdateAddressDetails();
@@ -27,7 +29,7 @@ const BasketSidebar = ({ menu, cartItems }: BasketSidebarProps) => {
                 <BasketDrawer>
                     <h2 className="text-xl font-bold mb-4 text-center">Basket</h2>
                     <div className="flex justify-center mb-2">
-                        <BasketToggle />
+                        <BasketToggle orderType={orderType} />
                     </div>
 
                     <BaseketSideBarContent
@@ -71,7 +73,7 @@ const BasketSidebar = ({ menu, cartItems }: BasketSidebarProps) => {
             >
                 <h2 className="text-xl font-bold mb-4 text-center">Basket</h2>
                 <div className="flex justify-center mb-2">
-                    <BasketToggle />
+                    <BasketToggle orderType={orderType} />
                 </div>
                 <BaseketSideBarContent
                     loading={loading}

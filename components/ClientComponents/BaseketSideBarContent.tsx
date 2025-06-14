@@ -13,22 +13,23 @@ import { CustomerDetails } from '@/lib/types/customer_order_type';
 interface BaseketSideBarContentProps {
     cartItems: Cart[]
     menu: MenuItem[];
-    loading:boolean;
+    loading: boolean;
     customerDetails: CustomerDetails;
     handleAdddressDetailOpen: () => void;
 }
 
-const BaseketSideBarContent = ({ menu, cartItems,loading,customerDetails,handleAdddressDetailOpen }: BaseketSideBarContentProps) => {
+const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, handleAdddressDetailOpen }: BaseketSideBarContentProps) => {
     const [hydrated, setHydrated] = useState(false);
     const [showLoader, setShowLoader] = useState(true);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
-    const { isLoading, items, addToCart, removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu, getCartTotal } = useCart()
+    const { isLoading, items, basketId, addToCart, removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu, getCartTotal } = useCart()
     const [isCartUpdated, setCartUpdated] = useState(false);
     const [cartItem, setCartItems] = useState<Cart[]>(cartItems);
 
     useEffect(() => {
         setHydrated(true);
     }, []);
+    
 
     useEffect(() => {
         // We define the timer variable here, so it's in scope for cleanup
@@ -153,6 +154,7 @@ const BaseketSideBarContent = ({ menu, cartItems,loading,customerDetails,handleA
                 setCustomizeModal={setCustomizeModal}
             />
             <BillDetails
+                basketId={basketId}
                 getCartTotal={getCartTotal}
                 customerDetails={customerDetails ?? {} as CustomerDetails}
                 handleAdddressDetailOpen={handleAdddressDetailOpen}

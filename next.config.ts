@@ -11,7 +11,8 @@ const nextConfig: NextConfig = {
       'flagcdn.com',
       'stripe.com',
       'www.flaticon.com',
-      'static.takeaway.com'
+      'static.takeaway.com',
+      'https://pay.google.com'
     ], // Add your image domain here
   },
 };
