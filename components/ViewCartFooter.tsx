@@ -7,12 +7,20 @@ import { formatPrice } from '@/utils/valueInEuros';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { handleBasketState } from '@/store/slices/basketSlice';
+import { useGetCartQuery } from '@/store/api/cartApi';
+import { MenuItem } from '@/lib/types/menu_type';
 
 interface ViewCartProps {
     itmesCount: number;
+    menuItems: MenuItem[]
 }
 
-const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
+const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, menuItems }) => {
+    const { data: cart = { cartItems: [], basketId: '' }, isLoading } = useGetCartQuery(undefined, {
+        refetchOnFocus: true,
+        refetchOnMountOrArgChange: true,
+    });
+    const [item_count, setItemCount] = React.useState<number>(itmesCount)
     const [cartTotal, setCartTotal] = React.useState<string>('0,00 €');
     const [isBasketOpen, setBasektOpen] = React.useState<boolean>(false);
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
@@ -24,18 +32,22 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
     }, []);
 
     useEffect(() => {
-        const cartTotal = sessionStorage.getItem('cartTotalAmount');
-        if (cartTotal) {
-            const total = JSON.parse(cartTotal);
-            setCartTotal(formatPrice(Number(total)));
+        const getCartTotal = () => {
+            const cartTotal = cart?.cartItems?.reduce((total, cartItem) => {
+                const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
+                return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
+            }, 0);
+            setCartTotal(formatPrice(Number(cartTotal)))
+            return cartTotal;
+        };
+        if (!isLoading) {
+            setItemCount(cart?.cartItems?.length)
+            getCartTotal()
         }
+    }, [isLoading, cart.cartItems, menuItems])
 
-    }, []);
 
-    if (!hasMounted || !isMobile || itmesCount <= 0) return null;
-
-    if (itmesCount <= 0) return null;
-    if (!isMobile) return null; // Hide on mobile view
+    if (!hasMounted || !isMobile || item_count <= 0) return null;
 
     const handleBasketToggle = () => {
         setBasektOpen(!isBasketOpen);
@@ -81,7 +93,7 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount }) => {
                             lineHeight: 1,
                         }}
                     >
-                        {itmesCount}
+                        {item_count}
                     </Box>
                 </Box>
 
