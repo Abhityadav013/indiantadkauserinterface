@@ -44,8 +44,6 @@ export default function PaymentMethod({ cartTotal }: PaymentMethodProps) {
         const payData = await payRes.json();
         if (payData.orderId) {
             localStorage.setItem(`paid_basket_${basketParam}`, 'true');
-            sessionStorage.removeItem('cartTotal')
-            sessionStorage.removeItem('cartTotalAmount');
             setSubmitting(false)
             window.location.href = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${payData.orderId}`;
         }

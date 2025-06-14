@@ -65,8 +65,6 @@ const StripeCheckout = ({ amount, clientSecret }: StripeCheckoutProps) => {
             if (res.ok) {
                 const data = await res.json()
                 localStorage.setItem(`paid_basket_${basketParam}`, 'true');
-                sessionStorage.removeItem('cartTotal')
-                sessionStorage.removeItem('cartTotalAmount');
                 window.location.href = `${process.env.NEXT_PUBLIC_SITE_BASE_URL}/checkout${basketParam ? '?basket=' + basketParam : ''}&orderId=${data.orderId}`;
             } else {
                 const data = await res.json();
