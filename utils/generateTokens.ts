@@ -5,12 +5,6 @@ import { Basket_Access_Token, Basket_Referesh_Token } from '@/lib/types/basket_t
 import { ApiError } from 'next/dist/server/api-utils';
 import type { StringValue } from 'ms';
 
-if (
-  process.env.ACCESS_TOKEN_EXPIRY === undefined ||
-  process.env.REFRESH_TOKEN_EXPIRY === undefined
-) {
-  throw new Error('NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined');
-}
 // Ensure these are cast correctly
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as Secret;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET as Secret;
