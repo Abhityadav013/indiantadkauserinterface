@@ -5,24 +5,41 @@ import { OrderType } from '@/lib/types/order_type';
 import { useDispatch } from 'react-redux';
 import { setOrderType } from '@/store/slices/orderSlice';
 import { Box, Button, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 
 interface BasketToggleProps {
-  orderType: OrderType
+  orderType: OrderType;
 }
-export default function BasketToggle({ orderType }: BasketToggleProps) {
+
+export default function BasketToggle({ orderType: initialOrderType }: BasketToggleProps) {
   const dispatch = useDispatch();
-  const [order_type, setorder_typeOrderType] = useState(orderType ?? OrderType.DELIVERY)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderTypeParam = searchParams.get('orderType') as OrderType | null;
+
+  const effectiveOrderType: OrderType = useMemo(() => {
+    return orderTypeParam || initialOrderType;
+  }, [orderTypeParam, initialOrderType]);
+
   useEffect(() => {
-    const order_Type = sessionStorage.getItem('orderType')
-    if (order_Type != orderType) {
-      setorder_typeOrderType(order_Type as OrderType)
+    if (!orderTypeParam) {
+      // No param in URL — fallback to prop & update URL + Redux
+      const newParams = new URLSearchParams(window.location.search);
+      newParams.set('orderType', initialOrderType);
+      router.replace(`/menu-list?${newParams.toString()}`, { scroll: false });
+      dispatch(setOrderType(initialOrderType));
+    } else {
+      // Sync Redux with param from URL
+      dispatch(setOrderType(orderTypeParam));
     }
-  }, [order_type, orderType])
+  }, [orderTypeParam, initialOrderType, router, dispatch]);
+
   const handleBasketType = (value: OrderType) => {
-    setorder_typeOrderType(value)
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.set('orderType', value);
     dispatch(setOrderType(value));
-    sessionStorage.setItem('orderType', value);
+    router.replace(`/menu-list?${newParams.toString()}`, { scroll: false });
   };
 
   return (
@@ -41,7 +58,6 @@ export default function BasketToggle({ orderType }: BasketToggleProps) {
     >
       <Button
         onClick={() => handleBasketType(OrderType.DELIVERY)}
-        variant="text"
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -49,10 +65,10 @@ export default function BasketToggle({ orderType }: BasketToggleProps) {
           px: 2,
           py: 0.5,
           borderRadius: '999px',
-          bgcolor: order_type === OrderType.DELIVERY ? 'white' : 'transparent',
-          color: order_type === OrderType.DELIVERY ? '#f97316' : 'grey.600',
-          fontWeight: order_type === OrderType.DELIVERY ? 600 : 400,
-          boxShadow: order_type === OrderType.DELIVERY ? 1 : 'none',
+          bgcolor: effectiveOrderType === OrderType.DELIVERY ? 'white' : 'transparent',
+          color: effectiveOrderType === OrderType.DELIVERY ? '#f97316' : 'grey.600',
+          fontWeight: effectiveOrderType === OrderType.DELIVERY ? 600 : 400,
+          boxShadow: effectiveOrderType === OrderType.DELIVERY ? 1 : 'none',
           textTransform: 'none',
           minWidth: 'auto',
         }}
@@ -63,7 +79,6 @@ export default function BasketToggle({ orderType }: BasketToggleProps) {
 
       <Button
         onClick={() => handleBasketType(OrderType.PICKUP)}
-        variant="text"
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -71,10 +86,10 @@ export default function BasketToggle({ orderType }: BasketToggleProps) {
           px: 2,
           py: 0.5,
           borderRadius: '999px',
-          bgcolor: order_type === OrderType.PICKUP ? 'white' : 'transparent',
-          color: order_type === OrderType.PICKUP ? '#f97316' : 'grey.600',
-          fontWeight: order_type === OrderType.PICKUP ? 600 : 400,
-          boxShadow: order_type === OrderType.PICKUP ? 1 : 'none',
+          bgcolor: effectiveOrderType === OrderType.PICKUP ? 'white' : 'transparent',
+          color: effectiveOrderType === OrderType.PICKUP ? '#f97316' : 'grey.600',
+          fontWeight: effectiveOrderType === OrderType.PICKUP ? 600 : 400,
+          boxShadow: effectiveOrderType === OrderType.PICKUP ? 1 : 'none',
           textTransform: 'none',
           minWidth: 'auto',
         }}

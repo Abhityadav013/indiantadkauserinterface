@@ -8,23 +8,28 @@ import addressReducer from './slices/addressSlice'; // Assuming you have an addr
 import basketReducer from './slices/basketSlice'; // Assuming you have a basketSlice
 import paymentReducer from './slices/paymentSlice';
 import navigationReducer from './slices/navigationSlice';
+import { availableCouponApi } from './api/availableCouponsApi';
+import couponReducer from './slices/discountCoupon';
 export const store = configureStore({
   reducer: {
     [cartApi.reducerPath]: cartApi.reducer,
     [customerDetailsApi.reducerPath]: customerDetailsApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
+    [availableCouponApi.reducerPath]: availableCouponApi.reducer,
     order: orderReducer,
     mobile: mobileReducer,
     address: addressReducer, // Assuming you have an addressReducer
     basket: basketReducer, // Assuming you have a basketReducer
     payment: paymentReducer,
     navigation: navigationReducer,
+    coupon: couponReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       cartApi.middleware,
       customerDetailsApi.middleware,
-      orderApi.middleware
+      orderApi.middleware,
+      availableCouponApi.middleware // ✅ Add this
     ),
 });
 
