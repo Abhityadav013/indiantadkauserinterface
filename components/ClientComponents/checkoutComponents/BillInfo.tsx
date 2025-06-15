@@ -9,6 +9,8 @@ import { OrderType } from '@/lib/types/order_type';
 import { formatPrice } from '@/utils/valueInEuros';
 import { MenuItem } from '@/lib/types/menu_type';
 import { Cart } from '@/lib/types/cart_type';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 // Calculate totals
 interface BillInfoProps {
     userData: CustomerOrder,
@@ -18,7 +20,7 @@ interface BillInfoProps {
 const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
     const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
     const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false); // State to control dialog visibility
-    // Function to handle opening the dialog
+    const { cartAmount, finalCartAmount } = useSelector((state: RootState) => state.coupon)
     const handleDialogOpen = () => setDialogOpen(true);
 
     const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
@@ -56,11 +58,8 @@ const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
         const serviceFee = (cartAmountTotal ? (Number(cartAmountTotal) * 2.5) / 100 : 0);
         const cappedServiceFee = serviceFee < 0.99 ? serviceFee : 0.99;
 
-        return formatPrice((Number(cartAmountTotal) ?? 0) + Number(userData?.customerDetails?.deliveryFee ?? 0) + cappedServiceFee);
+        return formatPrice((Number(finalCartAmount) ?? 0) + Number(userData?.customerDetails?.deliveryFee ?? 0) + cappedServiceFee);
     }
-
-
-
     return (
         <>
             <Box className="my-4">
@@ -71,6 +70,16 @@ const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
                     </Typography>
                     <Typography variant="body2">{formatPrice(Number(cartAmountTotal))}</Typography>
                 </Box>
+                {
+                    finalCartAmount !== cartAmount &&
+                    <Box className="flex justify-between mb-0.2">
+                        <Typography variant="body2" className='font-semibold'>
+                            Disocunt
+                        </Typography>
+                        <Typography variant="body2">- {formatPrice(Number(cartAmount) - Number(finalCartAmount))}</Typography>
+                    </Box>
+                }
+
 
                 {userData.orderType === OrderType.DELIVERY && (
                     <>

@@ -9,11 +9,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import DeliveryFeeDialog from '../DeliveryFeeDialog';
 import ServiceFeeDilaog from '../ServiceFeeDilaog';
 import { formatPrice } from '@/utils/valueInEuros';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BillDetailWrapperProps {
-    basketId:string,
+    basketId: string,
     customerDetails: CustomerDetails;
     getCartTotal: () => number;
     handleAddressModalOpen: () => void;
@@ -23,6 +23,7 @@ const BillDetailWrapper = ({
     basketId,
     customerDetails,
     getCartTotal,
+    handleAddressModalOpen
 }: BillDetailWrapperProps) => {
     const [loading, setLoading] = useState(true);
     const [deliveryFee, setDeliveryFee] = useState(0);
@@ -31,6 +32,8 @@ const BillDetailWrapper = ({
     const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false);
     const order_type = useSelector((state: RootState) => state.order.orderType);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const orderTypeParam = searchParams.get('orderType') as OrderType | null;
 
     useEffect(() => {
         const deliveryFee = sessionStorage.getItem('deliveryFee');
@@ -48,13 +51,27 @@ const BillDetailWrapper = ({
     }, [getCartTotal, deliveryFee]);
 
     const renderPriceOrLoader = (value: string | number) => {
-        if (loading) return <span>Loading...</span>;
+        if (loading) return (
+            <span className="inline-flex space-x-1 items-center">
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0s]"></span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+            </span>
+
+        )
         if (value === 0) return <span>Free</span>;
         return <span>{formatPrice(Number(value))}</span>;
     };
 
     const renderServiceFee = (value: string | number) => {
-        if (loading) return <span>Loading...</span>;
+        if (loading) return (
+            <span className="inline-flex space-x-1 items-center">
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0s]"></span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+            </span>
+
+        );
         const serviceFee = (Number(value) * 2.5) / 100;
         return <span>{formatPrice(serviceFee < 0.99 ? Number(serviceFee.toFixed(2)) : 0.99)}</span>;
     };
@@ -70,6 +87,17 @@ const BillDetailWrapper = ({
 
     const handleDialogOpen = () => setDialogOpen(true);
     const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
+
+    const handleCheckout = () => {
+        if (order_type === OrderType.PICKUP && (customerDetails?.name === '' || customerDetails.name === undefined || customerDetails.name == null)) {
+            return handleAddressModalOpen()
+        }
+
+        if (order_type === OrderType.DELIVERY && (!customerDetails.address || Object.keys(customerDetails.address).length == 0 || customerDetails?.address?.pincode === '')) {
+            return handleAddressModalOpen()
+        }
+        router.push(`/checkout?basket=${basketId}&orderType=${orderTypeParam  ??order_type}`)
+    }
     return (
         <>
 
@@ -140,41 +168,41 @@ const BillDetailWrapper = ({
                     </motion.div>
                 </AnimatePresence>
 
-                     <Box
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        position: 'absolute',
+                        bottom: '5px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '80%',
+                        mt: 2
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        hidden={!customerDetails || Object.keys(customerDetails).length === 0}
+                        onClick={handleCheckout}
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            position: 'absolute',
-                            bottom: '5px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: '80%',
-                            mt: 2
+                            width: '100%',
+                            backgroundColor: '#f36805',
+                            color: 'white',
+                            padding: '6px 12px',
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            borderRadius: '50px',
+                            textTransform: 'none',
+                            opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
+                            '&:hover': {
+                                backgroundColor: '#f36805',
+                            },
                         }}
                     >
-                        <Button
-                            variant="contained"
-                            hidden={!customerDetails || Object.keys(customerDetails).length === 0}
-                            onClick={() => router.push(`/checkout?basket=${basketId}`)}
-                            sx={{
-                                width: '100%',
-                                backgroundColor: '#f36805',
-                                color: 'white',
-                                padding: '6px 12px',
-                                fontSize: '20px',
-                                fontWeight: 'bold',
-                                borderRadius: '50px',
-                                textTransform: 'none',
-                                opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
-                                '&:hover': {
-                                    backgroundColor: '#f36805',
-                                },
-                            }}
-                        >
-                            Checkout ({calculateTotal()})
-                        </Button>
-                    </Box>
+                        Checkout ({calculateTotal()})
+                    </Button>
+                </Box>
 
             </Box>
 

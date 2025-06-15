@@ -8,6 +8,7 @@ import { getUserData } from '@/lib/api/fetchUserDetailsApi';
 import { Box } from '@mui/material';
 import PaymentMethodSelector from '@/components/ClientComponents/PaymentMethodSelector';
 import OrderConfirmationPage from '@/components/OrderConfirmationPage';
+import { getAvailableCouponData } from '@/lib/api/fetchAvailabelCouponApi';
 
 type CheckoutPageParam = {
   orderId?: string;
@@ -18,9 +19,16 @@ type CheckoutPageParam = {
 export default async function CheckoutPage({ searchParams }: { searchParams?: Promise<CheckoutPageParam> }) {
   const resolvedParams = searchParams ? await searchParams : undefined;
   const orderId = resolvedParams?.orderId;
-  const [menuData, cartdata, userData] = await Promise.all([getMenuData(), getCartData(), getUserData()]);
+  const [menuData, cartdata, userData, availableCouponsData] = await Promise.all([getMenuData(), getCartData(), getUserData(), getAvailableCouponData()]);
   const menuItems: MenuItem[] = menuData.menuItems;
-  
+  const getCartTotal = () => {
+    const cartTotal = cartdata.cartItems.reduce((total, cartItem) => {
+      const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
+      return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
+    }, 0);
+    return cartTotal
+
+  };
   if (orderId) {
     return <OrderConfirmationPage orderId={orderId} />
   }
@@ -51,7 +59,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams?: Pr
           >
             <Box sx={{ flex: 1 }}>
               <OrderDetails userData={userData} />
-              <PaymentMethodSelector />
+              <PaymentMethodSelector availableCoupons={availableCouponsData} cartAmount={getCartTotal()}/>
             </Box>
 
             <Box sx={{ flex: 1 }}>
