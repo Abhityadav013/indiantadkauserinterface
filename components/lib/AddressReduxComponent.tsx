@@ -1,8 +1,5 @@
 'use client';
 
-// import { useRouter, usePathname } from 'next/navigation';
-// import { useEffect } from 'react';
-import { useAddressDetails } from '@/hooks/useAddressDetails';
 import { useUpdateCartMutation } from '@/store/api/cartApi';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -10,9 +7,7 @@ import { useEffect } from 'react';
 const AddressReduxComponent = () => {
   const searchParams = useSearchParams(); // URLSearchParams
   const orderIdParam = searchParams.get('orderId') || '';
-  // const { items, clearCart } = useCart()
-    const [updateCart] = useUpdateCartMutation();
-  useAddressDetails();
+  const [updateCart] = useUpdateCartMutation();
 
   useEffect(() => {
     const updateCartAsync = async () => {

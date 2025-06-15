@@ -7,7 +7,8 @@ import { convertToSubcurrency } from '@/utils/convertToSubCurrency'
 import NavBarNavigation from '@/components/NavBarNavigation'
 import { Box, Typography } from '@mui/material'
 import Image from 'next/image'
-import StripeCheckoutSkeleton from '@/components/Skeletons/StripePageSkeleton'
+import { useSearchParams } from 'next/navigation'
+
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
     throw new Error('NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined')
@@ -19,6 +20,8 @@ const StripeComponent = () => {
     const [clientSecret, setClientSecret] = useState("")
     const [amount, setAmount] = useState<number>(0)
     const hasFetched = useRef(false)
+    const searchParams = useSearchParams(); // URLSearchParams
+    const basketParam = searchParams.get('basket') || '';
 
     useEffect(() => {
         if (hasFetched.current) return
@@ -46,19 +49,15 @@ const StripeComponent = () => {
                         Pay with card
                     </Typography>
                     <Typography variant="body1" className="text-gray-600 mb-6 text-center md:text-left">
-                        Order no. <span className="font-semibold">CTFTFF</span>
+                        Order no. <span className="font-semibold">{basketParam.slice(0, 5).toUpperCase()}</span>
                     </Typography>
 
-                    {clientSecret ? (
-                        <Elements
-                            stripe={stripePromise}
-                            options={{ clientSecret, locale: 'en' }}
-                        >
-                            <StripeCheckout amount={amount} clientSecret={clientSecret} />
-                        </Elements>
-                    ) : (
-                        <StripeCheckoutSkeleton />
-                    )}
+                    <Elements
+                        stripe={stripePromise}
+                        options={{ clientSecret, locale: 'en' }}
+                    >
+                        <StripeCheckout amount={amount} clientSecret={clientSecret} />
+                    </Elements>
                 </Box>
 
                 {/* Right Side: Security Text */}

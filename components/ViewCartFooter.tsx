@@ -20,7 +20,7 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, menuItems }) => {
         refetchOnFocus: true,
         refetchOnMountOrArgChange: true,
     });
-    const [item_count, setItemCount] = React.useState<number>(itmesCount)
+    const [item_count, setItemCount] = React.useState<number>(itmesCount ?? 0)
     const [cartTotal, setCartTotal] = React.useState<string>('0,00 €');
     const [isBasketOpen, setBasektOpen] = React.useState<boolean>(false);
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
@@ -46,8 +46,7 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, menuItems }) => {
         }
     }, [isLoading, cart.cartItems, menuItems])
 
-
-    if (!hasMounted || !isMobile || item_count <= 0) return null;
+    if (!hasMounted || !isMobile || !item_count || item_count === 0) return null;
 
     const handleBasketToggle = () => {
         setBasektOpen(!isBasketOpen);
