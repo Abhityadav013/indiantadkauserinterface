@@ -16,27 +16,37 @@ import { OrderType } from '@/lib/types/order_type';
 import { getIndianTadkaAddress } from '@/utils/getRestroAddress';
 import { RootState } from '@/store';
 import { useSelector } from 'react-redux';
+import { CustomerOrder } from '@/lib/types/customer_order_type';
+import { useAddressDetails } from '@/hooks/useAddressDetails';
 
-export default function OrderDetails() {
+interface OrderDetailsProps {
+  userData: CustomerOrder
+}
+
+export default function OrderDetails({ userData }: OrderDetailsProps) {
   const [openDialog, setOpenDialog] = useState<null | 'contact' | 'address' | 'time' | 'notes'>(null);
 
   const handleOpen = (dialog: typeof openDialog) => setOpenDialog(dialog);
   const handleClose = () => setOpenDialog(null);
-  const [userInfo, setUserInfo] = useState<{ name: string, phoneNumber: string }>({ name: '', phoneNumber: '' });
-  const [addressInfo, setAddressInfo] = useState<{ pincode: string, buildingNumber: string, street: string, town: string }>({ pincode: '', buildingNumber: '', street: '', town: '' })
+  const [userInfo, setUserInfo] = useState<{ name: string, phoneNumber: string }>({ name: userData.customerDetails?.name ?? '', phoneNumber: `+49-${userData.customerDetails?.phoneNumber}` });
+  const [addressInfo, setAddressInfo] = useState<{ pincode: string, buildingNumber: string, street: string, town: string }>({
+    pincode: userData.customerDetails?.address?.pincode ?? '',
+    buildingNumber: userData.customerDetails?.address?.buildingNumber ?? '',
+    street: userData.customerDetails?.address?.street ?? '',
+    town: userData.customerDetails?.address?.town ?? ''
+  })
   const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string } | null>(null);
   const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
-  const { loading,customerDetails } = useSelector((state: RootState) => state.address);
+  const { isLoading: loading, customerDetails } = useAddressDetails();
   const order_type = useSelector((state: RootState) => state.order.orderType);
   useEffect(() => {
     // Only run when loading is false
-    if (!loading) {
+    if (!loading && customerDetails) {
       // Get data from session
       const contactData = getDialogDataFromSession('contact');
       const addressData = getDialogDataFromSession('address');
       const deliveryTimeData = getDialogDataFromSession('time');
       const deliverNoteData = getDialogDataFromSession("notes")
-
       // Use session if exists, else fallback to customerDetails
       if (contactData) {
         setUserInfo(contactData as { name: string; phoneNumber: string });

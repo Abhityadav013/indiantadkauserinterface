@@ -1,35 +1,41 @@
-'use client'
-import { Box, Skeleton } from '@mui/material'
+'use client';
 
-const StripePageSkeleton = () => {
+import { Card, CardContent } from '@mui/material';
+
+const StripeCheckoutSkeleton = () => {
     return (
-        <Box className="max-w-4xl mx-auto flex flex-col md:flex-row gap-6 px-4 mt-20">
-            {/* Left Side Skeleton */}
-            <Box className="flex-1 space-y-4">
-                {/* Heading + Order ID */}
-                <Skeleton variant="text" width="40%" height={32} />
-                <Skeleton variant="text" width="60%" height={24} />
+        <>
+            {/* Skeleton for the Card Form */}
+            <Card className="rounded-xl shadow-md p-4 min-h-[320px] bg-white">
+                <CardContent className="space-y-4 animate-pulse">
+                    {/* Card label */}
+                    <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-gray-300 rounded-full" />
+                        <div className="h-4 w-20 bg-gray-300 rounded" />
+                    </div>
 
-                {/* Stripe form placeholder */}
-                <Skeleton variant="rectangular" height={150} className="rounded-md" />
+                    {/* Card number */}
+                    <div className="h-12 mt-10 bg-gray-200 rounded-md w-full" />
 
-                {/* Pay Button */}
-                <Skeleton variant="rectangular" height={48} width="100%" className="rounded-md" />
-            </Box>
+                    {/* Expiry & CVC */}
+                    <div className="flex gap-4">
+                        <div className="h-12 bg-gray-200 rounded-md flex-1" />
+                        <div className="h-12 bg-gray-200 rounded-md flex-1" />
+                    </div>
 
-            {/* Right Side Security Info */}
-            <Box className="flex-1 bg-gray-50 rounded-lg mt-8 text-gray-700 shadow-md text-sm h-[40%] hidden md:block p-4 space-y-4">
-                {/* Skeleton for image */}
-                <Skeleton variant="rectangular" width={128} height={128} className="mx-auto rounded-md" />
+                    {/* Country selector */}
+                    <div className="h-12 bg-gray-200 rounded-md w-full" />
 
-                {/* Heading and description */}
-                <Skeleton variant="text" width="70%" height={28} className="mx-auto" />
-                <Skeleton variant="text" width="90%" height={20} className="mx-auto" />
-                <Skeleton variant="text" width="90%" height={20} className="mx-auto" />
-                <Skeleton variant="text" width="80%" height={20} className="mx-auto" />
-            </Box>
-        </Box>
-    )
-}
+                    <div className="bottom-0 left-0 right-0 bg-white border-t w-full pt-4 animate-pulse">
+                        <button className="h-12 bg-gray-300 rounded-md w-full" />
+                    </div>
+                </CardContent>
+            </Card>
 
-export default StripePageSkeleton
+            {/* Sticky Pay Button Skeleton */}
+
+        </>
+    );
+};
+
+export default StripeCheckoutSkeleton;

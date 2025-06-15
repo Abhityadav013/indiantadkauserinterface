@@ -83,27 +83,26 @@ const PaypalComponent: React.FC<PaypalComponentProps> = ({ amount }) => {
 
                 }}
             >
-              <div className="relative">
-          <PayPalButtons
-            fundingSource="paypal"
-            style={{
-              shape: 'pill',
-              layout: 'vertical',
-              color: 'gold',
-              label: 'paypal',
-              height: 55,
-            }}
-            createOrder={onclick}
-            onApprove={onApprove}
-          />
-
-          {/* Spinner Overlay */}
-          {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-md pointer-events-none">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent border-white" />
-            </div>
-          )}
-        </div>
+                <div className="relative">
+                    <PayPalButtons
+                        fundingSource="paypal"
+                        style={{
+                            shape: 'pill',
+                            layout: 'vertical',
+                            color: 'gold',
+                            label: 'paypal',
+                            height: 55,
+                        }}
+                        createOrder={onclick}
+                        onApprove={onApprove}
+                    />
+                    {/* Full-screen spinner overlay */}
+                    {loading && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm transition-opacity">
+                            <div className="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent border-gray-800" />
+                        </div>
+                    )}
+                </div>
 
             </PayPalScriptProvider>
         </div>

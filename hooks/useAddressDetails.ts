@@ -57,6 +57,7 @@ export function useAddressDetails() {
   };
 
   return {
+    isLoading,
     customerDetails,
     customerOrder,
     isAddressModelOpen,

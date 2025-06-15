@@ -31,7 +31,7 @@ interface MenuContentProps {
 export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories, orderType }: MenuContentProps) {
     return (
         <>
-            <Box component="main" sx={{ display: 'flex', width: '100%', backgroundColor: 'white', flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}>
+            <div className="flex w-[100%] bg-white flex-col">
                 {/* Left Content */}
                 <Box component="section" sx={{ flex: 1, pl: { xs: 1, sm: 1, md: 2 }, pr: { xs: 1, sm: 1, md: 2 }, maxWidth: { md: 'calc(100% - 460px)' } }}>
                     <NavBarNavigation label="Our Menu" redirect_url="/" isImage={false} />
@@ -144,7 +144,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                 </Box>
                 <BasketSidebar menu={menuItems} cartItems={cartItems} orderType={orderType} />
                 <ViewCartFooter itmesCount={cartItems.length ?? 0} menuItems={menuItems} />
-            </Box>
+            </div>
             <FooterCopyRights />
         </>
     );

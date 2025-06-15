@@ -50,7 +50,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams?: Pr
             }}
           >
             <Box sx={{ flex: 1 }}>
-              <OrderDetails />
+              <OrderDetails userData={userData} />
               <PaymentMethodSelector />
             </Box>
 
