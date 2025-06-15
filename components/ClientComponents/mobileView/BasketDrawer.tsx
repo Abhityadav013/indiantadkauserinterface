@@ -33,7 +33,7 @@ const BasketDrawer = ({ children }: BasketDrawerProps) => {
           },
         }}
       >
-        <div className="w-full p-6 relative">
+        <div className="w-full top-0 p-3 relative">
           {/* Close button */}
           <IconButton
             edge="start"
