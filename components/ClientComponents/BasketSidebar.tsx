@@ -12,17 +12,22 @@ import AddressForm from './AddressForm';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
 import { useUpdateAddressDetails } from '@/hooks/useUpdateAddressDetails';
 import { OrderType } from '@/lib/types/order_type';
+import SkeletonSidebar from '../Skeletons/SkeletonSidebar';
 
 interface BasketSidebarProps {
     menu: MenuItem[];
     cartItems: Cart[];
-    orderType:OrderType;
+    orderType: OrderType;
 }
 
-const BasketSidebar = ({ menu, cartItems,orderType }: BasketSidebarProps) => {
+const BasketSidebar = ({ menu, cartItems, orderType }: BasketSidebarProps) => {
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
     const { addressModel: isAddressModelOpen, customerDetails, customerOrder, } = useSelector((state: RootState) => state.address);
     const { loading, formError, setFormError, handleUpdateCustomerDetails, handleAdddressDetailClose, handleAdddressDetailOpen } = useUpdateAddressDetails();
+    const isDataReady =  customerDetails && customerOrder && !loading;
+    if (!isDataReady) {
+        return <SkeletonSidebar />; // or return null;
+    }
     if (isMobile) {
         return (
             <>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import { MenuItem } from '@/lib/types/menu_type';
 import React, { useEffect, useState } from 'react'
@@ -29,7 +30,7 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
     useEffect(() => {
         setHydrated(true);
     }, []);
-    
+
 
     useEffect(() => {
         // We define the timer variable here, so it's in scope for cleanup
@@ -62,62 +63,87 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
     }, [menuItems, menu, updateMenuItems])
 
     const handleAddToCart = async (item: MenuItem) => {
-        await addToCart(item);
-        //updateCart({ cart: updatedCart });
-
         setCartUpdated(true);
-        const timer = setTimeout(() => {
-            // updateCart({ cart: updatedCart });
-            setCartUpdated(false);
-        }, 1000); // Show loading indicator for 1 second
-        toast.success(`${item.name} Added to cart`, {
-            id: item.id,
-            duration: 2000, // Show toast for 2 seconds
-            style: {
-                padding: "16px 24px", // Adjusted padding
-                height: "60px", // Fixed height
-                fontSize: "16px", // Fixed font size
-                backgroundColor: "#28a745", // Green color for success
-                color: "#fff", // White text
-                borderRadius: "10px",
-                marginTop: '20px'
-            },
-            iconTheme: {
-                primary: "#fff", // White icon
-                secondary: "#28a745", // Green icon
-            },
-        });
-        return () => clearTimeout(timer);
-
+        try {
+            await addToCart(item);
+            toast.success(`${item.name} added to cart`, {
+                id: item.id,
+                duration: 2000,
+                style: {
+                    padding: '16px 24px',
+                    height: '60px',
+                    fontSize: '16px',
+                    backgroundColor: '#28a745',
+                    color: '#fff',
+                    borderRadius: '10px',
+                    marginTop: '20px',
+                },
+                iconTheme: {
+                    primary: '#fff',
+                    secondary: '#28a745',
+                },
+            });
+        } catch (err) {
+            toast.error(`Failed to add ${item.name}`, {
+                id: `add-error-${item.id}`,
+                duration: 2500,
+                style: {
+                    padding: '16px 24px',
+                    height: '60px',
+                    fontSize: '16px',
+                    backgroundColor: '#e53e3e',
+                    color: '#fff',
+                    borderRadius: '10px',
+                    marginTop: '20px',
+                },
+            });
+        } finally {
+            const timer = setTimeout(() => setCartUpdated(false), 1000);
+            return () => clearTimeout(timer);
+        }
     };
 
     const handleRemoveFromCart = async (item: MenuItem) => {
-        await removeFromCart(item);
         setCartUpdated(true);
-        const timer = setTimeout(() => {
-            // updateCart({ cart: updatedCart });
-            setCartUpdated(false);
-        }, 1000); // Show loading indicator for 1 second
-        toast(`${item.name} removed from cart`, {
-            id: `remove-${item.id}`,
-            duration: 2000,
-            style: {
-                padding: "16px 24px",
-                height: "60px",
-                fontSize: "16px",
-                backgroundColor: "#dc3545", // Red color for removal
-                color: "#fff",
-                borderRadius: "10px",
-                marginTop: "50px",
-            },
-            iconTheme: {
-                primary: "#fff",
-                secondary: "#dc3545",
-            },
-        });
-        return () => clearTimeout(timer);
-
+        try {
+            await removeFromCart(item);
+            toast(`${item.name} removed from cart`, {
+                id: `remove-${item.id}`,
+                duration: 2000,
+                style: {
+                    padding: '16px 24px',
+                    height: '60px',
+                    fontSize: '16px',
+                    backgroundColor: '#dc3545',
+                    color: '#fff',
+                    borderRadius: '10px',
+                    marginTop: '50px',
+                },
+                iconTheme: {
+                    primary: '#fff',
+                    secondary: '#dc3545',
+                },
+            });
+        } catch (err) {
+            toast.error(`Failed to remove ${item.name}`, {
+                id: `remove-error-${item.id}`,
+                duration: 2500,
+                style: {
+                    padding: '16px 24px',
+                    height: '60px',
+                    fontSize: '16px',
+                    backgroundColor: '#e53e3e',
+                    color: '#fff',
+                    borderRadius: '10px',
+                    marginTop: '50px',
+                },
+            });
+        } finally {
+            const timer = setTimeout(() => setCartUpdated(false), 1000);
+            return () => clearTimeout(timer);
+        }
     };
+
 
     if (!hydrated) {
         // Before hydration (first render), rely on props

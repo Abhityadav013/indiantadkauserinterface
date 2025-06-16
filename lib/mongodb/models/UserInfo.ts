@@ -29,9 +29,10 @@ export interface IUserInfo extends Document {
     lat: string;
     long: string;
   };
-  isFreeDelivery:boolean;
-  deliveryFee:string;
-  notDeliverable:boolean
+  isFreeDelivery: boolean;
+  deliveryFee: string;
+  notDeliverable: boolean;
+  discountPrice: number;
 }
 
 export type IUserInfoLean = Omit<IUserInfo, keyof Document>; // remove Mongoose Document properties
@@ -59,11 +60,12 @@ const UserInfoSchema = new Schema<IUserInfo>(
     tid: { type: String, required: true },
     orderMethod: { type: String, required: true },
     userLocation: { type: Object, required: false },
-    isFreeDelivery:{type:Boolean,required:false},
-    deliveryFee:{type:String,required:false},
-    notDeliverable:{type:Boolean,required:false}
+    isFreeDelivery: { type: Boolean, required: false },
+    deliveryFee: { type: String, required: false },
+    notDeliverable: { type: Boolean, required: false },
+    discountPrice: { type: Number, required: false },
   },
-  { versionKey: false, collection: UserInfoSchemaName },
+  { versionKey: false, collection: UserInfoSchemaName }
 );
 
 UserInfoSchema.pre('save', async function (next) {
@@ -73,7 +75,7 @@ UserInfoSchema.pre('save', async function (next) {
       const counter = await Counter.findOneAndUpdate(
         { _id: 'user' }, // Find by the 'user' type
         { $inc: { seq: 1 } }, // Increment the sequence
-        { new: true, upsert: true }, // Create if not found
+        { new: true, upsert: true } // Create if not found
       );
 
       if (counter) {
@@ -91,6 +93,5 @@ UserInfoSchema.pre('save', async function (next) {
   next(); // Proceed with saving
 });
 
-const UserInfo =
-  mongoose?.models?.UserInfo || mongoose.model('UserInfo', UserInfoSchema);
+const UserInfo = mongoose?.models?.UserInfo || mongoose.model('UserInfo', UserInfoSchema);
 export default UserInfo;

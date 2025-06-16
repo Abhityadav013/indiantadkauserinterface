@@ -4,14 +4,12 @@ import Image from "next/image";
 import { Cart } from "@/lib/types/cart_type";
 import { MenuItem } from "@/lib/types/menu_type";
 import BillInfo from "./ClientComponents/checkoutComponents/BillInfo";
-import { CustomerOrder } from "@/lib/types/customer_order_type";
 interface CheckoutCartProps {
     cart: Cart[],
     menu: MenuItem[];
-    userData: CustomerOrder
 }
 
-const CheckoutCart: React.FC<CheckoutCartProps> = ({ cart, menu, userData }) => {
+const CheckoutCart: React.FC<CheckoutCartProps> = ({ cart, menu }) => {
     const getItemPriceWithMenu = (item: Cart) => {
         const fetchMenuItem = menu.find((mi) => mi.id === item.itemId);
         const itemPrice = fetchMenuItem?.price ?? 0;
@@ -86,7 +84,7 @@ const CheckoutCart: React.FC<CheckoutCartProps> = ({ cart, menu, userData }) => 
             </Box>
 
             <Divider className="mb-4" />
-            <BillInfo userData={userData} cart={cart} menu={menu} />
+            <BillInfo cart={cart} menu={menu} />
         </CardContent>
 
     );

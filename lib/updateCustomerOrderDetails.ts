@@ -45,7 +45,6 @@ const storeDialogDataInSession = <T extends keyof DialogPayloadMap>(
   // Save the updated dialogData object back to sessionStorage
   sessionStorage.setItem('dialogData', JSON.stringify(dialogDataObj));
 
-  console.log(`Stored ${data.type} data in sessionStorage:`, data.payload);
 };
 
 export const getDialogDataFromSession = <T extends DialogType>(

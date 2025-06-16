@@ -25,7 +25,7 @@ export function useCart() {
 
   // Add item to cart
   const addToCart = async (item: MenuItem) => {
-    if (isLoading || isUpdating) return;
+    if (isLoading || isUpdating) return Promise.reject('Cart is busy');
 
     // Copy current cart or empty array
     const updatedCart = cart?.cartItems ? [...cart.cartItems] : [];
@@ -45,12 +45,12 @@ export function useCart() {
     }
 
     // Send update to backend
-    await updateCart({ cart: updatedCart });
+    return updateCart({ cart: updatedCart });
   };
 
   // Remove item from cart
   const removeFromCart = async (item: MenuItem) => {
-    if (isLoading || isUpdating) return;
+    if (isLoading || isUpdating) return Promise.reject('Cart is busy');
 
     const updatedCart = cart.cartItems
       .map((cartItem) =>
@@ -58,7 +58,7 @@ export function useCart() {
       )
       .filter((cartItem) => cartItem.quantity > 0);
 
-    await updateCart({ cart: updatedCart });
+    return updateCart({ cart: updatedCart });
   };
 
   const updateMenuItems = (menuItems: MenuItem[]) => {
@@ -83,9 +83,9 @@ export function useCart() {
     await updateCart({ cart: [], isCartEmpty: true });
   };
 
-  const emptyCart = () =>{
-    setCartData([])
-  }
+  const emptyCart = () => {
+    setCartData([]);
+  };
 
   const getCartTotal = () => {
     const cartTotal = cart?.cartItems?.reduce((total, cartItem) => {
@@ -110,6 +110,6 @@ export function useCart() {
     clearCart,
     updateMenuItems,
     getCartTotal,
-    emptyCart
+    emptyCart,
   };
 }

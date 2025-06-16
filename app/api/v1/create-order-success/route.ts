@@ -1,7 +1,7 @@
 import { connectToDatabase } from '@/lib/mongodb/connect';
 import Menu, { IMenu } from '@/lib/mongodb/models/Menu';
 import Order, { IOrder, OrderStatus } from '@/lib/mongodb/models/Order';
-import { OrderSuccessSummary } from '@/lib/types/order_summary';
+import { CreateOrderRequest, OrderSuccessSummary } from '@/lib/types/order_summary';
 import { OrderType } from '@/lib/types/order_type';
 import ApiResponse from '@/utils/ApiResponse';
 import { generateOrderConfirmationEmail } from '@/utils/generateOrderConfirmationEmail';
@@ -11,7 +11,15 @@ import nodemailer from 'nodemailer';
 export async function POST(request: NextRequest) {
   await connectToDatabase(); // Ensure DB connection
   try {
-    const { orderDetails, orderType, deliveryFee, tipAmount } = await request.json();
+    const {
+      orderDetails,
+      orderType,
+      deliveryFee,
+      tipAmount,
+      discount,
+      deliveryAddress,
+    }: CreateOrderRequest = await request.json();
+    console.log('deliveryAddress::::', deliveryAddress);
     const deviceId = request.headers.get('ssid') || '';
     const onlineOrder = orderType === OrderType.DELIVERY;
     const pickupOrder = orderType === OrderType.PICKUP;
@@ -50,20 +58,32 @@ export async function POST(request: NextRequest) {
         return null; // Should not happen as we validate items exist earlier
       })
       .filter(Boolean); // Remove any null items
+    const isDiscountApplied = discount && Object.keys(discount).length;
     const orderAmount = {
-      orderTotal: totalAmount,
+      orderTotal: isDiscountApplied ? Number(totalAmount - discount.amount) : totalAmount,
       ...(deliveryFee && {
         deliveryFee: deliveryFee,
       }),
       ...(tipAmount && {
         tipAmount: tipAmount,
       }),
+      ...(isDiscountApplied && { discount }),
     };
 
     //const transaction :ITransaction | null = await Transaction.findOne({ paymentIntentId: paymentIntentId });
-
     // Create the order with the calculated order items and total amount
     try {
+      console.log('New Order Payload:', {
+        orderDate,
+        orderItems,
+        onlineOrder,
+        pickupOrder,
+        status,
+        orderAmount,
+        deviceId,
+        deliveryAddress,
+      });
+
       const newOrder: IOrder = new Order({
         orderDate,
         orderItems,
@@ -72,8 +92,12 @@ export async function POST(request: NextRequest) {
         status,
         orderAmount,
         deviceId,
+        deliveryAddress: deliveryAddress,
       });
       await newOrder.save();
+
+      console.log('New Order Object Before Save:', newOrder);
+
       const orderResponse: OrderSuccessSummary = {
         displayId: newOrder.displayId,
         orderId: newOrder.id,
@@ -87,6 +111,7 @@ export async function POST(request: NextRequest) {
           };
         }),
         orderAmount: newOrder.orderAmount,
+        ...(onlineOrder && { deliveryAddress: deliveryAddress }),
         createdAt: new Date().toISOString(),
       };
 
@@ -104,9 +129,9 @@ export async function POST(request: NextRequest) {
       });
 
       const mailOptions = {
-        from: `"Your Restaurant" <${process.env.SENDER_EMAIL}>`,
+        from: `"Your Order"- ${newOrder.displayId} <${process.env.SENDER_EMAIL}>`,
         to: process.env.RECIEVER_EMAIL,
-        subject: '🔥 New Order Received - Urgent Attention Required',
+        subject: `🔥 New Order Received - Urgent Attention Required ${newOrder.displayId}`,
         html: generateOrderConfirmationEmail(orderResponse), // your dynamic email content
         headers: {
           'X-Priority': '1', // For Outlook

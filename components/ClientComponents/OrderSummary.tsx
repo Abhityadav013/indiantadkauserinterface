@@ -15,15 +15,6 @@ interface OrderSummaryProps {
 
 export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps) {
 
-  const getCartTotal = () => {
-    const cartTotal = cart.cartItems.reduce((total, cartItem) => {
-      const foodItemMatch = menu.find((item) => item.id === cartItem.itemId);
-      return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
-    }, 0);
-    return cartTotal
-
-  };
-
   if (cart.cartItems.length == 0) {
     return null;
   }
@@ -35,9 +26,9 @@ export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps
           Order summary
         </Typography>
       </Box>
-      <CheckoutCart cart={cart.cartItems} menu={menu} userData={userData} />
+      <CheckoutCart cart={cart.cartItems} menu={menu} />
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <PaymentMethod cartTotal={getCartTotal()} />
+        <PaymentMethod  userData={userData} />
       </Box>
     </Paper>
   );

@@ -16,6 +16,8 @@ import ViewCartFooter from "./ViewCartFooter";
 import SearchBar from "./ClientComponents/SearchBar";
 import { OrderType } from "@/lib/types/order_type";
 import BasketToggle from "./ClientComponents/BasketToggle";
+import { Suspense } from "react";
+import SkeletonSidebar from "./Skeletons/SkeletonSidebar";
 
 interface MenuContentProps {
     groupedMenu: {
@@ -143,7 +145,9 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                         </Box>
                     )}
                 </Box>
-                <BasketSidebar menu={menuItems} cartItems={cartItems} orderType={orderType} />
+                <Suspense fallback={<SkeletonSidebar />}>
+                    <BasketSidebar menu={menuItems} cartItems={cartItems} orderType={orderType} />
+                </Suspense>
                 <ViewCartFooter itmesCount={cartItems.length ?? 0} menuItems={menuItems} />
             </div>
             <FooterCopyRights />

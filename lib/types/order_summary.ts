@@ -17,7 +17,12 @@ export type OrderSuccessSummary = {
     orderTotal: number;
     deliveryFee?: number;
     tipAmount?: number;
+    discount?: {
+      amount: number;
+      code: string;
+    };
   };
+  deliveryAddress?: string;
   createdAt: Date | string;
 };
 
@@ -27,4 +32,9 @@ export interface CreateOrderRequest {
   paymentIntentId?: string | null;
   deliveryFee?: number;
   tipAmount?: number;
+  deliveryAddress?: string;
+  discount?: {
+    amount: number;
+    code: string;
+  };
 }

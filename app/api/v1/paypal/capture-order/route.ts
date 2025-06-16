@@ -9,7 +9,7 @@ import { postToApi } from '@/lib/postAPICall';
 
 export async function POST(request: NextRequest) {
   // Get amount and order from the request body
-  const { orderID, basketId } = await request.json();
+  const { orderID, basketId, discount } = await request.json();
   try {
     const response = await ordersController.captureOrder({
       id: orderID,
@@ -25,6 +25,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User Deails not found' }, { status: 404 });
     }
 
+    if (discount && Object.keys(discount).length) {
+      userDetails.discount = discount.discountAmount;
+    }
+
+    const isDiscountApplied = discount && Object.keys(discount).length;
     const orderRes = await postToApi<OrderSuccessSummary, CreateOrderRequest>(
       'create-order-success',
       {
@@ -33,6 +38,8 @@ export async function POST(request: NextRequest) {
           orderType: userDetails.orderMethod,
           paymentIntentId: response.result.id,
           deliveryFee: userDetails.deliveryFee,
+          deliveryAddress: userDetails?.address?.displayAddress,
+          ...(isDiscountApplied && { discount }),
         },
       }
     );
