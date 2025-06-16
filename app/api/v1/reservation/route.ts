@@ -41,16 +41,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const date = new Date(data.reservationDateTime);
-
-    const formattedDateTime = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true, // this makes AM/PM format
-    }).format(date);
+    const date ='2025-06-20T16:00:00.000+00:00'
 
     // Email content
     const mailOptions = {
@@ -61,14 +52,14 @@ export async function POST(request: Request) {
         Name: ${data.fullName}\n
         Phone: ${data.phoneNumber}\n
         Number of People: ${data.numberOfPeople}\n
-        Date & Time: ${formattedDateTime}\n
+        Date & Time: ${date}\n
       `,
       html: `
         <h3>New Reservation Received</h3>
         <p><strong>Name:</strong> ${data.fullName}</p>
         <p><strong>Phone:</strong> ${data.phoneNumber}</p>
         <p><strong>Number of People:</strong> ${data.numberOfPeople}</p>
-        <p><strong>Date & Time:</strong> ${formattedDateTime}</p>
+        <p><strong>Date & Time:</strong> ${date}</p>
       `,
     };
 

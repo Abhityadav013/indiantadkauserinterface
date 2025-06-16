@@ -34,6 +34,7 @@ export async function GET(
                 price: item?.price
             };
         }),
+        deliveryAddress:orderInfo.deliveryAddress,
         orderAmount: orderInfo.orderAmount,
         createdAt: new Date().toISOString(),
     };

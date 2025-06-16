@@ -32,10 +32,14 @@ export interface IOrder extends Document {
   }>; // List of ordered items
   orderAmount: {
     orderTotal: number;
-    deliveryFee?:number;
+    deliveryFee?: number;
     tipAmount?: number;
-
+    discount?: {
+      code: string;
+      amount: number;
+    };
   };
+  deliveryAddress?: string;
   deviceId: string;
 }
 const OrderSchema = new Schema<IOrder>(
@@ -88,6 +92,10 @@ const OrderSchema = new Schema<IOrder>(
     orderAmount: {
       type: Object,
       required: true,
+    },
+    deliveryAddress: {
+      type: String,
+      required: false,
     },
     deviceId: {
       type: String,

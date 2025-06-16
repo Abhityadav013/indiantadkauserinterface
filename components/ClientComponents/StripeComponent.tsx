@@ -15,11 +15,14 @@ const StripeComponent: React.FC<StripeComponentProps> = ({ amount }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const qParam = searchParams.get('basket') || '';
+  const couponApplied = searchParams.get('coupon') || '';
   const fetchPaymentIntent = async () => {
     const res = await fetch('/api/v1/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, currency: "eur" }),
+      body: JSON.stringify({
+        amount, currency: "eur"
+      }),
     });
 
     const data = await res.json();
@@ -27,11 +30,17 @@ const StripeComponent: React.FC<StripeComponentProps> = ({ amount }) => {
     if (res.ok && data.clientSecret) {
       const paymentIntentId = data.clientSecret.split('_secret_')[0]; // ✅ extract directly
       sessionStorage.setItem('checkout_client_secret', data.clientSecret);
-      router.push(`/payment/${paymentIntentId}?basket=${qParam}`); // ✅ now works correctly
+      router.push(`/payment/${paymentIntentId}?basket=${qParam}&?coupon${couponApplied}`); // ✅ now works correctly
     }
   };
 
   const handleCardPayment = () => {
+    const clientSecret = sessionStorage.getItem('checkout_client_secret')
+    if (clientSecret) {
+      const paymentIntentId = clientSecret.split('_secret_')[0]; // ✅ extract directly
+      return router.push(`/payment/${paymentIntentId}?basket=${qParam}`); // ✅ now works correctly
+    }
+
     fetchPaymentIntent();
   };
 

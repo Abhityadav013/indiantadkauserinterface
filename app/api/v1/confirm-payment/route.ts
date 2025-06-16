@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
 
 export async function POST(req: NextRequest) {
   try {
-    const { paymentIntentId, basketId } = await req.json();
+    const { paymentIntentId, basketId, discount } = await req.json();
 
     if (!paymentIntentId) {
       return NextResponse.json({ error: 'Missing paymentIntentId' }, { status: 400 });
@@ -28,6 +28,12 @@ export async function POST(req: NextRequest) {
     if (!userDetails) {
       return NextResponse.json({ error: 'User Deails not found' }, { status: 404 });
     }
+
+    if (discount && Object.keys(discount).length) {
+      userDetails.discount = discount.discountAmount;
+    }
+
+    const isDiscountApplied = discount && Object.keys(discount).length;
     if (paymentIntent.status === 'succeeded') {
       // ✅ Payment was successful – now call internal API to save order
       const orderRes = await postToApi<OrderSuccessSummary, CreateOrderRequest>(
@@ -38,6 +44,8 @@ export async function POST(req: NextRequest) {
             orderType: userDetails.orderMethod,
             paymentIntentId: paymentIntentId,
             deliveryFee: userDetails.deliveryFee,
+            deliveryAddress: userDetails?.address?.displayAddress,
+            ...(isDiscountApplied && { discount }),
           },
         }
       );

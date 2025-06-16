@@ -9,30 +9,31 @@ export const SessionProvider = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const createSession = async () => {
-      const storedTid = localStorage.getItem('tid');
-      const storedSsid = localStorage.getItem('ssid');
-      const orderType = sessionStorage.getItem('orderType');
-      dispatch(setOrderType(orderType as OrderType));
+    const storedTid = localStorage.getItem('tid');
+    const storedSsid = localStorage.getItem('ssid');
+    const orderType = sessionStorage.getItem('orderType');
 
+    if (!storedTid || storedTid === 'undefined' || !storedSsid || storedSsid === 'undefined') {
+      console.warn('Missing session info, skipping session fetch');
+      return;
+    }
+
+    dispatch(setOrderType(orderType as OrderType));
+
+    const createSession = async () => {
       try {
         const response = await fetch('/api/v1', {
           method: 'POST',
           credentials: 'include',
-          body: JSON.stringify({ ssid: storedSsid,tid:storedTid }),
+          body: JSON.stringify({ ssid: storedSsid, tid: storedTid }),
         });
 
         if (response.ok) {
           const data = await response.json();
           const { tid, deviceId } = data.data;
 
-          // 🔁 Always update if mismatch OR not set
-          if (!storedTid || storedTid !== tid) {
-            localStorage.setItem('tid', tid);
-          }
-          if (!storedSsid || storedSsid !== deviceId) {
-            localStorage.setItem('ssid', deviceId);
-          }
+          if (!storedTid || storedTid !== tid) localStorage.setItem('tid', tid);
+          if (!storedSsid || storedSsid !== deviceId) localStorage.setItem('ssid', deviceId);
         }
       } catch (err) {
         console.error('Failed to create session:', err);
@@ -41,6 +42,7 @@ export const SessionProvider = () => {
 
     createSession();
   }, [dispatch]);
+
 
   return null;
 };

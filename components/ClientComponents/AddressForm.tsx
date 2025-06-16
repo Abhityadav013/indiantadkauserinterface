@@ -53,7 +53,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
             },
             orderType: values.orderType,
         };
-        console.log('customerDetails',customerDetails)
         await handleUpdateCustomerDetails(customerDetails)
     };
 

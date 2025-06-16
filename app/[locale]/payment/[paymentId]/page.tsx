@@ -22,7 +22,7 @@ const StripeComponent = () => {
     const hasFetched = useRef(false)
     const searchParams = useSearchParams(); // URLSearchParams
     const basketParam = searchParams.get('basket') || '';
-
+    
     useEffect(() => {
         if (hasFetched.current) return
         const existingClientSecret = sessionStorage.getItem('checkout_client_secret')

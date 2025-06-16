@@ -118,21 +118,26 @@ export async function POST(request: NextRequest) {
     });
 
     let deliveryFee,
+      discountPrice = 0,
       isFreeDelivery = true,
       notDeliverable = false,
       userLocation: UserLocation = { lat: 0, lng: 0 };
 
+    if (customerDetails?.discountPrice) {
+      discountPrice = customerDetails.discountPrice;
+    }
     if (orderType === OrderType.DELIVERY) {
       userLocation = await fetchUserLocation(customerDetails.address.displayAddress);
       const getlocationInsights = await getUserLocationFromLatLon({
         userLocation,
       });
-
       if (typeof getlocationInsights !== 'boolean' && typeof getlocationInsights !== 'string') {
         deliveryFee = String(getlocationInsights);
+        isFreeDelivery = false;
       } else if (typeof getlocationInsights === 'string') {
         isFreeDelivery = true;
       } else {
+        isFreeDelivery = false;
         notDeliverable = true;
       }
     }
@@ -141,12 +146,14 @@ export async function POST(request: NextRequest) {
         userInformation.name = customerDetails.name;
         userInformation.phoneNumber = customerDetails.phoneNumber;
         userInformation.orderMethod = orderType === OrderType.DELIVERY ? 'DELIVERY' : 'PICKUP';
+        userInformation.discountPrice = discountPrice;
       } else {
         userInformation.address = customerDetails.address;
         userInformation.deliveryFee = deliveryFee;
         userInformation.isFreeDelivery = isFreeDelivery;
         userInformation.notDeliverable = notDeliverable;
         userInformation.orderMethod = orderType === OrderType.DELIVERY ? 'DELIVERY' : 'PICKUP';
+        userInformation.discountPrice = discountPrice;
       }
       // Update existing user info
     } else {
@@ -163,6 +170,7 @@ export async function POST(request: NextRequest) {
         deliveryFee: deliveryFee,
         isFreeDelivery: isFreeDelivery,
         notDeliverable: notDeliverable,
+        discountPrice: discountPrice,
       });
     }
     await userInformation.save();
@@ -180,6 +188,7 @@ export async function POST(request: NextRequest) {
         isFreeDelivery: userData.isFreeDelivery,
         deliveryFee: userData.deliveryFee,
         notDeliverable: userData.notDeliverable,
+        discountPrice: discountPrice,
       },
       orderType: userData.orderMethod as OrderType,
     };

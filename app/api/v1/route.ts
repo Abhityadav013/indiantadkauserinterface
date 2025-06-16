@@ -14,13 +14,14 @@ export async function POST(request: NextRequest) {
     const payload = await request.json();
     const { ssid, tid } = payload;
     const cookieStore = await cookies(); // ✅ Always use this in App Router
-    const deviceId = ssid ?? cookieStore.get('_device_id')?.value;
+    const deviceId = ssid && ssid !== 'undefined' ? ssid : cookieStore.get('_device_id')?.value;
+
     let access_Token = request.cookies.get('access_token')?.value || '';
     const refresh_token = request.cookies.get('refresh_token')?.value || '';
     let session = new UserSession();
     let isexistingUser = false;
 
-    if (!deviceId || deviceId === 'undefined') {
+    if (!deviceId) {
       // If no deviceId in cookies, create a new guest session
       const guestId = uuidv4();
       const sessionId = uuidv4();

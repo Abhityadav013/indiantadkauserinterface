@@ -4,7 +4,6 @@ import ServiceFeeDilaog from '@/components/ServiceFeeDilaog';
 import { Box, Divider, IconButton, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import InfoIcon from '@mui/icons-material/Info';
-import { CustomerOrder } from '@/lib/types/customer_order_type';
 import { OrderType } from '@/lib/types/order_type';
 import { formatPrice } from '@/utils/valueInEuros';
 import { MenuItem } from '@/lib/types/menu_type';
@@ -13,20 +12,20 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 // Calculate totals
 interface BillInfoProps {
-    userData: CustomerOrder,
     cart: Cart[];
     menu: MenuItem[];
 }
-const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
+const BillInfo = ({  cart, menu }: BillInfoProps) => {
     const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
     const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false); // State to control dialog visibility
     const { cartAmount, finalCartAmount } = useSelector((state: RootState) => state.coupon)
     const handleDialogOpen = () => setDialogOpen(true);
+    const { customerDetails,customerOrder } = useSelector((state: RootState) => state.address)
 
     const handleServiceFeeDialogOpen = () => setServiceFeeDialogOpen(true);
 
     const renderPriceOrLoader = (value: string | number) => {
-        if (value === 0) {
+        if (Number(value) === 0) {
             return <span>Free</span>
         } else {
             return <span>{formatPrice(Number(value))}</span>
@@ -58,7 +57,7 @@ const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
         const serviceFee = (cartAmountTotal ? (Number(cartAmountTotal) * 2.5) / 100 : 0);
         const cappedServiceFee = serviceFee < 0.99 ? serviceFee : 0.99;
 
-        return formatPrice((Number(finalCartAmount) ?? 0) + Number(userData?.customerDetails?.deliveryFee ?? 0) + cappedServiceFee);
+        return formatPrice((Number(finalCartAmount) ?? 0) + Number(customerDetails?.deliveryFee ?? 0) + cappedServiceFee);
     }
     return (
         <>
@@ -81,7 +80,7 @@ const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
                 }
 
 
-                {userData.orderType === OrderType.DELIVERY && (
+                {customerOrder.orderType === OrderType.DELIVERY && (
                     <>
                         <Typography variant="body2" className="flex justify-between">
                             <span>
@@ -91,7 +90,7 @@ const BillInfo = ({ userData, cart, menu }: BillInfoProps) => {
                                 </IconButton>
                             </span>
 
-                            {renderPriceOrLoader(userData?.customerDetails?.deliveryFee ?? 0)}
+                            {renderPriceOrLoader(customerDetails?.deliveryFee ?? 0)}
 
                         </Typography>
                         <Typography variant="body2" className="flex justify-between">

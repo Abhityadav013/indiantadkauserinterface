@@ -3,14 +3,16 @@ import { Box, Button, Divider, Typography, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { OrderType } from '@/lib/types/order_type';
 import { CustomerDetails } from '@/lib/types/customer_order_type';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
 import InfoIcon from '@mui/icons-material/Info';
 import DeliveryFeeDialog from '../DeliveryFeeDialog';
 import ServiceFeeDilaog from '../ServiceFeeDilaog';
 import { formatPrice } from '@/utils/valueInEuros';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import MinimumOrderDialog from './MinimumOrderDialog';
+import { handleBasketState } from '@/store/slices/basketSlice';
 
 interface BillDetailWrapperProps {
     basketId: string,
@@ -30,7 +32,9 @@ const BillDetailWrapper = ({
     const [cartAmountTotal, setCartAmountTotal] = useState<number>();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [serviceFeeDialogOpen, setServiceFeeDialogOpen] = useState(false);
+    const [minimumDialogOpen, setMinimumDialogOpen] = useState(false)
     const order_type = useSelector((state: RootState) => state.order.orderType);
+    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const searchParams = useSearchParams();
     const orderTypeParam = searchParams.get('orderType') as OrderType | null;
@@ -45,7 +49,7 @@ const BillDetailWrapper = ({
         if (cartTotal) {
             const total = ((cartTotal ?? 0) + deliveryFee).toFixed(2);
             sessionStorage.setItem('cartTotalAmount', total);
-            setCartAmountTotal(Number(total));
+            setCartAmountTotal(Number(cartTotal));
             setLoading(false);
         }
     }, [getCartTotal, deliveryFee]);
@@ -96,7 +100,15 @@ const BillDetailWrapper = ({
         if (order_type === OrderType.DELIVERY && (!customerDetails.address || Object.keys(customerDetails.address).length == 0 || customerDetails?.address?.pincode === '')) {
             return handleAddressModalOpen()
         }
-        router.push(`/checkout?basket=${basketId}&orderType=${orderTypeParam  ??order_type}`)
+
+        if (cartAmountTotal && cartAmountTotal < 10) {
+            return setMinimumDialogOpen(true)
+        }
+        router.push(`/checkout?basket=${basketId}&orderType=${orderTypeParam ?? order_type}`)
+    }
+    const handleShopMore = () =>{
+        setMinimumDialogOpen(false)
+                dispatch(handleBasketState(false));
     }
     return (
         <>
@@ -205,6 +217,10 @@ const BillDetailWrapper = ({
                 </Box>
 
             </Box>
+            <MinimumOrderDialog open={minimumDialogOpen}
+                onClose={() => setMinimumDialogOpen(false)}
+                onShopMore={handleShopMore} // callback to redirect or close dialog for adding more items
+                currentAmount={cartAmountTotal ?? 0} />
 
             {/* Dialogs */}
             <DeliveryFeeDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
