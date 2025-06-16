@@ -142,6 +142,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
       // For example:
       setDeliveryNoteInfo(storedData as { notes: string });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

@@ -26,7 +26,7 @@ export default function OrderSummary({ cart, menu, userData }: OrderSummaryProps
           Order summary
         </Typography>
       </Box>
-      <CheckoutCart cart={cart.cartItems} menu={menu} userData={userData} />
+      <CheckoutCart cart={cart.cartItems} menu={menu} />
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <PaymentMethod  userData={userData} />
       </Box>
