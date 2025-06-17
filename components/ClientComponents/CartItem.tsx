@@ -20,7 +20,7 @@ interface CartItemProps {
     }
     setCustomizeModal: React.Dispatch<React.SetStateAction<boolean>>,
 }
-const CartItem: React.FC<CartItemProps> = ({
+const CartItem: React.FC<CartItemProps> = React.memo(({
     isCartUpdated,
     isCustomizeModal,
     items,
@@ -50,7 +50,7 @@ const CartItem: React.FC<CartItemProps> = ({
                         initial={false}
                         animate={{ opacity: isCartUpdated ? 1 : 0 }}
                         transition={{ duration: 0.3 }}
-                        style={{ height: 8, marginBottom: '0.5rem' }} // margin to make it visible
+                        style={{ height: 8, marginBottom: '0.5rem' }}
                     >
                         <LinearProgress
                             sx={{
@@ -67,10 +67,7 @@ const CartItem: React.FC<CartItemProps> = ({
             {
                 items.map((item) => {
                     const quantity = getItemQuantity(item.itemId)
-                    //const quantity = item.quantity ?? 0
                     const { totalPrice: itemTotal, menu: currentMenuItem } = getItemPriceWithMenu(item)
-                    // const cartDescription = cartDescriptions.find(di => di.itemId === item.id);
-
                     return (
                         <React.Fragment key={item.itemId}>
                             <Box
@@ -98,13 +95,6 @@ const CartItem: React.FC<CartItemProps> = ({
                                         </Typography>
                                         {isCustomizeModal && (
                                             <></>
-                                            // <CartCustomizeDialog
-                                            //     isOpen={isCustomizeModal}
-                                            //     onClose={handleCustomizeModal}
-                                            //     foodData={{ itemId: item.id, itemName: item.itemName }}
-                                            //     onSubmit={handleItemDescription}
-                                            //     cartDescription={String(cartDescription?.description || '')}
-                                            // />
                                         )}
                                     </Box>
                                     <Box sx={{
@@ -116,16 +106,16 @@ const CartItem: React.FC<CartItemProps> = ({
                                     }}
                                         className=" border border-gray-500"
                                     >
-
                                         <Button
                                             onClick={() => handleRemoveFromCart(currentMenuItem || {} as MenuItem)}
                                             className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                             size="sm"
+                                            tabIndex={0}
+                                            aria-label={`Remove one ${item.itemName} from cart`}
+                                            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleRemoveFromCart(currentMenuItem || {} as MenuItem); }}
                                         >
                                             -
                                         </Button>
-
-                                        {/* Quantity Animation */}
                                         <AnimatePresence mode="wait">
                                             <motion.span
                                                 key={quantity}
@@ -138,16 +128,17 @@ const CartItem: React.FC<CartItemProps> = ({
                                                 {quantity}
                                             </motion.span>
                                         </AnimatePresence>
-
                                         <Button
                                             onClick={() => handleAddToCart(currentMenuItem || {} as MenuItem)}
                                             className="text-green-600 font-bold border-none shadow-none rounded-none bg-transparent hover:bg-transparent"
                                             size="sm"
+                                            tabIndex={0}
+                                            aria-label={`Add one more ${item.itemName} to cart`}
+                                            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleAddToCart(currentMenuItem || {} as MenuItem); }}
                                         >
                                             +
                                         </Button>
                                     </Box>
-                                    {/* Price Section */}
                                     <Box sx={{
                                         width: '15%',
                                         display: 'flex',
@@ -159,7 +150,6 @@ const CartItem: React.FC<CartItemProps> = ({
                                             {formatPrice(Number(itemTotal.toFixed(2)))}
                                         </Typography>
                                     </Box>
-
                                 </Box>
                             </Box>
                         </React.Fragment>
@@ -168,6 +158,6 @@ const CartItem: React.FC<CartItemProps> = ({
             }
         </React.Fragment>
     );
-};
+});
 
 export default CartItem;

@@ -57,6 +57,7 @@ export default async function MenuPage({ searchParams }: { searchParams?: Promis
             cartItems={cartItems.cartItems}
             categories={menuCategoriesDetails}
             orderType={userData.orderType}
+            loading={false}
         />
     );
 }

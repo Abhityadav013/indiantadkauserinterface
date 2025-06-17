@@ -7,12 +7,14 @@ import { setOrderType } from '@/store/slices/orderSlice';
 import { Box, Button, Typography } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 interface BasketToggleProps {
   orderType: OrderType;
 }
 
 export default function BasketToggle({ orderType: initialOrderType }: BasketToggleProps) {
+  const hasMounted = useHasMounted();
   const dispatch = useDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,6 +23,8 @@ export default function BasketToggle({ orderType: initialOrderType }: BasketTogg
   const effectiveOrderType: OrderType = useMemo(() => {
     return orderTypeParam || initialOrderType;
   }, [orderTypeParam, initialOrderType]);
+
+ 
 
   useEffect(() => {
     if (!orderTypeParam) {
@@ -41,6 +45,9 @@ export default function BasketToggle({ orderType: initialOrderType }: BasketTogg
     dispatch(setOrderType(value));
     router.replace(`/menu-list?${newParams.toString()}`, { scroll: false });
   };
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <Box

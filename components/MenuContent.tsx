@@ -4,20 +4,17 @@ import Image from "next/image";
 import { formatPrice } from "@/utils/valueInEuros";
 import TruncatedDescription from "./ClientComponents/TruncatedDescription";
 import AddToCartButton from "./ClientComponents/AddToCart";
-import BasketSidebar from "./ClientComponents/BasketSidebar";
-// import BasketToggle from "./ClientComponents/BasketToggle";
+import BasketSidebarClient from './ClientComponents/BasketSidebarClient';
 import FooterCopyRights from "./FooterCopyRight";
 import { MenuCategory } from "@/lib/types/menu_category";
 import { MenuItem } from "@/lib/types/menu_type";
 import { Cart } from "@/lib/types/cart_type";
-// import SearchBar from "./ClientComponents/SearchBar";
 import CategoryTabs from "./ClientComponents/CategoryFilter";
-import ViewCartFooter from "./ViewCartFooter";
+import ViewCartFooterClient from './ClientComponents/ViewCartFooterClient';
 import SearchBar from "./ClientComponents/SearchBar";
 import { OrderType } from "@/lib/types/order_type";
 import BasketToggle from "./ClientComponents/BasketToggle";
-import { Suspense } from "react";
-import SkeletonSidebar from "./Skeletons/SkeletonSidebar";
+import MenuItemSkeleton from "./Skeletons/MenuItemSkeleton";
 
 interface MenuContentProps {
     groupedMenu: {
@@ -29,8 +26,9 @@ interface MenuContentProps {
     cartItems: Cart[],
     categories: MenuCategory[];
     orderType: OrderType;
+    loading: boolean;
 }
-export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories, orderType }: MenuContentProps) {
+export default function MenuContent({ groupedMenu, filtered, menuItems, cartItems, categories, orderType, loading }: MenuContentProps) {
     return (
         <>
             <div className="flex w-full bg-white flex-col md:flex-row">
@@ -54,14 +52,19 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
 
                     {filtered.length === 0 ? (
                         <p className="mt-4">No items found for your search.</p>
+                    ) : loading ? (
+                        <Box component="section" aria-label="Menu List Loading" role="region" sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 } }}>
+                            {[...Array(6)].map((_, idx) => (
+                                <MenuItemSkeleton key={idx} />
+                            ))}
+                        </Box>
                     ) : (
-                        <Box component="section" sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 } }}>
+                        <Box component="section" aria-label="Menu List" role="region" sx={{ mt: { xs: 4, sm: 4, md: 8, lg: 8 } }}>
                             {groupedMenu.map(({ category, items }) => (
                                 <Box key={category.id} id={`category-${category.id}`} className="mb-6">
                                     <Divider sx={{ mb: 1, borderBottomWidth: '1.5px' }} />
                                     <h2 className="text-2xl font-bold p-2 text-gray-800 mb-4">{category.categoryName}</h2>
-
-                                    <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} role="list">
                                         {items.map((item, index) => (
                                             <Box
                                                 key={item.id}
@@ -76,6 +79,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                     width: '100%',
                                                     maxWidth: '100%',
                                                 }}
+                                                role="listitem"
                                             >
                                                 <Box
                                                     component="div"
@@ -93,6 +97,7 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                         alt={item.name}
                                                         fill
                                                         sizes="(max-width: 768px) 100px, 200px"
+                                                        loading={index === 0 ? 'eager' : 'lazy'}
                                                         priority={index === 0}
                                                     />
                                                 </Box>
@@ -137,7 +142,6 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                                                     </Box>
                                                 </Box>
                                             </Box>
-
                                         ))}
                                     </Box>
                                 </Box>
@@ -145,10 +149,8 @@ export default function MenuContent({ groupedMenu, filtered, menuItems, cartItem
                         </Box>
                     )}
                 </Box>
-                <Suspense fallback={<SkeletonSidebar />}>
-                    <BasketSidebar menu={menuItems} cartItems={cartItems} orderType={orderType} />
-                </Suspense>
-                <ViewCartFooter itmesCount={cartItems.length ?? 0} menuItems={menuItems} />
+                <BasketSidebarClient menu={menuItems} cartItems={cartItems} orderType={orderType} />
+                <ViewCartFooterClient itmesCount={cartItems.length ?? 0} menuItems={menuItems} />
             </div>
             <FooterCopyRights />
         </>

@@ -20,42 +20,11 @@ interface BaseketSideBarContentProps {
 }
 
 const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, handleAdddressDetailOpen }: BaseketSideBarContentProps) => {
-    const [hydrated, setHydrated] = useState(false);
-    const [showLoader, setShowLoader] = useState(true);
-    const [isCustomizeModal, setCustomizeModal] = useState(false);
     const { isLoading, items, basketId, addToCart, removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu, getCartTotal } = useCart()
     const [isCartUpdated, setCartUpdated] = useState(false);
-    const [cartItem, setCartItems] = useState<Cart[]>(cartItems);
+    const [isCustomizeModal, setCustomizeModal] = useState(false);
+    const [liveMessage, setLiveMessage] = useState('');
 
-    useEffect(() => {
-        setHydrated(true);
-    }, []);
-
-
-    useEffect(() => {
-        // We define the timer variable here, so it's in scope for cleanup
-        let timer: NodeJS.Timeout;
-        if (!isLoading && !loading) {
-            if (items && Array.isArray(items)) {
-                setCartItems((prev) => {
-                    // Only update if cartItems length is different
-                    if (prev.length !== items.length) {
-                        return items; // Update cartItems if lengths are different
-                    }
-                    return prev; // Otherwise, keep previous state
-                });
-            }
-            timer = setTimeout(() => setShowLoader(false), 1000); // Delay 1 second
-        } else {
-            timer = setTimeout(() => setShowLoader(false), 200); // Delay 1 second
-            // setShowLoader(true); // Show loader if isLoading is true
-        }
-
-        // Cleanup: clear timer if the component unmounts or the effect reruns
-        return () => {
-            if (timer) clearTimeout(timer);
-        };
-    }, [isLoading, loading, items]); // Only depend on isLoading and items, not cartItems
     useEffect(() => {
         if (!menuItems.length) {
             updateMenuItems(menu)
@@ -64,6 +33,7 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
 
     const handleAddToCart = async (item: MenuItem) => {
         setCartUpdated(true);
+        setLiveMessage(`${item.name} added to cart`);
         try {
             await addToCart(item);
             toast.success(`${item.name} added to cart`, {
@@ -105,6 +75,7 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
 
     const handleRemoveFromCart = async (item: MenuItem) => {
         setCartUpdated(true);
+        setLiveMessage(`${item.name} removed from cart`);
         try {
             await removeFromCart(item);
             toast(`${item.name} removed from cart`, {
@@ -144,47 +115,40 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
         }
     };
 
-
-    if (!hydrated) {
-        // Before hydration (first render), rely on props
-        if (cartItems.length === 0) {
-            return <EmptyCart />;
-        }
-    } else {
-        // After hydration, rely on client-side state
-        if (cartItem.length === 0) {
-            return <EmptyCart />;
-        }
-    }
-    if (showLoader) {
+    if (loading || isLoading) {
         return (
             <Image
                 src='https://testing.indiantadka.eu/assets/foodCartLoader.gif'
                 alt="Loading..."
                 width={400}
-                height={400} // Assuming the image is square
+                height={400}
             />
         );
     }
-
+    if (items.length === 0) {
+        return <EmptyCart />;
+    }
     return (
         <>
+            <div aria-live="polite" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>{liveMessage}</div>
             <CartHistory
                 isCartUpdated={isCartUpdated}
                 isCustomizeModal={isCustomizeModal}
-                items={cartItem}
+                items={items}
                 handleAddToCart={handleAddToCart}
                 handleRemoveFromCart={handleRemoveFromCart}
                 getItemQuantity={getItemQuantity}
                 getItemPriceWithMenu={getItemPriceWithMenu}
                 setCustomizeModal={setCustomizeModal}
             />
-            <BillDetails
-                basketId={basketId}
-                getCartTotal={getCartTotal}
-                customerDetails={customerDetails ?? {} as CustomerDetails}
-                handleAdddressDetailOpen={handleAdddressDetailOpen}
-            />
+            <div aria-live="polite">
+                <BillDetails
+                    basketId={basketId}
+                    getCartTotal={getCartTotal}
+                    customerDetails={customerDetails ?? {} as CustomerDetails}
+                    handleAdddressDetailOpen={handleAdddressDetailOpen}
+                />
+            </div>
         </>
     )
 }

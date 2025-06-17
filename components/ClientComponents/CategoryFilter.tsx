@@ -113,11 +113,12 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
     }, [])
 
     return (
-        <div className="flex items-start gap-2 mt-4 w-[100%] relative bg-white">
+        <div role="tablist" aria-label="Menu Categories" className="flex items-start gap-2 mt-4 w-[100%] relative bg-white">
             {showLeftArrow && (
                 <button
                     onClick={scrollLeft}
                     className="absolute left-2 top-[15px] -translate-y-1/2 z-10 bg-white px-1 hidden md:block"
+                    aria-label="Scroll left"
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </button>
@@ -128,16 +129,25 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
                     ref={scrollRef}
                     className="flex overflow-x-auto gap-1 scroll-smooth scrollbar-hide px-2"
                 >
-                    {categories.map((c) => (
+                    {categories.map((c, idx) => (
                         <button
                             key={c.id}
                             ref={el => { buttonRefs.current[c.id] = el }}
                             onClick={() => handleClick(c.id)}
                             className={`px-2 py-1 rounded-full whitespace-nowrap text-sm font-medium transition-colors duration-200
-                            ${selected === c.id
-                                    ? 'bg-[#FF6347] text-white'
-                                    : 'hover:bg-gray-100 text-gray-800'
-                                }`}
+                            ${selected === c.id ? 'bg-[#FF6347] text-white' : 'hover:bg-gray-100 text-gray-800'} focus:ring-2 focus:ring-[#FF6347] focus:outline-none`}
+                            role="tab"
+                            aria-selected={selected === c.id}
+                            tabIndex={selected === c.id ? 0 : -1}
+                            onKeyDown={e => {
+                                if (e.key === 'ArrowRight') {
+                                    const next = (idx + 1) % categories.length;
+                                    buttonRefs.current[categories[next].id]?.focus();
+                                } else if (e.key === 'ArrowLeft') {
+                                    const prev = (idx - 1 + categories.length) % categories.length;
+                                    buttonRefs.current[categories[prev].id]?.focus();
+                                }
+                            }}
                         >
                             {c.categoryName}
                         </button>
