@@ -2,22 +2,26 @@ import Reservation from '@/lib/mongodb/models/Reservation';
 import ApiResponse from '@/utils/ApiResponse';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { connectToDatabase } from '@/lib/mongodb/connect';
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const data = await request.json();    
     const deviceId = request.headers.get('ssid') || '';
 
     const requiredFields = ['fullName', 'phoneNumber', 'numberOfPeople', 'reservationDateTime'];
     for (const field of requiredFields) {
       if (!data[field]) {
+        console.error(`❌ API: Missing required field: ${field}`);
         return NextResponse.json(
           { success: false, message: `Missing required field: ${field}` },
           { status: 400 }
         );
       }
     }
-
+   
+    // Connect to database
+    await connectToDatabase();
     const reservation = new Reservation({
       fullName: data.fullName,
       phoneNumber: data.phoneNumber,
@@ -25,7 +29,6 @@ export async function POST(request: Request) {
       reservationDateTime: data.reservationDateTime,
       deviceId,
     });
-
     await reservation.save();
 
     // --- SEND EMAIL AFTER SUCCESSFUL RESERVATION ---
@@ -41,7 +44,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const date ='2025-06-20T16:00:00.000+00:00'
+    const date = '2025-06-20T16:00:00.000+00:00';
 
     // Email content
     const mailOptions = {
@@ -72,9 +75,19 @@ export async function POST(request: Request) {
       }
     });
 
+    const reservationData = {
+      id: reservation.id,
+      displayId: reservation.displayId,
+      fullName: data.fullName,
+      phoneNumber: data.phoneNumber,
+      numberOfPeople: data.numberOfPeople,
+      reservationDateTime: data.reservationDateTime,
+      deviceId: deviceId,
+      status: 'draft',
+    };
     // Response to client
     return NextResponse.json(
-      new ApiResponse(201, { ...reservation }, 'Reservation created successfully')
+      new ApiResponse(201, { ...reservationData }, 'Reservation created successfully')
     );
   } catch (error) {
     console.error('Error processing reservation:', error);

@@ -106,9 +106,9 @@ const BillDetailWrapper = ({
         }
         router.push(`/checkout?basket=${basketId}&orderType=${orderTypeParam ?? order_type}`)
     }
-    const handleShopMore = () =>{
+    const handleShopMore = () => {
         setMinimumDialogOpen(false)
-                dispatch(handleBasketState(false));
+        dispatch(handleBasketState(false));
     }
     return (
         <>
@@ -199,20 +199,21 @@ const BillDetailWrapper = ({
                         onClick={handleCheckout}
                         sx={{
                             width: '100%',
-                            backgroundColor: '#f36805',
+                            fontWeight: 600,
+                            fontSize: '1.1rem',
+                            borderRadius: 50,
+                            mt: 4,
+                            py: 1.5,
+                            backgroundColor: '#FF6347',
                             color: 'white',
-                            padding: '6px 12px',
-                            fontSize: '20px',
-                            fontWeight: 'bold',
-                            borderRadius: '50px',
-                            textTransform: 'none',
-                            opacity: !customerDetails || Object.keys(customerDetails).length === 0 ? 0.6 : 1,
-                            '&:hover': {
-                                backgroundColor: '#f36805',
-                            },
+                            '&:hover': { backgroundColor: '#e5533d' },
+                            '&[aria-disabled="true"]': { opacity: 0.5, cursor: 'not-allowed' },
                         }}
+                        disabled={Boolean(cartAmountTotal && cartAmountTotal < 10)}
+                        aria-disabled={Boolean(cartAmountTotal && cartAmountTotal < 10)}
+                        title={cartAmountTotal && cartAmountTotal < 10 ? 'Minimum order is 10€' : cartAmountTotal?.toString()}
                     >
-                        Checkout ({calculateTotal()})
+                       {cartAmountTotal && cartAmountTotal < 10 ? 'Minimum order is 10 €' : `Checkout ${formatPrice(Number(cartAmountTotal))}`}
                     </Button>
                 </Box>
 

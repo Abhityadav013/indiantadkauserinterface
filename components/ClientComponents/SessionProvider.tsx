@@ -13,10 +13,12 @@ export const SessionProvider = () => {
     const storedSsid = localStorage.getItem('ssid');
     const orderType = sessionStorage.getItem('orderType');
 
-    if (!storedTid || storedTid === 'undefined' || !storedSsid || storedSsid === 'undefined') {
-      console.warn('Missing session info, skipping session fetch');
-      return;
-    }
+    // if (!storedTid || storedTid === 'undefined' || !storedSsid || storedSsid === 'undefined') {
+    //   console.log('storedTid::::::', storedTid)
+    //   console.log('storedSsid::::::', storedSsid)
+    //   console.warn('Missing session info, skipping session fetch');
+    //   return;
+    // }
 
     dispatch(setOrderType(orderType as OrderType));
 

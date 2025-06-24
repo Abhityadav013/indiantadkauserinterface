@@ -12,6 +12,7 @@ export interface IReservation extends Document {
     numberOfPeople: string;
     reservationDateTime: Date,
     deviceId: string
+    status: string;
 }
 
 
@@ -46,6 +47,7 @@ const ReservationSchema = new Schema<IReservation>(
             type: String,
             required: true,
         },
+        status: { type: String, default: "draft" }
     },
     {
         versionKey: false,

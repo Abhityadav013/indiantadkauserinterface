@@ -1,10 +1,11 @@
 import { Typography } from '@mui/material';
+import React from 'react';
 
 interface TruncatedDescriptionProps {
     description: string;
 }
 
-export default function TruncatedDescription({
+const TruncatedDescription = React.memo(function TruncatedDescription({
     description,
 }: TruncatedDescriptionProps) {
     const maxChars = 80;
@@ -14,6 +15,7 @@ export default function TruncatedDescription({
     return (
         <Typography
             variant="body2"
+            aria-label="Menu item description"
             className="
                         text-gray-600 text-sm leading-snug
                         max-sm:line-clamp-2 max-sm:overflow-hidden max-sm:text-ellipsis
@@ -24,4 +26,6 @@ export default function TruncatedDescription({
             <span className="hidden sm:inline">{truncatedDesktopDescription}</span>
         </Typography>
     );
-}
+});
+
+export default TruncatedDescription;
