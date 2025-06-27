@@ -177,40 +177,40 @@ export default function ReservationForm() {
             }
             const ssid = localStorage.getItem('ssid');
             const _device_id = ssid || '';
+            
+            const requestBody = {
+                ...formData,
+                phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}`,
+                reservationDateTime: combinedDateTime,
+            };
+                        
             const response = await fetch("/api/v1/reservation", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     ssid: _device_id,
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}`,
-                    reservationDateTime: combinedDateTime,
-                }),
+                body: JSON.stringify(requestBody),
             })
 
             const data = await response.json()
-
             if (!response.ok) {
                 throw new Error(data.message || "Failed to submit reservation")
             }
-            if (response.ok) {
-                console.log('data:::::', data)
-                const reservationData = {
-                    id: data.id,
-                    displayId: data.displayId,
-                    fullName: data.fullName,
-                    phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}`,
-                    numberOfPeople: data.numberOfPeople,
-                    reservationDateTime: combinedDateTime,
-                    deviceId: _device_id,
-                    status: 'draft',
-                    createdAt: data.data.createdAt || new Date().toISOString(),
-                    updatedAt: data.data.updatedAt || new Date().toISOString(),
-                };
-                emitReservationEvent(reservationData);
-            }
+            // Emit socket event from client-side after successful reservation
+            const reservationData = {
+                id: data.data.id,
+                displayId: data.data.displayId,
+                fullName: formData.fullName,
+                phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}`,
+                numberOfPeople: formData.numberOfPeople,
+                reservationDateTime: combinedDateTime,
+                deviceId: _device_id,
+                status: 'draft',
+                createdAt: data.data.createdAt || new Date().toISOString(),
+                updatedAt: data.data.updatedAt || new Date().toISOString(),
+            };
+            emitReservationEvent(reservationData);
 
             // Reset form on success
             setFormData({
@@ -239,7 +239,8 @@ export default function ReservationForm() {
                 },
             });
         } catch (error) {
-            console.error("Error submitting reservation:", error)
+            console.error("❌ FORM: Error submitting reservation:", error)
+            toast.error(`Failed to submit reservation: ${error instanceof Error ? error.message : 'Unknown error'}`)
         } finally {
             setSubmitting(false)
         }

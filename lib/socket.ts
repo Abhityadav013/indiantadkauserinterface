@@ -1,12 +1,12 @@
 import { io, Socket } from 'socket.io-client';
 
 // Socket.IO client configuration for connecting to admin server
-const SOCKET_URL = process.env.NEXT_PUBLIC_ADMIN_SOCKET_URL || 'http://localhost:3000';
+const SOCKET_URL = process.env.NEXT_PUBLIC_ADMIN_SOCKET_URL || 'http://localhost:8080';
 
 let socket: Socket | null = null;
 
 declare global {
-  // Declare io with a specific type instead of 'any' and use 'let'
+  // Declare io with a specific type instead of 'any'
   let io: typeof import('socket.io-client').io;
 }
 
@@ -30,7 +30,6 @@ export const getSocket = (): Promise<Socket> => {
       });
       return;
     }
-    
     console.log(`SOCKET: No active socket, creating new connection to ${SOCKET_URL}...`);
     const newSocket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
@@ -90,7 +89,6 @@ export const emitReservationEvent = async (reservationData: any) => {
   try {
     console.log('--------------------------------------------------');
     console.log('🚀 CLIENT: Attempting to emit reservation event...');
-    
     // Use direct connection approach like the working test script
     const directSocket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
@@ -99,10 +97,10 @@ export const emitReservationEvent = async (reservationData: any) => {
 
     directSocket.on('connect', () => {
       console.log('✅ CLIENT: Direct socket connected:', directSocket.id);
-      
-      directSocket.emit('new-online-booking', reservationData);      
+
+      directSocket.emit('new-online-booking', reservationData);
       console.log(`✅ CLIENT: Successfully emitted events for reservation: ${reservationData.displayId}`);
-      
+
       // Disconnect after emitting events
       setTimeout(() => {
         directSocket.disconnect();
@@ -118,9 +116,9 @@ export const emitReservationEvent = async (reservationData: any) => {
     directSocket.on('disconnect', () => {
       console.log('✅ CLIENT: Direct socket disconnected');
     });
-    
+
     console.log('--------------------------------------------------');
-    
+
   } catch (error) {
     console.error('--------------------------------------------------');
     console.error('❌ CLIENT: ERROR in emitReservationEvent:', error);

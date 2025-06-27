@@ -20,7 +20,7 @@ interface CartItemProps {
     }
     setCustomizeModal: React.Dispatch<React.SetStateAction<boolean>>,
 }
-const CartItem: React.FC<CartItemProps> = React.memo(({
+const CartItem: React.FC<CartItemProps> =({
     isCartUpdated,
     isCustomizeModal,
     items,
@@ -158,6 +158,6 @@ const CartItem: React.FC<CartItemProps> = React.memo(({
             }
         </React.Fragment>
     );
-});
+};
 
 export default CartItem;
