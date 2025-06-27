@@ -19,6 +19,7 @@ import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-picker
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import ReservationFormSkeleton from "../Skeletons/ReservationFormSkeleton";
 import { useTranslations } from "next-intl";
+import { emitReservationEvent } from "@/lib/socket";
 
 interface FormData {
     fullName: string
@@ -81,12 +82,6 @@ export default function ReservationForm() {
 
         fetchDisabledDates()
     }, [])
-
-    // useEffect(() => {
-    //     if (phoneNumber) {
-    //         setFormData({ ...formData, ['phoneNumber']: phoneNumber })
-    //     }
-    // }, [phoneNumber, formData])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -180,9 +175,6 @@ export default function ReservationForm() {
                 combinedDateTime = new Date(formData.reservationDate)
                 combinedDateTime.setHours(formData.reservationTime.getHours(), formData.reservationTime.getMinutes())
             }
-        //        if (phoneNumber) {
-        //     setFormData({ ...formData, ['phoneNumber']: phoneNumber })
-        // }
             const ssid = localStorage.getItem('ssid');
             const _device_id = ssid || '';
             const response = await fetch("/api/v1/reservation", {
@@ -202,6 +194,22 @@ export default function ReservationForm() {
 
             if (!response.ok) {
                 throw new Error(data.message || "Failed to submit reservation")
+            }
+            if (response.ok) {
+                console.log('data:::::', data)
+                const reservationData = {
+                    id: data.id,
+                    displayId: data.displayId,
+                    fullName: data.fullName,
+                    phoneNumber: `+${getCountryCallingCode(selectedCountry)}${phoneNumber}`,
+                    numberOfPeople: data.numberOfPeople,
+                    reservationDateTime: combinedDateTime,
+                    deviceId: _device_id,
+                    status: 'draft',
+                    createdAt: data.data.createdAt || new Date().toISOString(),
+                    updatedAt: data.data.updatedAt || new Date().toISOString(),
+                };
+                emitReservationEvent(reservationData);
             }
 
             // Reset form on success
@@ -248,7 +256,7 @@ export default function ReservationForm() {
 
     if (loading) {
         return (
-          <ReservationFormSkeleton />
+            <ReservationFormSkeleton />
         )
     }
 
@@ -284,7 +292,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <TextField
                                 select
-                                 label={t('field_two')}
+                                label={t('field_two')}
                                 name="numberOfPeople"
                                 value={formData.numberOfPeople}
                                 onChange={handleInputChange}
@@ -307,7 +315,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationDate}>
                                 <DatePicker
-                                     label={t('field_three')}
+                                    label={t('field_three')}
                                     value={formData.reservationDate}
                                     onChange={handleDateChange}
                                     disablePast
@@ -326,7 +334,7 @@ export default function ReservationForm() {
                         <div className="mb-4">
                             <FormControl fullWidth error={!!errors.reservationTime}>
                                 <TimePicker
-                                      label={t('field_four')}
+                                    label={t('field_four')}
                                     value={formData.reservationTime}
                                     onChange={handleTimeChange}
                                     slotProps={{
