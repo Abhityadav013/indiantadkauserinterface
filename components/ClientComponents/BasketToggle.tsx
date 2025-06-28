@@ -8,6 +8,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useHasMounted } from '@/hooks/useHasMounted';
+import { useIsClient } from '@/hooks/useIsClient';
 
 interface BasketToggleProps {
   orderType: OrderType;
@@ -15,6 +16,7 @@ interface BasketToggleProps {
 
 export default function BasketToggle({ orderType: initialOrderType }: BasketToggleProps) {
   const hasMounted = useHasMounted();
+  const isClient = useIsClient();
   const dispatch = useDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,6 +29,8 @@ export default function BasketToggle({ orderType: initialOrderType }: BasketTogg
  
 
   useEffect(() => {
+    if (!isClient) return;
+    
     if (!orderTypeParam) {
       // No param in URL — fallback to prop & update URL + Redux
       const newParams = new URLSearchParams(window.location.search);
@@ -37,9 +41,11 @@ export default function BasketToggle({ orderType: initialOrderType }: BasketTogg
       // Sync Redux with param from URL
       dispatch(setOrderType(orderTypeParam));
     }
-  }, [orderTypeParam, initialOrderType, router, dispatch]);
+  }, [orderTypeParam, initialOrderType, router, dispatch, isClient]);
 
   const handleBasketType = (value: OrderType) => {
+    if (!isClient) return;
+    
     const newParams = new URLSearchParams(window.location.search);
     newParams.set('orderType', value);
     dispatch(setOrderType(value));

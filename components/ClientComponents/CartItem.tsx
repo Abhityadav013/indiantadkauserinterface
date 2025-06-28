@@ -20,7 +20,8 @@ interface CartItemProps {
     }
     setCustomizeModal: React.Dispatch<React.SetStateAction<boolean>>,
 }
-const CartItem: React.FC<CartItemProps> =({
+
+const CartItem: React.FC<CartItemProps> = React.memo(({
     isCartUpdated,
     isCustomizeModal,
     items,
@@ -116,9 +117,10 @@ const CartItem: React.FC<CartItemProps> =({
                                         >
                                             -
                                         </Button>
+                                        {/* Animate quantity value with a stable key wrapper to avoid removeChild errors */}
                                         <AnimatePresence mode="wait">
                                             <motion.span
-                                                key={quantity}
+                                                key={`quantity-${item.itemId}`}
                                                 className="text-sm font-bold text-green-600"
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
@@ -158,6 +160,6 @@ const CartItem: React.FC<CartItemProps> =({
             }
         </React.Fragment>
     );
-};
+});
 
 export default CartItem;

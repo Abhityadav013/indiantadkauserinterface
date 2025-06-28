@@ -11,7 +11,6 @@ import {
   ListItemIcon,
   IconButton,
   Divider,
-  useMediaQuery,
   useTheme,
   Typography,
   Button,
@@ -38,6 +37,8 @@ import { useAvailableCoupons } from '@/hooks/useAvailableCoupons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { applyCoupon, removeCoupon } from '@/store/slices/discountCoupon';
 import CouponSection from './CouponSection';
+import { useSafeSessionStorage, useIsClient } from '@/hooks/useIsClient';
+import { useSafeMediaQuery } from '@/hooks/useSafeMediaQuery';
 
 export const paymentMethods = [
   {
@@ -84,7 +85,7 @@ export default function PaymentMethodSelector({
   cartAmount: number;
 }) {
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const fullScreen = useSafeMediaQuery(theme.breakpoints.down('sm'));
   useAvailableCoupons({ availableCoupons, cartAmount });
   const [open, setOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<(typeof paymentMethods)[0] | null>(null);
@@ -98,7 +99,8 @@ export default function PaymentMethodSelector({
   const { payment_type } = useSelector((state: RootState) => state.payment);
   const [couponsDialogOpen, setCouponsDialogOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-
+  const sessionStorage = useSafeSessionStorage();
+  const isClient = useIsClient();
 
   useEffect(() => {
     if (couponParam && couponParam !== appliedCoupon?.label) {
@@ -112,7 +114,7 @@ export default function PaymentMethodSelector({
   }, [couponParam, appliedCoupon, dispatch]);
 
   const addCouponToUrl = () => {
-    if (couponCode) {
+    if (couponCode && isClient) {
       const currentUrl = window.location.href;
       const url = new URL(currentUrl);
       url.searchParams.set('coupon', couponCode);
@@ -121,10 +123,12 @@ export default function PaymentMethodSelector({
   };
 
   const removeCouponToUrl = () => {
-    const currentUrl = window.location.href;
-    const url = new URL(currentUrl);
-    url.searchParams.delete('coupon');
-    router.push(url.toString());
+    if (isClient) {
+      const currentUrl = window.location.href;
+      const url = new URL(currentUrl);
+      url.searchParams.delete('coupon');
+      router.push(url.toString());
+    }
   };
 
   useEffect(() => {
@@ -138,7 +142,7 @@ export default function PaymentMethodSelector({
       dispatch(setPaymentMethod(paymentMethods[0].id as PaymentMethod));
     }
     setLoading(false);
-  }, [payment_type, dispatch]);
+  }, [payment_type, dispatch, sessionStorage]);
 
   const handleSelect = () => {
     if (selectedMethod) {
@@ -169,9 +173,11 @@ export default function PaymentMethodSelector({
 
   // Copy coupon to clipboard and show snackbar
   const handleCopy = (couponLabel: string) => {
-    navigator.clipboard.writeText(couponLabel).then(() => {
-      setCopySuccess(true);
-    });
+    if (isClient && navigator.clipboard) {
+      navigator.clipboard.writeText(couponLabel).then(() => {
+        setCopySuccess(true);
+      });
+    }
   };
 
   return (

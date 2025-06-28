@@ -2,12 +2,13 @@
 
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { setMobileView } from "@/store/slices/mobileSlice";
+import { useSafeMediaQuery } from "@/hooks/useSafeMediaQuery";
 
 const MobileViewDetector: React.FC = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useSafeMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useDispatch();
 
   useEffect(() => {

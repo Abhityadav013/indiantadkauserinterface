@@ -116,7 +116,7 @@ const BillDetailWrapper = ({
             <Box sx={{ position: 'relative', paddingBottom: '5px', height: '25vh' }} className="mt-2 text-gray-700">
                 <AnimatePresence initial={false} mode="wait">
                     <motion.div
-                        key={order_type}
+                        key={order_type || OrderType.DELIVERY}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}

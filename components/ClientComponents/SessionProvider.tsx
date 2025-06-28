@@ -4,9 +4,12 @@ import { OrderType } from '@/lib/types/order_type';
 import { setOrderType } from '@/store/slices/orderSlice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { useSafeLocalStorage, useSafeSessionStorage } from '@/hooks/useIsClient';
 
 export const SessionProvider = () => {
   const dispatch = useDispatch();
+  const localStorage = useSafeLocalStorage();
+  const sessionStorage = useSafeSessionStorage();
 
   useEffect(() => {
     const storedTid = localStorage.getItem('tid');
@@ -43,7 +46,7 @@ export const SessionProvider = () => {
     };
 
     createSession();
-  }, [dispatch]);
+  }, [dispatch, localStorage, sessionStorage]);
 
 
   return null;

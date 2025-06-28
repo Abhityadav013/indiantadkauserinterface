@@ -3,6 +3,7 @@ import { getMenuData } from '@/lib/api/fetchMenuDataApi';
 import { getCartData } from '@/lib/api/fetchCartDataApi';
 import MenuContent from '@/components/MenuContent';
 import { getUserData } from '@/lib/api/fetchUserDetailsApi';
+import { OrderType } from '@/lib/types/order_type';
 
 type SearchParams = {
     category?: string;
@@ -56,7 +57,7 @@ export default async function MenuPage({ searchParams }: { searchParams?: Promis
             menuItems={menuItems}
             cartItems={cartItems.cartItems}
             categories={menuCategoriesDetails}
-            orderType={userData.orderType}
+            orderType={userData.orderType ?? OrderType.DELIVERY}
             loading={false}
         />
     );

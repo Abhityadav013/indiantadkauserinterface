@@ -124,7 +124,12 @@ export default function GooglePayButton({ cartAmount, finalCartAmount, amount }:
 
     document.head.appendChild(script);
     return () => {
-      document.head.removeChild(script);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+      if (btnRef.current) {
+        btnRef.current.innerHTML = '';
+      }
     };
   }, [handleGooglePayClick]);
 
