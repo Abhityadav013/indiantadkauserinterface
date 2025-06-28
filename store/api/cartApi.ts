@@ -26,6 +26,12 @@ interface GetCartDescriptionResponse {
   };
 }
 
+// Safe default cart structure
+const DEFAULT_CART_DATA: GetCartData = {
+  cartItems: [],
+  basketId: '',
+};
+
 // Create the API slice
 export const cartApi = createApi({
   reducerPath: 'cartApi',
@@ -48,7 +54,16 @@ export const cartApi = createApi({
     // GET /cart
     getCart: builder.query<GetCartData, void>({
       query: () => '/cart',
-      transformResponse: (res: GetCartResponse) =>res.data || {} as GetCartData,
+      transformResponse: (res: GetCartResponse) => {
+        // Ensure we always return a consistent structure
+        if (res?.data) {
+          return {
+            cartItems: res.data.cartItems || [],
+            basketId: res.data.basketId || '',
+          };
+        }
+        return DEFAULT_CART_DATA;
+      },
       providesTags: ['Cart'],
     }),
 
@@ -59,7 +74,16 @@ export const cartApi = createApi({
         method: 'POST',
         body: { cart, isCartEmpty },
       }),
-      transformResponse: (res: UpdateCartResponse) => res.data || {} as GetCartData,
+      transformResponse: (res: UpdateCartResponse) => {
+        // Ensure we always return a consistent structure
+        if (res?.data) {
+          return {
+            cartItems: res.data.cartItems || [],
+            basketId: res.data.basketId || '',
+          };
+        }
+        return DEFAULT_CART_DATA;
+      },
       invalidatesTags: ['Cart'],
     }),
 

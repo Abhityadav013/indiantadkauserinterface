@@ -2,20 +2,29 @@ import { useGetCartQuery, useUpdateCartMutation } from '@/store/api/cartApi';
 import { useEffect, useState } from 'react';
 import { MenuItem } from '@/lib/types/menu_type';
 import { Cart } from '@/lib/types/cart_type';
+import { useHasMounted } from './useHasMounted';
+
+// Default cart structure to prevent hydration mismatches
+const DEFAULT_CART = {
+  cartItems: [] as Cart[],
+  basketId: '',
+};
 
 export function useCart() {
+  const hasMounted = useHasMounted();
   const [cartData, setCartData] = useState<Cart[]>([]);
-  // Query cart from backend
-  const { data: cart = { cartItems: [], basketId: '' }, isLoading } = useGetCartQuery(undefined, {
+  
+  // Query cart from backend with safe defaults
+  const { data: cart = DEFAULT_CART, isLoading } = useGetCartQuery(undefined, {
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
   });
 
   useEffect(() => {
-    if (!isLoading) {
-      setCartData(cart.cartItems);
+    if (!isLoading && hasMounted) {
+      setCartData(cart.cartItems || []);
     }
-  }, [cart, isLoading]);
+  }, [cart, isLoading, hasMounted]);
 
   // Mutation to update cart
   const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation();
@@ -52,7 +61,7 @@ export function useCart() {
   const removeFromCart = async (item: MenuItem) => {
     if (isLoading || isUpdating) return Promise.reject('Cart is busy');
 
-    const updatedCart = cart.cartItems
+    const updatedCart = (cart.cartItems || [])
       .map((cartItem) =>
         cartItem.itemId === item.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem
       )
@@ -70,7 +79,7 @@ export function useCart() {
   };
 
   const getTotalItems = () => {
-    return cart?.cartItems?.reduce((total, item) => total + item.quantity, 0);
+    return cart?.cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
   };
 
   const getItemPriceWithMenu = (item: Cart) => {
@@ -88,11 +97,20 @@ export function useCart() {
   };
 
   const getCartTotal = () => {
-    const cartTotal = cart?.cartItems?.reduce((total, cartItem) => {
+    const cartTotal = (cart?.cartItems || []).reduce((total, cartItem) => {
       const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
       return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
     }, 0);
-    sessionStorage.setItem('cartTotal', JSON.stringify(cartTotal));
+    
+    // Only access sessionStorage on client side
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('cartTotal', JSON.stringify(cartTotal));
+      } catch (error) {
+        console.warn('Failed to save cart total to sessionStorage:', error);
+      }
+    }
+    
     return cartTotal;
   };
 
@@ -100,7 +118,7 @@ export function useCart() {
     isLoading,
     isUpdating,
     items: cartData,
-    basketId: cart.basketId,
+    basketId: cart.basketId || '',
     menuItems,
     addToCart,
     removeFromCart,

@@ -10,6 +10,7 @@ import { useCart } from '@/hooks/useCartDetails';
 import { Cart } from '@/lib/types/cart_type';
 import Image from 'next/image';
 import { CustomerDetails } from '@/lib/types/customer_order_type';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 
 interface BaseketSideBarContentProps {
     cartItems: Cart[]
@@ -19,7 +20,7 @@ interface BaseketSideBarContentProps {
     handleAdddressDetailOpen: () => void;
 }
 
-const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, handleAdddressDetailOpen }: BaseketSideBarContentProps) => {
+function BaseketSideBarContentContent({ menu, cartItems, loading, customerDetails, handleAdddressDetailOpen }: BaseketSideBarContentProps) {
     const { isLoading, items, basketId, addToCart, removeFromCart, menuItems, getItemQuantity, updateMenuItems, getItemPriceWithMenu, getCartTotal } = useCart()
     const [isCartUpdated, setCartUpdated] = useState(false);
     const [isCustomizeModal, setCustomizeModal] = useState(false);
@@ -150,6 +151,14 @@ const BaseketSideBarContent = ({ menu, cartItems, loading, customerDetails, hand
                 />
             </div>
         </>
+    )
+}
+
+const BaseketSideBarContent = (props: BaseketSideBarContentProps) => {
+    return (
+        <ErrorBoundary>
+            <BaseketSideBarContentContent {...props} />
+        </ErrorBoundary>
     )
 }
 

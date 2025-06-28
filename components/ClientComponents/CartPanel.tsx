@@ -2,8 +2,9 @@
 
 import { Button, Typography, Divider } from "@mui/material"
 import { useCart } from "@/hooks/useCartDetails"
+import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary"
 
-export default function CartPanel() {
+function CartPanelContent() {
   const { items:cartItems } = useCart()
 
   if (cartItems.length === 0) {
@@ -75,5 +76,13 @@ export default function CartPanel() {
         Checkout
       </Button>
     </div>
+  )
+}
+
+export default function CartPanel() {
+  return (
+    <ErrorBoundary>
+      <CartPanelContent />
+    </ErrorBoundary>
   )
 }

@@ -26,6 +26,7 @@ const BasketSidebar = ({ menu, cartItems, orderType }: BasketSidebarProps) => {
     const { addressModel: isAddressModelOpen, customerDetails, customerOrder, } = useSelector((state: RootState) => state.address);
     const { loading, formError, setFormError, handleUpdateCustomerDetails, handleAdddressDetailClose, handleAdddressDetailOpen } = useUpdateAddressDetails();
     const isDataReady = customerDetails && customerOrder && !loading;
+    
     if (!isDataReady) {
         return <SkeletonSidebar />; // or return null;
     }

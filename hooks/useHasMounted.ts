@@ -5,7 +5,12 @@ export function useHasMounted() {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true);
+    // Use a small delay to ensure hydration is complete
+    const timer = setTimeout(() => {
+      setHasMounted(true);
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return hasMounted;

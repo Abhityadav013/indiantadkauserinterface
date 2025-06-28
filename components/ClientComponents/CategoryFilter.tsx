@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
+import { useIsClient } from '@/hooks/useIsClient'
 
 interface CategoryTabsProps {
     categories: MenuCategory[]
@@ -26,11 +27,14 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
     const [filterOpen, setFilterOpen] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile)
+    const isClient = useIsClient()
 
     // Create a map of refs for each category button
     const buttonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
     useEffect(() => {
+        if (!isClient) return;
+        
         const handleScroll = () => {
             for (const category of categories) {
                 const el = document.getElementById(`category-${category.id}`);
@@ -57,7 +61,7 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
         handleScroll();
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [categories, selected, searchParams, router, isMobile]);
+    }, [categories, selected, searchParams, router, isMobile, isClient]);
 
     const scrollCategoryButtonIntoView = (categoryId: string) => {
         const buttonEl = buttonRefs.current[categoryId];
@@ -71,6 +75,8 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
     }
 
     const handleClick = (categoryId: string) => {
+        if (!isClient) return;
+        
         setSelected(categoryId);
         scrollCategoryButtonIntoView(categoryId);
 
@@ -104,13 +110,15 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
     }
 
     useEffect(() => {
+        if (!isClient) return;
+        
         const el = scrollRef.current
         updateArrowVisibility()
         if (!el) return
 
         el.addEventListener('scroll', updateArrowVisibility)
         return () => el.removeEventListener('scroll', updateArrowVisibility)
-    }, [])
+    }, [isClient])
 
     return (
         <div role="tablist" aria-label="Menu Categories" className="flex items-start gap-2 mt-4 w-[100%] relative bg-white">
@@ -207,6 +215,8 @@ export default function CategoryTabs({ categories }: CategoryTabsProps) {
                                 <li
                                     key={category.id}
                                     onClick={() => {
+                                        if (!isClient) return;
+                                        
                                         setSelected(category.id);
                                         setSelectedCategory(category.id);
                                         setFilterOpen(false);

@@ -12,6 +12,7 @@ import { setRequestLocale } from "next-intl/server";
 import Script from "next/script";
 import RouteLoader from "@/components/ClientComponents/RouteLoader";
 import ClientLayoutWrapper from "@/components/ClientComponents/ClientLayoutWrapper";
+import GlobalErrorHandler from "@/components/ErrorBoundary/GlobalErrorHandler";
 
 
 const geistSans = Geist({
@@ -67,13 +68,15 @@ export default async function LocaleLayout({
           className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-[100%] mx-auto bg-white min-h-screen shadow-md relative`}
         >
           <NextIntlClientProvider locale={locale}>
-            <Toaster position="top-right" reverseOrder={false} />
-            <SessionProvider />
-            <MobileViewDetector />
-            <ClientLayoutWrapper>
-              <main>
-                <RouteLoader />{children}</main>
-            </ClientLayoutWrapper>
+            <GlobalErrorHandler>
+              <Toaster position="top-right" reverseOrder={false} />
+              <SessionProvider />
+              <MobileViewDetector />
+              <ClientLayoutWrapper>
+                <main>
+                  <RouteLoader />{children}</main>
+              </ClientLayoutWrapper>
+            </GlobalErrorHandler>
           </NextIntlClientProvider>
         </body>
       </html>

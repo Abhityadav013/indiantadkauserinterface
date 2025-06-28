@@ -9,6 +9,7 @@ import { RootState } from '@/store';
 import { handleBasketState } from '@/store/slices/basketSlice';
 import { useGetCartQuery } from '@/store/api/cartApi';
 import { MenuItem } from '@/lib/types/menu_type';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 interface ViewCartProps {
     itmesCount: number;
@@ -25,15 +26,11 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, menuItems }) => {
     const [isBasketOpen, setBasektOpen] = React.useState<boolean>(false);
     const isMobile = useSelector((state: RootState) => state.mobile.isMobile);
     const dispatch = useDispatch();
-    const [hasMounted, setHasMounted] = React.useState(false);
-
-    useEffect(() => {
-        setHasMounted(true);
-    }, []);
+    const hasMounted = useHasMounted();
 
     useEffect(() => {
         const getCartTotal = () => {
-            const cartTotal = cart?.cartItems?.reduce((total, cartItem) => {
+            const cartTotal = (cart?.cartItems || []).reduce((total, cartItem) => {
                 const foodItemMatch = menuItems.find((item) => item.id === cartItem.itemId);
                 return foodItemMatch ? total + foodItemMatch.price * cartItem.quantity : total;
             }, 0);
@@ -41,7 +38,7 @@ const ViewCartFooter: React.FC<ViewCartProps> = ({ itmesCount, menuItems }) => {
             return cartTotal;
         };
         if (!isLoading) {
-            setItemCount(cart?.cartItems?.length)
+            setItemCount(cart?.cartItems?.length || 0)
             getCartTotal()
         }
     }, [isLoading, cart.cartItems, menuItems])

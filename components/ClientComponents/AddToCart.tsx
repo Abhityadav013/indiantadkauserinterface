@@ -9,13 +9,13 @@ import { Plus } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { openAddressModel } from '@/store/slices/addressSlice'
 import { RootState } from '@/store'
-
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary'
 
 interface Props {
     item: MenuItem
 }
 
-export default function AddToCartButton({ item }: Props) {
+function AddToCartButtonContent({ item }: Props) {
     const dispatch = useDispatch()
     const { addToCart } = useCart()
     const {customerDetails} = useSelector((state: RootState) => state.address);
@@ -57,5 +57,13 @@ export default function AddToCartButton({ item }: Props) {
                     <Plus className="mr-1 h-4 w-4" /> Add
                 </Button>
         </CardFooter>
+    )
+}
+
+export default function AddToCartButton({ item }: Props) {
+    return (
+        <ErrorBoundary>
+            <AddToCartButtonContent item={item} />
+        </ErrorBoundary>
     )
 }
