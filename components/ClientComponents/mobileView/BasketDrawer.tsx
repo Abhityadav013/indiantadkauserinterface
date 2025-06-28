@@ -20,9 +20,13 @@ const BasketDrawer = ({ children }: BasketDrawerProps) => {
     if (isBasketOpen && firstFocusableRef.current) {
       firstFocusableRef.current.focus();
     }
+    
+    // Capture the ref value to avoid stale closure
+    const lastTriggerElement = lastTriggerRef.current;
+    
     return () => {
-      if (!isBasketOpen && lastTriggerRef.current) {
-        lastTriggerRef.current.focus();
+      if (!isBasketOpen && lastTriggerElement) {
+        lastTriggerElement.focus();
       }
     };
   }, [isBasketOpen]);

@@ -162,4 +162,6 @@ const CartItem: React.FC<CartItemProps> = React.memo(({
     );
 });
 
+CartItem.displayName = 'CartItem';
+
 export default CartItem;

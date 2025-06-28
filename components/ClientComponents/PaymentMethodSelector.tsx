@@ -39,6 +39,7 @@ import { applyCoupon, removeCoupon } from '@/store/slices/discountCoupon';
 import CouponSection from './CouponSection';
 import { useSafeSessionStorage, useIsClient } from '@/hooks/useIsClient';
 import { useSafeMediaQuery } from '@/hooks/useSafeMediaQuery';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 
 export const paymentMethods = [
   {
@@ -77,7 +78,7 @@ export const paymentMethods = [
   },
 ];
 
-export default function PaymentMethodSelector({
+function PaymentMethodSelectorContent({
   availableCoupons,
   cartAmount,
 }: {
@@ -345,5 +346,16 @@ export default function PaymentMethodSelector({
         </Alert>
       </Snackbar>
     </>
+  );
+}
+
+export default function PaymentMethodSelector(props: {
+  availableCoupons: GetCouponData[];
+  cartAmount: number;
+}) {
+  return (
+    <ErrorBoundary>
+      <PaymentMethodSelectorContent {...props} />
+    </ErrorBoundary>
   );
 }
