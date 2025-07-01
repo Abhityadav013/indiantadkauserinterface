@@ -132,19 +132,18 @@ function PaymentMethodSelectorContent({
     }
   };
 
-  useEffect(() => {
-    const stored = sessionStorage.getItem('selectedPaymentMethod');
-    const method = paymentMethods.find((m) => m.id === (payment_type ?? stored));
-    if (method) {
-      setSelectedMethod(method);
-      dispatch(setPaymentMethod(method.id as PaymentMethod));
-    } else {
-      setSelectedMethod(paymentMethods[0]);
-      dispatch(setPaymentMethod(paymentMethods[0].id as PaymentMethod));
-    }
-    setLoading(false);
-  }, [payment_type, dispatch, sessionStorage]);
-
+useEffect(() => {
+  const stored = sessionStorage.getItem('selectedPaymentMethod');
+  const method = paymentMethods.find((m) => m.id === (payment_type ?? stored));
+  if (method) {
+    setSelectedMethod(method);
+    dispatch(setPaymentMethod(method.id as PaymentMethod));
+  } else {
+    setSelectedMethod(paymentMethods[0]);
+    dispatch(setPaymentMethod(paymentMethods[0].id as PaymentMethod));
+  }
+  setLoading(false);
+}, []); // remove all dependencies to run only once
   const handleSelect = () => {
     if (selectedMethod) {
       sessionStorage.setItem('selectedPaymentMethod', selectedMethod.id);

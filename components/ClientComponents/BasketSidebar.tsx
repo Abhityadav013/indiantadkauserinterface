@@ -70,7 +70,7 @@ const BasketSidebar = ({ menu, cartItems, orderType }: BasketSidebarProps) => {
                     position: 'sticky',
                     top: 0,
                     height: '100vh',
-                    width: { xs: '100vw', sm: '90vw', lg: '28vw' },
+                    width: { xs: '100vw', sm: '90vw', lg: '34vw' },
                     backgroundColor: 'white',
                     borderLeft: { xs: 'none', lg: '1px solid #e0e0e0' },
                     boxShadow: '0 0 10px rgba(0,0,0,0.1)',

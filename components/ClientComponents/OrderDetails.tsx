@@ -8,19 +8,15 @@ import { OrderDetailsSummary } from '@/lib/types/order_details_type';
 import { DialogType } from '@/lib/types/dialog_type';
 import { dialogHandlers, getDialogDataFromSession } from '@/lib/updateCustomerOrderDetails';
 import AddressInfo from './checkoutComponents/AddressInfo';
-// import { UserAddress } from '@/lib/types/address_type';
 import DeliveryTime from './checkoutComponents/DeliveryTime';
 import DeliveryNote from './checkoutComponents/DeliveryNote';
 import OrderDetailsSkeleton from '../Skeletons/OrderDetailsSkeleton';
-import { OrderType } from '@/lib/types/order_type';
 import { getIndianTadkaAddress } from '@/utils/getRestroAddress';
-import { RootState } from '@/store';
-import { useSelector } from 'react-redux';
 import { CustomerDetails, CustomerOrder } from '@/lib/types/customer_order_type';
 import { useAddressDetails } from '@/hooks/useAddressDetails';
 import { useSearchParams } from 'next/navigation';
 import { useUpdateAddressDetails } from '@/hooks/useUpdateAddressDetails';
-// import { useSearchParams } from 'next/navigation';
+import { OrderType } from '@/lib/types/order_type';
 
 interface OrderDetailsProps {
   userData: CustomerOrder
@@ -29,7 +25,7 @@ interface OrderDetailsProps {
 export default function OrderDetails({ userData }: OrderDetailsProps) {
   const [openDialog, setOpenDialog] = useState<null | 'contact' | 'address' | 'time' | 'notes'>(null);
   const searchParams = useSearchParams(); // URLSearchParams
-  const orderParam = searchParams.get('orderType') || '';
+  const orderParam = searchParams.get('orderType') || OrderType.DELIVERY; // Default to DELIVERY if not specified
   const handleOpen = (dialog: typeof openDialog) => setOpenDialog(dialog);
   const handleClose = () => setOpenDialog(null);
   const [userInfo, setUserInfo] = useState<{ name: string, phoneNumber: string }>({ name: userData.customerDetails?.name ?? '', phoneNumber: `+49-${userData.customerDetails?.phoneNumber}` });
@@ -43,7 +39,6 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
   const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
   const { isLoading: loading, customerDetails } = useAddressDetails();
   const { handleUpdateCustomerDetails } = useUpdateAddressDetails();
-  const order_type = useSelector((state: RootState) => state.order.orderType);
   const hasInitialized = useRef(false);
   const createUserDetails = useCallback(async ({ type }: { type: string }) => {
     const displayAddress = `${addressInfo.street} ${addressInfo.buildingNumber}, ${addressInfo.pincode} ${addressInfo.town}, Germany`;
@@ -122,7 +117,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
       const newData = storedData as { name: string; phoneNumber: string };
       const hasChanged = newData.name !== userInfo.name || newData.phoneNumber !== userInfo.phoneNumber;
       setUserInfo(newData);
-      if (hasChanged) createUserDetails({type:'contact'}); // ✅ Update only if changed
+      if (hasChanged) createUserDetails({ type: 'contact' }); // ✅ Update only if changed
     } else if (data.type === 'address') {
       // If 'address' dialog, update address info
       const newData = storedData as { buildingNumber: string; street: string; pincode: string; town: string };
@@ -132,7 +127,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
         newData.street !== addressInfo.street ||
         newData.town !== addressInfo.town;
       setAddressInfo(newData);
-      if (hasChanged) createUserDetails({ type: 'address'}); // ✅ Update only if changed
+      if (hasChanged) createUserDetails({ type: 'address' }); // ✅ Update only if changed
     } else if (data.type === 'time') {
       // If 'time' dialog, you can add logic for time
       // For example:
@@ -142,7 +137,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
       // For example:
       setDeliveryNoteInfo(storedData as { notes: string });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -165,30 +160,32 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
           payload: { name: customerDetails.name, phoneNumber: fullNumber }
         })
       }
-
-      if (addressData) {
-        setAddressInfo(addressData as {
-          pincode: string;
-          buildingNumber: string;
-          street: string;
-          town: string;
+      if (orderParam === OrderType.PICKUP) {
+        const address = getIndianTadkaAddress()
+        setAddressInfo({
+          buildingNumber: address?.buildingNumber ?? '',
+          town: address?.town ?? '',
+          pincode: address?.pincode ?? '',
+          street: address?.street ?? '',
         });
-      } else if (customerDetails?.address) {
-        if (order_type === OrderType.PICKUP) {
-          const address = getIndianTadkaAddress()
-          setAddressInfo({
+        handleDialogAction({
+          type: 'address',
+          payload: {
             buildingNumber: address?.buildingNumber ?? '',
             town: address?.town ?? '',
             pincode: address?.pincode ?? '',
             street: address?.street ?? '',
+          }
+        })
+      } else {
+        if (addressData) {
+          setAddressInfo(addressData as {
+            pincode: string;
+            buildingNumber: string;
+            street: string;
+            town: string;
           });
         } else {
-          // setAddressInfo({
-          //   buildingNumber: customerDetails.address?.buildingNumber ?? '',
-          //   town: customerDetails.address?.town ?? '',
-          //   pincode: customerDetails.address?.pincode ?? '',
-          //   street: customerDetails.address?.street ?? '',
-          // });
           handleDialogAction({
             type: 'address',
             payload: {
@@ -219,7 +216,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
         })
       }
     }
-  }, [loading, customerDetails, order_type, handleDialogAction]);
+  }, [loading, customerDetails, orderParam, handleDialogAction]);
 
   const isDataReady =
     userInfo.name &&
@@ -242,7 +239,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
       <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
 
       <AddressInfo
-        isPickup={order_type === OrderType.PICKUP}
+        isPickup={orderParam === OrderType.PICKUP}
         openDialog={openDialog}
         customerAddress={addressInfo}
         handleOpen={handleOpen}
@@ -252,7 +249,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
       <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
 
       <DeliveryTime
-        isPickup={order_type === OrderType.PICKUP}
+        isPickup={orderParam === OrderType.PICKUP}
         openDialog={openDialog}
         initialTime={timeInfo?.scheduledTime ?? ""}
         handleOpen={handleOpen}
@@ -260,7 +257,7 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
         handleDialogAction={handleDialogAction}
       />
       {
-        order_type === OrderType.DELIVERY && (
+        orderParam === OrderType.DELIVERY && (
           <>
             <Divider sx={{ backgroundColor: '#E0E0E0', mb: 1 }} />
 
