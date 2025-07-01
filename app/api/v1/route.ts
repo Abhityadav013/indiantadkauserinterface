@@ -13,8 +13,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const payload = await request.json();
     const { ssid, tid } = payload;
-    const cookieStore = await cookies(); // ✅ Always use this in App Router
-    const deviceId = ssid && ssid !== 'undefined' ? ssid : cookieStore.get('_device_id')?.value;
+    const deviceId = ssid;
 
     let access_Token = request.cookies.get('access_token')?.value || '';
     const refresh_token = request.cookies.get('refresh_token')?.value || '';

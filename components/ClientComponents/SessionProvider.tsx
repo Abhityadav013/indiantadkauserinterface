@@ -5,6 +5,7 @@ import { setOrderType } from '@/store/slices/orderSlice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSafeLocalStorage, useSafeSessionStorage } from '@/hooks/useIsClient';
+import { v4 as uuidv4 } from 'uuid';
 
 export const SessionProvider = () => {
   const dispatch = useDispatch();
@@ -12,16 +13,19 @@ export const SessionProvider = () => {
   const sessionStorage = useSafeSessionStorage();
 
   useEffect(() => {
-    const storedTid = localStorage.getItem('tid');
-    const storedSsid = localStorage.getItem('ssid');
+    let storedTid = localStorage.getItem('tid');
+    let storedSsid = localStorage.getItem('ssid');
     const orderType = sessionStorage.getItem('orderType');
 
-    // if (!storedTid || storedTid === 'undefined' || !storedSsid || storedSsid === 'undefined') {
-    //   console.log('storedTid::::::', storedTid)
-    //   console.log('storedSsid::::::', storedSsid)
-    //   console.warn('Missing session info, skipping session fetch');
-    //   return;
-    // }
+    // Generate if missing
+    if (!storedTid || storedTid === 'undefined') {
+      storedTid = uuidv4();
+      localStorage.setItem('tid', storedTid);
+    }
+    if (!storedSsid || storedSsid === 'undefined') {
+      storedSsid = uuidv4();
+      localStorage.setItem('ssid', storedSsid);
+    }
 
     dispatch(setOrderType(orderType as OrderType));
 
