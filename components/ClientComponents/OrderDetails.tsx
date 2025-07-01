@@ -22,21 +22,53 @@ interface OrderDetailsProps {
   userData: CustomerOrder
 }
 
+// Helper type guard
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isAddressData(obj: any): obj is { pincode: string; buildingNumber: string; street: string; town: string } {
+  return (
+    obj &&
+    typeof obj === 'object' &&
+    typeof obj.pincode === 'string' &&
+    typeof obj.buildingNumber === 'string' &&
+    typeof obj.street === 'string' &&
+    typeof obj.town === 'string'
+  );
+}
+
 export default function OrderDetails({ userData }: OrderDetailsProps) {
   const [openDialog, setOpenDialog] = useState<null | 'contact' | 'address' | 'time' | 'notes'>(null);
   const searchParams = useSearchParams(); // URLSearchParams
-  const orderParam = searchParams.get('orderType') || OrderType.DELIVERY; // Default to DELIVERY if not specified
+  const orderParam = searchParams.get('orderType') || userData.orderType || OrderType.DELIVERY; // Default to DELIVERY if not specified
   const handleOpen = (dialog: typeof openDialog) => setOpenDialog(dialog);
   const handleClose = () => setOpenDialog(null);
-  const [userInfo, setUserInfo] = useState<{ name: string, phoneNumber: string }>({ name: userData.customerDetails?.name ?? '', phoneNumber: `+49-${userData.customerDetails?.phoneNumber}` });
-  const [addressInfo, setAddressInfo] = useState<{ pincode: string, buildingNumber: string, street: string, town: string }>({
-    pincode: userData.customerDetails?.address?.pincode ?? '',
-    buildingNumber: userData.customerDetails?.address?.buildingNumber ?? '',
-    street: userData.customerDetails?.address?.street ?? '',
-    town: userData.customerDetails?.address?.town ?? ''
-  })
-  const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string } | null>(null);
-  const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" })
+
+  // --- Hydration-safe initial state ---
+  // userInfo always from props
+  const [userInfo, setUserInfo] = useState<{ name: string, phoneNumber: string }>({
+    name: userData.customerDetails?.name ?? '',
+    phoneNumber: `+49-${userData.customerDetails?.phoneNumber}`,
+  });
+  // addressInfo: pickup = getIndianTadkaAddress, delivery = props
+  const isPickup = orderParam === OrderType.PICKUP;
+  const rawPickupAddress = getIndianTadkaAddress();
+  const initialAddress = isPickup
+    ? {
+        pincode: String(rawPickupAddress.pincode || ''),
+        buildingNumber: String(rawPickupAddress.buildingNumber || ''),
+        street: String(rawPickupAddress.street || ''),
+        town: String(rawPickupAddress.town || ''),
+      }
+    : {
+        pincode: String(userData.customerDetails?.address?.pincode || ''),
+        buildingNumber: String(userData.customerDetails?.address?.buildingNumber || ''),
+        street: String(userData.customerDetails?.address?.street || ''),
+        town: String(userData.customerDetails?.address?.town || ''),
+      };
+  const [addressInfo, setAddressInfo] = useState(initialAddress);
+  // timeInfo: always { asap: true, scheduledTime: '' } on first render
+  const [timeInfo, setTimeInfo] = useState<{ asap: boolean; scheduledTime: string }>({ asap: true, scheduledTime: '' });
+  // deliveryNoteInfo: only for delivery
+  const [deliveryNoteInfo, setDeliveryNoteInfo] = useState<{ notes: string }>({ notes: "" });
   const { isLoading: loading, customerDetails } = useAddressDetails();
   const { handleUpdateCustomerDetails } = useUpdateAddressDetails();
   const hasInitialized = useRef(false);
@@ -141,82 +173,50 @@ export default function OrderDetails({ userData }: OrderDetailsProps) {
   }, [])
 
   useEffect(() => {
-    // Only run when loading is false
+    // Only run when loading is false and on client
     if (!loading && customerDetails && !hasInitialized.current) {
-      hasInitialized.current = true
-      // Get data from session
-      const contactData = getDialogDataFromSession('contact');
-      const addressData = getDialogDataFromSession('address');
-      const deliveryTimeData = getDialogDataFromSession('time');
-      const deliverNoteData = getDialogDataFromSession("notes")
-      // Use session if exists, else fallback to customerDetails
-      if (contactData) {
-        setUserInfo(contactData as { name: string; phoneNumber: string });
-      } else if (customerDetails) {
-        const fullNumber = `+${getCountryCallingCode("DE")}-${customerDetails.phoneNumber}`;
-        // setUserInfo({ name: customerDetails.name, phoneNumber: fullNumber });
-        handleDialogAction({
-          type: 'contact',
-          payload: { name: customerDetails.name, phoneNumber: fullNumber }
-        })
-      }
-      if (orderParam === OrderType.PICKUP) {
-        const address = getIndianTadkaAddress()
-        setAddressInfo({
-          buildingNumber: address?.buildingNumber ?? '',
-          town: address?.town ?? '',
-          pincode: address?.pincode ?? '',
-          street: address?.street ?? '',
-        });
-        handleDialogAction({
-          type: 'address',
-          payload: {
-            buildingNumber: address?.buildingNumber ?? '',
-            town: address?.town ?? '',
-            pincode: address?.pincode ?? '',
-            street: address?.street ?? '',
-          }
-        })
-      } else {
-        if (addressData) {
-          setAddressInfo(addressData as {
-            pincode: string;
-            buildingNumber: string;
-            street: string;
-            town: string;
+      hasInitialized.current = true;
+      // Only update from sessionStorage if DELIVERY (never for PICKUP)
+    const contactData = getDialogDataFromSession('contact');
+        const addressData = getDialogDataFromSession('address');
+        const deliveryTimeData = getDialogDataFromSession('time');
+        const deliverNoteData = getDialogDataFromSession("notes");
+        // Use session if exists, else fallback to customerDetails
+        if (contactData) {
+          setUserInfo(contactData as { name: string; phoneNumber: string });
+        } else if (customerDetails) {
+          const fullNumber = `+${getCountryCallingCode("DE")}-${customerDetails.phoneNumber}`;
+          handleDialogAction({
+            type: 'contact',
+            payload: { name: customerDetails.name, phoneNumber: fullNumber }
+          });
+        }
+        if (isAddressData(addressData)) {
+          setAddressInfo({
+            pincode: String(addressData.pincode || ''),
+            buildingNumber: String(addressData.buildingNumber || ''),
+            street: String(addressData.street || ''),
+            town: String(addressData.town || ''),
           });
         } else {
           handleDialogAction({
             type: 'address',
             payload: {
-              buildingNumber: customerDetails.address?.buildingNumber ?? '',
-              town: customerDetails.address?.town ?? '',
-              pincode: customerDetails.address?.pincode ?? '',
-              street: customerDetails.address?.street ?? '',
+              buildingNumber: String((customerDetails.address && customerDetails.address.buildingNumber) || ''),
+              town: String((customerDetails.address && customerDetails.address.town) || ''),
+              pincode: String((customerDetails.address && customerDetails.address.pincode) || ''),
+              street: String((customerDetails.address && customerDetails.address.street) || ''),
             }
-          })
+          });
         }
-      }
-
-      if (deliveryTimeData) {
-        //setTimeInfo(deliveryTimeData as { scheduledTime: string; asap: boolean });
-        const deliverTime = deliveryTimeData as { scheduledTime: string; asap: boolean }
-        handleDialogAction({
-          type: 'time',
-          payload: deliverTime
-        })
-      }
-
-      if (deliverNoteData) {
-        // setDeliveryNoteInfo(deliverNoteData as { notes: string })
-        const deliveryNote = deliverNoteData as { notes: string }
-        handleDialogAction({
-          type: 'notes',
-          payload: deliveryNote
-        })
-      }
+        if (deliveryTimeData) {
+          setTimeInfo(deliveryTimeData as { scheduledTime: string; asap: boolean });
+        }
+        if (deliverNoteData) {
+          setDeliveryNoteInfo(deliverNoteData as { notes: string });
+        }
     }
-  }, [loading, customerDetails, orderParam, handleDialogAction]);
+  }, [loading, customerDetails, isPickup, handleDialogAction]);
 
   const isDataReady =
     userInfo.name &&
