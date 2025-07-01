@@ -6,13 +6,16 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSafeLocalStorage, useSafeSessionStorage } from '@/hooks/useIsClient';
 import { v4 as uuidv4 } from 'uuid';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 export const SessionProvider = () => {
   const dispatch = useDispatch();
   const localStorage = useSafeLocalStorage();
   const sessionStorage = useSafeSessionStorage();
-
+  const hasMounted = useHasMounted();
   useEffect(() => {
+    if (!hasMounted) return; // Only run on client after mount
+
     let storedTid = localStorage.getItem('tid');
     let storedSsid = localStorage.getItem('ssid');
     const orderType = sessionStorage.getItem('orderType');
