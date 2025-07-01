@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
     const payload = await request.json();
     const { ssid, tid } = payload;
     const deviceId = ssid;
+    console.log('deviceId::::::', deviceId)
 
     let access_Token = request.cookies.get('access_token')?.value || '';
     const refresh_token = request.cookies.get('refresh_token')?.value || '';
