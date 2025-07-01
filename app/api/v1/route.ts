@@ -2,7 +2,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import UserSession from '@/lib/mongodb/models/UserSession';
 import ApiResponse from '@/utils/ApiResponse';
 import { connectToDatabase } from '@/lib/mongodb/connect';
