@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Indian Tadka – Restaurant Web Platform
 
-## Getting Started
+A modern, full-stack web application for Indian Tadka, a restaurant bringing authentic Indian cuisine to Germany. This platform enables customers to explore the menu, place online orders, make reservations, view offers, and interact with a smart chatbot assistant—all with a seamless, responsive user experience.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
+- **Homepage Product Tour**: Interactive, branded tour for first-time visitors
+- **Multilingual Support**: English and German localization
+- **Digital Menu**: Browse categorized menu items with search and filtering
+- **Online Ordering**: Add to cart, customize orders, and checkout with multiple payment options (Stripe, PayPal, Google Pay, Cash)
+- **Reservation System**: Book tables online and manage reservations
+- **Special Offers**: View current and upcoming restaurant offers
+- **Order Tracking**: Real-time order status updates
+- **Chatbot Assistant**: Restaurant chatbot for FAQs, order help, and quick actions
+- **Customer Reviews**: Display testimonials and feedback
+- **Contact Form**: Send messages directly to the restaurant
+- **Responsive Design**: Optimized for desktop and mobile
+- **Admin APIs**: For managing menu, orders, reservations, and more
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, MUI, Framer Motion
+- **State Management**: Redux Toolkit
+- **Internationalization**: next-intl
+- **Backend**: Next.js API routes (App Router), Node.js
+- **Database**: MongoDB (via Mongoose)
+- **Payments**: Stripe, PayPal, Google Pay
+- **Email**: Nodemailer (SMTP)
+- **Maps**: React-Leaflet, Google Maps API
+- **Other**: Firebase, JWT, Vercel Analytics
+
+## Getting Started (Local Development)
+
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd IndianTadka
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or
+yarn install
+   ```
+
+3. **Configure environment variables:**
+   - Copy `.env.example` to `.env.local` and fill in required values (MongoDB URI, Stripe/PayPal keys, SMTP, etc.)
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project is production-ready and can be deployed on [Vercel](https://vercel.com/) for optimal performance and scalability.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Vercel**: Push your repository to GitHub and import it into Vercel. Set environment variables in the Vercel dashboard.
+- **Custom Hosting**: You can also deploy on your own Node.js server. Build with `npm run build` and start with `npm start`.
 
-## Learn More
+## Folder Structure (Highlights)
 
-To learn more about Next.js, take a look at the following resources:
+- `app/` – Next.js app directory (pages, API routes, localization)
+- `components/` – UI and client components
+- `lib/` – Database models, API utilities, and services
+- `store/` – Redux store and slices
+- `public/` – Static assets
+- `i18n/` – Localization files
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is proprietary and developed for Indian Tadka Restaurant.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For questions or support, contact: [contact@indiantadka.eu](mailto:contact@indiantadka.eu)
